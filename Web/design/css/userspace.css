@@ -1,0 +1,16 @@
+@CHARSET "ISO-8859-1";
+
+body {
+	background:#000000 url("../images/bg_test.jpg") no-repeat center;
+	color:white;
+	font:20px Calibri;
+}
+
+.mainContent {
+	font: 20px Calibri;
+	text-align:center;
+	border:5px solid #FFFFFF;
+	width:60%;
+	height:90%;
+	margin-top:50px;
+}
