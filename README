@@ -1,1 +1,63 @@
 GamersNet Proyect README:
+
+PHP coding standards:
+    - Variable names:
+        - Normal variables must be named like this:
+            $myVariableName (Not $MyVariableName or $myvariablename or $Myvariablename or $my_variable_name)
+        - Private data members must be preceded by a "_":
+            $_myPrivateVariable
+
+    - Contants:
+        All contants must be named using capital letters and using "_" as word separator:
+            $MY_CONSTANT, $MY_CONSTANT_ARRA['INDEX'] (Not $My_Constant or $MY_CONSTANT_ARRAY['index'])
+
+    - All class functions must be commented following the next scheme:
+        /**
+        * Function description.
+        * @param var_type $varName Variable description.
+        * @return var_type Variable description.
+        */
+
+    - All private class variables must be accessed using the specific Set() and Get() methods. The __set() and __get()
+    built-in methods can be used, but only if the variable accesed has no relation with a database field.
+
+    - The if () ... else/*if ()*/ ... blocks must be written like this:
+        // The "(" must be separated from the "if" by a space:
+        if ($myVar > MY_CONSTANT_LIMIT)
+        {
+            // My sentences
+        }
+        else
+        {
+            // My alternative sentences
+        }
+
+        // The "{}" could be omitted if only one sentece is going to be executed:
+        if ($myVar > MY_CONSTANT_LIMIT)
+            // My sentence
+        else
+            // My other sentence
+
+        // Or for example:
+        if ($myVar > MY_CONSTANT_LIMIT)
+        {
+            // My sentences
+        }
+        else
+            // My other sentence
+
+        // If there is only one sentence, but it is a composed one like a loop, the "{}" are a must:
+        if ($myVar > MY_CONSTANT_LIMIT)
+        {
+            while ($myControl < MY_CONTROL_LIMIT)
+            {
+                // My sentences
+            }
+        }
+        else
+        {
+            for($i = 0; $i < MY_CONTROL_LIMIT2; ++$i)
+                // My sentence
+        }
+
+To be continued...
