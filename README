@@ -7,9 +7,9 @@ PHP coding standards:
         - Private data members must be preceded by a "_":
             $_myPrivateVariable
 
-    - Contants:
+    - Constants:
         All contants must be named using capital letters and using "_" as word separator:
-            $MY_CONSTANT, $MY_CONSTANT_ARRA['INDEX'] (Not $My_Constant or $MY_CONSTANT_ARRAY['index'])
+            $MY_CONSTANT, $MY_CONSTANT_ARRAY['INDEX'] (Not $My_Constant or $MY_CONSTANT_ARRAY['index'])
 
     - All class functions must be commented following the next scheme:
         /**
