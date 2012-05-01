@@ -4,11 +4,12 @@
 <script type="text/javascript">
 function Lookup(friendname)
 {
+	$('#sent').css("display", "none");
     if(friendname.length < 3)
         $('#suggestionsBox').hide();
     else
     {
-        $.post("http://localhost/gamersNet_Beta/Web/design/php/friendsfinder.php", {nickname: friendname}, function(data) {
+        $.post("http://localhost/design/php/friendsfinder.php", {nickname: friendname}, function(data) {
             if (data.length > 0)
             {
                 $('#suggestionsBox').show();
@@ -32,6 +33,52 @@ function Fill(thisValue)
     $('#friendname').val(thisValue);
     setTimeout("$('#suggestionsBox').hide();", 200);
 }
+
+function SendFriendRequest()
+{
+	var friendName = $('#friendname').val();
+	if (friendName === "")
+	{
+		$('#sent').text("You must write a valid friend name");
+        $('#sent').css('background-color', "#FF0000");
+        $('#sent').css('display', '');
+        return;
+	}
+	var message = 'Request sent!';
+	var bgColor = '#00CC00';
+	$.post("http://localhost/core/addfriend.php", {username: friendName}, function(data) {
+		if (data.length > 0)
+		{
+			if (data === 'FAILED')
+			{
+				message = 'There was an error sending your request. Please, try again soon.';
+				bgColor = '#FF0000';
+			}
+			else if (data === 'USER_DOESNT_EXISTS')
+			{
+				message = 'User not found!';
+				bgColor = '#FF0000';
+			}
+			else if (data === 'USER_ALREADY_IS_FRIEND')
+			{
+				message = friendName + " already is your friend!";
+			}
+			else if (data === 'REQUEST_ALREADY_SENT')
+			{
+				message = "You have already sent a friend request to that person"
+				bgColor = '#FF0000';
+			}
+		}
+		else
+		{
+			message = 'There was a fatal error connecting to the server.';
+			bgColor = '#FF0000';
+		}
+        $('#sent').text(message);
+        $('#sent').css('background-color', bgColor);
+        $('#sent').css('display', '');
+	});
+}
 </script>
 <style type="text/css">
     body {
@@ -54,11 +101,10 @@ function Fill(thisValue)
         margin-left:20%;
         margin-right:20%;
         align:center;
-        background-color: transparent;
-        -moz-border-radius: 7px;
-        -webkit-border-radius: 7px;
-        border: 2px solid #FFFFFF;
-        color: #fff;
+        background-color:transparent;
+        border-radius:1em;
+        border:2px solid #FFFFFF;
+        color:#FFFFFF;
     }
     
     .suggestionsList {
@@ -67,24 +113,54 @@ function Fill(thisValue)
     }
     
     .listItem {
-        margin: 0px 0px 3px 0px;
-        padding: 3px;
         cursor: pointer;
     }
     
     .listItem:hover {
         background-color: #424242;
     }
+    
+    .sent {
+        font:15px Calibri;
+        padding:3px;
+        margin-left:10%;
+        margin-right:10%;
+        color:#000000;
+        text-align:center;
+        border-radius:1em;
+    }
+    
+    .button {
+        font:16px Calibri;
+        padding:3px;
+        margin-left:20%;
+        margin-right:20%;
+        color:#FFFFFF;
+        text-align:center;
+        border:2px solid #FFFFFF;
+    }
+    
+    .button:hover {
+        background-color:#0066FF;
+        cursor:pointer;
+    }
+    
+    .input {
+        text-align:center;
+        border-radius:1em;
+    }
 </style>
 </head>
 <body bgcolor="#000000">
 <div class="main" align="center">
 	<form>
-		<input type="text" value="" id="friendname" onkeyup="Lookup(this.value);" onblur="Fill();"/>
+		<input class="input" type="text" value="" id="friendname" onkeyup="Lookup(this.value);" onblur="Fill();"/>
 		<div class="suggestionsBox" id="suggestionsBox" style="display:none;">
 		  <div class="suggestionsList" id="suggestionsList"></div>
 		</div>
-		<input type="submit" value="Add as friend"/>
+		<br/>
+		<div><p><a id="button" class="button" onclick="SendFriendRequest();">Send friend request</a><p></div>
+		<div id="sent" class="sent" style="background-color:#00CC00; display:none"></div>
 	</form>
 </div>
 </body>

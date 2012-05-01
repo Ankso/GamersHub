@@ -1,6 +1,6 @@
 <?php
-require_once ("../Common/SharedDefines.php");
-require_once ("../Classes/Database.Class.php");
+require_once ("F:/GamersNet/GamersNet_Beta/Common/SharedDefines.php");
+require_once ("F:/GamersNet/GamersNet_Beta/Classes/Database.Class.php");
 
 Class User
 {
@@ -269,8 +269,8 @@ Class User
         $result = $DB->Execute("SELECT friend_id FROM user_friends WHERE user_id = ". $this->GetId());
         if ($result === false)
             return false;
-        if (mysql_num_rows($result) == 0)
-            return -1;
+        if (mysql_num_rows($result) === 0)
+            return -2;
         $friends = array();
         while ($row = mysql_fetch_assoc($result))
             $friends[] = $row['friend_id'];
@@ -288,12 +288,47 @@ Class User
         $result = $DB->Execute("SELECT a.username FROM user_data AS a, user_friends AS b WHERE b.friend_id = a.id AND b.user_id = ". $this->GetId());
         if ($result === false)
             return false;
-        if (mysql_num_rows($result) == 0)
-            return -1;
+        if (mysql_num_rows($result) === 0)
+            return -2;
         $friends = array();
         while ($row = mysql_fetch_assoc($result))
             $friends[] = $row['username'];
         return $friends;
+    }
+    
+    public function IsFriendOf($id)
+    {
+        global $DATABASES, $SERVER_INFO;
+        $DB = new Database($DATABASES['USERS']);
+        $result = $DB->Execute("SELECT * FROM user_friends WHERE user_id = ". $this->GetId() ." AND friend_id = ". $id);
+        if ($result === false)
+            return false;
+        if (mysql_num_rows($result) === 0)
+            return false;
+        return true;
+    }
+    
+    /**
+     * [INCOMPLETE] Sends a new friend request. Note that the target friend must be updated in real-time when the function is complete.
+     * @param long $friendId The request target ID
+     * @param string $message The message that the user sends to his new friend
+     * @return bool Returns true on success, USER_IS_ALREADY_FRIEND if the users are friends, RESQUEST_ALREADY_SENT if the friend request has been sent and is wayting for aproval, or false on failure
+     */
+    public function SendFriendRequest($friendId, $message)
+    {
+        global $DATABASES, $SERVER_INFO;
+        if ($this->IsFriendOf($friendId))
+            return -3;
+        $DB = new Database($DATABASES['USERS']);
+        $result = $DB->Execute("SELECT user_id FROM user_friend_requests WHERE user_id = ". $friendId ." AND requester_id = ". $this->GetId());
+        if ($result === false)
+            return false;
+        if (mysql_num_rows($result) > 0)
+            return -4;
+        if ($DB->Execute("INSERT INTO user_friend_requests (user_id, requester_id, request_message) VALUES".
+                		 "(". $friendId .", ". $this->GetId() .", '". ((is_null($message)) ? ($this->Getusername() . " wants to be your friend!") : $message) ."')"))
+            return true;
+        return false;
     }
     
     private $_id;                // The user's unique ID
