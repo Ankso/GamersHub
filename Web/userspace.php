@@ -30,8 +30,9 @@ if (!isset($_SESSION['user']))
         width:230,
         flapDim:"200",
         extruderOpacity:1,
-        autoCloseTime:0,
+        autoCloseTime:500,
         slideTimer:200,
+        closeOnExternalClick:false,
         onExtClose:function(){},
         onExtOpen:function(){},
         onExtContentLoad: function(){}
@@ -87,26 +88,24 @@ if (!isset($_SESSION['user']))
 </table>
 </div>
 <div id="friendsTab" class="a {title:'My friends'}">
-<div id="newFriend" class="voice {}"><span class="label">Add New Friend +</span></div>
+<div id="newFriend" class="voice {panel: 'design/ajax/friendsfinder.html'}"><span class="label">Add New Friend +</span></div>
 <?php
 $friendsList = $_SESSION['user']->GetAllFriendsByUsername();
 if ($friendsList === USER_HAS_NO_FRIENDS)
-    echo '    <div id="noFriends" class="voice {}"><span class="label"><a class="label">You have no friends</a></span></div>' . "\n";
+    echo '    <div id="noFriends" class="voice {}"><span class="label"><a class="label">You have no friends</a></span></div>', "\n";
 elseif ($friendsList === false)
-    echo '    <div id="noFriends" class="voice {}"><span class="label"><a class="label">Error retrieving your friends.</a></span></div>' . "\n";
+    echo '    <div id="noFriends" class="voice {}"><span class="label"><a class="label">Error retrieving your friends.</a></span></div>', "\n";
 else
 {
     foreach ($friendsList as $i => $value)
-    {
-        echo '    <div id="friend" class="voice {panel: \'friendmenutab.php\'}"><span class="label"><a class="label">'. $friendsList[$i] .'</a></span></div>' . "\n";
-    }
+        echo '    <div id="friend" class="voice {panel: \'friendmenutab.php\'}"><span class="label"><a class="label">', $friendsList[$i], '</a></span></div>', "\n";
 }
 ?>
 </div>
 <div id="clansTab" class="a {title:'My Clans'}">
 <?php 
 for ($i = 1; $i < 5; ++$i)
-    echo '    <div id="clan" class="voice {panel: \'clansmenutab.php\'}"><span class="label"><a class="label">Clan'. $i .'</a></span></div>' . "\n";
+    echo '    <div id="clan" class="voice {panel: \'clansmenutab.php\'}"><span class="label"><a class="label">Clan', $i, '</a></span></div>', "\n";
 ?>
 </div>
 <div id="mySpaceTab" class="a {title: 'My Space'}"></div>

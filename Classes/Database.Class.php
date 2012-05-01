@@ -1,6 +1,6 @@
 <?php
 
-require_once("../Common/SharedDefines.php");
+require_once($_SERVER['DOCUMENT_ROOT'] . "gamersNet_Beta/Common/SharedDefines.php");
 
 /**
  * Main Database Class.<p>Handles all Database tasks like conection, query execution, etc.</p>

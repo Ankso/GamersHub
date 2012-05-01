@@ -5,7 +5,7 @@ define("USER_HAS_NO_FRIENDS", -1);
  */
 // DB server connection info
 $SERVER_INFO = array(
-    'HOST' => "localhost",      // MySQL Server address
+    'HOST'     => "localhost",  // MySQL Server address
     'USERNAME' => "root",       // MySQL Server user
     'PASSWORD' => "password",   // MySQL Server password
 );

@@ -1,0 +1,91 @@
+<html>
+<head>
+<script type="text/javascript" src="../../js/inc/jquery.latest.js"></script>
+<script type="text/javascript">
+function Lookup(friendname)
+{
+    if(friendname.length < 3)
+        $('#suggestionsBox').hide();
+    else
+    {
+        $.post("http://localhost/gamersNet_Beta/Web/design/php/friendsfinder.php", {nickname: friendname}, function(data) {
+            if (data.length > 0)
+            {
+                $('#suggestionsBox').show();
+                $('#suggestionsList').html(data);
+            }
+        });
+    }
+}
+
+function CheckSuggestionsBox(returnedData)
+{
+	if (returnedData.lenght > 0)
+	{
+		$('#suggestionsBox').show();
+		$('#suggestionsList').html(returnedData);
+	}
+}
+
+function Fill(thisValue)
+{
+    $('#friendname').val(thisValue);
+    setTimeout("$('#suggestionsBox').hide();", 200);
+}
+</script>
+<style type="text/css">
+    body {
+        font-family: Calibri;
+        font-size: 11px;
+        color: #FFFFFF;
+    }
+    
+    h3 {
+        margin: 0px;
+        padding: 0px;   
+    }
+    
+    .main {
+        margin-top: 13px;
+    }
+    
+    .suggestionsBox {
+        position: relative;
+        margin-left:20%;
+        margin-right:20%;
+        align:center;
+        background-color: transparent;
+        -moz-border-radius: 7px;
+        -webkit-border-radius: 7px;
+        border: 2px solid #FFFFFF;
+        color: #fff;
+    }
+    
+    .suggestionsList {
+        margin: 0px;
+        padding: 0px;
+    }
+    
+    .listItem {
+        margin: 0px 0px 3px 0px;
+        padding: 3px;
+        cursor: pointer;
+    }
+    
+    .listItem:hover {
+        background-color: #424242;
+    }
+</style>
+</head>
+<body bgcolor="#000000">
+<div class="main" align="center">
+	<form>
+		<input type="text" value="" id="friendname" onkeyup="Lookup(this.value);" onblur="Fill();"/>
+		<div class="suggestionsBox" id="suggestionsBox" style="display:none;">
+		  <div class="suggestionsList" id="suggestionsList"></div>
+		</div>
+		<input type="submit" value="Add as friend"/>
+	</form>
+</div>
+</body>
+</html>

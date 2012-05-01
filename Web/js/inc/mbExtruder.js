@@ -160,10 +160,11 @@
 
 				c.bind("mouseleave", function(e){
 					if(extruder.get(0).options.closeOnExternalClick){
-
-						//Chrome bug: FORMELEMENT fire mouseleave event.
-						if(!$(e.target).parents().is(".text"))
-							$(document).one("click.extruder"+extruder.get(0).idx,function(){extruder.closeMbExtruder();});
+						/*
+						 * Chrome bug: FORMELEMENT fire mouseleave event.
+						 * if(!$(e.target).parents().is(".text"))
+						 * $(document).one("click.extruder"+extruder.get(0).idx,function(){extruder.closeMbExtruder();});
+						*/
 					}
 					closeTimer=setTimeout(function(){
 
@@ -345,7 +346,7 @@
 							content.children().not(".text")
 									.addClass("panelVoice")
 									.click(function(){
-								extruder.closeMbExtruder();
+								//extruder.closeMbExtruder();
 							});
 							content.slideDown(400);
 						}

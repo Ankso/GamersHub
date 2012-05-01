@@ -222,7 +222,7 @@ Class User
     {
         global $DATABASES, $SERVER_INFO;
         $DB = New Database($DATABASES['USERS']);
-        if ($DB->Execute("UPDATE user_data SET is_online = ". $isOnline ? "1" : "0"))
+        if ($DB->Execute("UPDATE user_data SET is_online = ". ($isOnline ? "1" : "0") ." WHERE id = ". $this->GetId()))
         {
             $this->_isOnline = $isOnline;
             return true;
