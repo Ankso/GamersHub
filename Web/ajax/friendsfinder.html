@@ -1,6 +1,6 @@
 <html>
 <head>
-<script type="text/javascript" src="../../js/inc/jquery.latest.js"></script>
+<script type="text/javascript" src="../js/inc/jquery.latest.js"></script>
 <script type="text/javascript">
 function Lookup(friendname)
 {
@@ -9,7 +9,7 @@ function Lookup(friendname)
         $('#suggestionsBox').hide();
     else
     {
-        $.post("http://localhost/design/php/friendsfinder.php", {nickname: friendname}, function(data) {
+        $.post("../core/friends/friendsfinder.php", {nickname: friendname}, function(data) {
             if (data.length > 0)
             {
                 $('#suggestionsBox').show();
@@ -46,7 +46,7 @@ function SendFriendRequest()
 	}
 	var message = 'Request sent!';
 	var bgColor = '#00CC00';
-	$.post("http://localhost/core/addfriend.php", {username: friendName}, function(data) {
+	$.post("../core/friends/addfriend.php", {username: friendName}, function(data) {
 		if (data.length > 0)
 		{
 			if (data === 'FAILED')

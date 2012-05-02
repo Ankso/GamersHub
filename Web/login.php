@@ -57,6 +57,7 @@ body {
 
 .login {
 	text-align:center;
+	color:#FFFFFF;
 	position:relative;
 	margin-top:17%;
 	margin-left:41%;
@@ -73,10 +74,6 @@ body {
 .input {
 	text-align:center;
 	border-radius:1em;
-}
-
-.newAccount {
-	color:#FFFFFF;
 }
 </style>
 </head>

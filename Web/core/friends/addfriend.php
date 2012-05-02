@@ -1,6 +1,6 @@
 <?php
-require_once("F:/GamersNet/GamersNet_Beta/Common/Common.php");
-require_once("F:/GamersNet/GamersNet_Beta/Classes/User.Class.php");
+require_once($_SERVER['DOCUMENT_ROOT'] . "/../Common/Common.php");
+require_once($_SERVER['DOCUMENT_ROOT'] . "/../Classes/User.Class.php");
 
 session_start();
 if(isset($_POST['username']))

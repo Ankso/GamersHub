@@ -1,6 +1,6 @@
 <?php
-require_once("F:/GamersNet/GamersNet_Beta/Common/SharedDefines.php");
-require_once("F:/GamersNet/GamersNet_Beta/Classes/Database.Class.php");
+require_once($_SERVER['DOCUMENT_ROOT'] . "/../Common/SharedDefines.php");
+require_once($_SERVER['DOCUMENT_ROOT'] . "/../Classes/Database.Class.php");
 
 if (isset($_POST['nickname']))
 {

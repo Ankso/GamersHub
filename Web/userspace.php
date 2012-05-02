@@ -13,8 +13,8 @@ if (!isset($_SESSION['user']))
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title><?php echo $_GET['username'] ?>'s profile - GamersNet</title>
-<link href="js/css/mbExtruder.css" media="all" rel="stylesheet" type="text/css">
-<link href="design/css/userspace.css" media="all" rel="stylesheet" type="text/css">
+<link href="css/mbExtruder.css" media="all" rel="stylesheet" type="text/css">
+<link href="css/userspace.css" media="all" rel="stylesheet" type="text/css">
 <script type="text/javascript" src="js/inc/jquery.latest.js"></script>
 <script type="text/javascript" src="js/inc/jquery.hoverIntent.min.js"></script>
 <script type="text/javascript" src="js/inc/jquery.metadata.js"></script>
@@ -90,7 +90,7 @@ if (!isset($_SESSION['user']))
 </table>
 </div>
 <div id="friendsTab" class="a {title:'My friends'}">
-<div id="newFriend" class="voice {panel: 'design/ajax/friendsfinder.html'}"><span class="label">Add New Friend +</span></div>
+<div id="newFriend" class="voice {panel: 'ajax/friendsfinder.html'}"><span class="label">Add New Friend +</span></div>
 <?php
 $friendsList = $_SESSION['user']->GetAllFriendsByUsername();
 if ($friendsList === USER_HAS_NO_FRIENDS)
@@ -100,14 +100,14 @@ elseif ($friendsList === false)
 else
 {
     foreach ($friendsList as $i => $value)
-        echo '    <div id="friend" class="voice {panel: \'friendmenutab.php\'}"><span class="label"><a class="label">', $friendsList[$i], '</a></span></div>', "\n";
+        echo '    <div id="friend" class="voice {panel: \'core/friends/friendmenutab.php\'}"><span class="label"><a class="label">', $friendsList[$i], '</a></span></div>', "\n";
 }
 ?>
 </div>
 <div id="clansTab" class="a {title:'My Clans'}">
 <?php 
 for ($i = 1; $i < 5; ++$i)
-    echo '    <div id="clan" class="voice {panel: \'clansmenutab.php\'}"><span class="label"><a class="label">Clan', $i, '</a></span></div>', "\n";
+    echo '    <div id="clan" class="voice {panel: \'core/clans/clansmenutab.php\'}"><span class="label"><a class="label">Clan', $i, '</a></span></div>', "\n";
 ?>
 </div>
 <div id="mySpaceTab" class="a {title: 'My Space'}"></div>
