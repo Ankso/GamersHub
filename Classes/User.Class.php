@@ -1,6 +1,6 @@
 <?php
-require_once ("F:/GamersNet/GamersNet_Beta/Common/SharedDefines.php");
-require_once ("F:/GamersNet/GamersNet_Beta/Classes/Database.Class.php");
+require_once ($_SERVER['DOCUMENT_ROOT'] . "/../Common/SharedDefines.php");
+require_once ($_SERVER['DOCUMENT_ROOT'] . "/../Classes/Database.Class.php");
 
 Class User
 {
@@ -43,7 +43,7 @@ Class User
         else
             $query = "SELECT id, username, password_sha1, email, ip_v4, ip_v6 FROM user_data WHERE id = ". $this->_id;
         $result = $DB->Execute($query);
-        if ($userData = mysql_fetch_assoc($result))
+        if ($userData = $result->fetch_assoc())
         {
             $this->_id = $userData['id'];
             $this->_username = $userData['username'];
@@ -272,10 +272,10 @@ Class User
         $result = $DB->Execute("SELECT friend_id FROM user_friends WHERE user_id = ". $this->GetId());
         if ($result === false)
             return false;
-        if (mysql_num_rows($result) === 0)
+        if ($result->num_rows === 0)
             return USER_HAS_NO_FRIENDS;
         $friends = array();
-        while ($row = mysql_fetch_assoc($result))
+        while ($row = $result->fetch_assoc())
             $friends[] = $row['friend_id'];
         return $friends;
     }
@@ -291,10 +291,10 @@ Class User
         $result = $DB->Execute("SELECT a.username FROM user_data AS a, user_friends AS b WHERE b.friend_id = a.id AND b.user_id = ". $this->GetId());
         if ($result === false)
             return false;
-        if (mysql_num_rows($result) === 0)
+        if ($result->num_rows === 0)
             return USER_HAS_NO_FRIENDS;
         $friends = array();
-        while ($row = mysql_fetch_assoc($result))
+        while ($row = $result->fetch_assoc())
             $friends[] = $row['username'];
         return $friends;
     }
@@ -311,7 +311,7 @@ Class User
         $result = $DB->Execute("SELECT * FROM user_friends WHERE user_id = ". $this->GetId() ." AND friend_id = ". $id);
         if ($result === false)
             return false;
-        if (mysql_num_rows($result) > 0)
+        if ($result->num_rows > 0)
             return USERS_ARE_FRIENDS;
         return USERS_ARENT_FRIENDS;
     }
@@ -331,7 +331,7 @@ Class User
         $result = $DB->Execute("SELECT user_id FROM user_friend_requests WHERE user_id = ". $friendId ." AND requester_id = ". $this->GetId());
         if ($result === false)
             return false;
-        if (mysql_num_rows($result) > 0)
+        if ($result->num_rows > 0)
             return FRIEND_REQUEST_ALREADY_SENT;
         if ($DB->Execute("INSERT INTO user_friend_requests (user_id, requester_id, request_message) VALUES".
                 		 "(". $friendId .", ". $this->GetId() .", '". ((is_null($message)) ? ($this->Getusername() . " wants to be your friend!") : $message) ."')"))
@@ -350,10 +350,10 @@ Class User
         $result = $DB->Execute("SELECT a.username, b.message FROM user_data AS a, user_friend_requests AS b WHERE b.user_id = ". $this->GetId() ." AND a.id = b.requester_id");
         if ($result === false)
             return false;
-        if (mysql_num_rows($result) === 0)
+        if ($result->num_rows === 0)
             return USER_HAS_NO_FRIEND_REQUESTS;
         $friendRequests = array();
-        while ($row = mysql_fetch_assoc($result))
+        while ($row = $result->fetch_assoc())
         {
             $friendRequests[] = array(
                 "username" => $row['username'],

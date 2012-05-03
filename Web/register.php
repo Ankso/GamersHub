@@ -50,7 +50,7 @@ if ($_POST)
     if ($result)
     {
         $row;
-        if ($row = mysql_fetch_assoc($result))      // If a coincidence was found in the DB, print the errors
+        if ($row = $result->fetch_assoc())      // If a coincidence was found in the DB, print the errors
         {
             PrintForm();
             if ($row["username"] == $username)

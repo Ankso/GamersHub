@@ -29,7 +29,7 @@ else
     	$DB = New Database($DATABASES['USERS']);
     	if ($result = $DB->Execute($query));
     	{
-    	    if ($row = mysql_fetch_assoc($result))            // If we have a coincidence...
+    	    if ($row = $result->fetch_assoc())            // If we have a coincidence...
     	    {
     	        if ($row['password_sha1'] === CreateSha1Pass($username, $password))    // The passwords match
     	        {
