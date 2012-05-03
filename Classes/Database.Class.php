@@ -18,13 +18,6 @@ class Database
         $this->_mysqli = new mysqli($SERVER_INFO['HOST'], $SERVER_INFO['USERNAME'], $SERVER_INFO['PASSWORD'], $dbToConnect);
         if ($this->_mysqli->connect_errno)
             die("Fatal error ". $this->_mysqli->connect_errno .": ". $this->_mysqli->connect_error);
-        /*
-        if (!isset($dbToConnect))
-            die("Fatal error: Missing argument when initializing the Database class.");
-        global $SERVER_INFO;
-        $this->_connection = mysql_connect($SERVER_INFO['HOST'], $SERVER_INFO['USERNAME'], $SERVER_INFO['PASSWORD']) or die("Fatal error initializing Database class: ". mysql_error());
-        mysql_select_db($dbToConnect, $this->_connection) or die("Fatal error initializing Database class: ". mysql_error());
-        */
     }
     
     /**
