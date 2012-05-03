@@ -52,7 +52,7 @@ else
 <style type="text/css">
 body {
 	font:17px Calibri;
-	background-color:#000000;
+	background:#000000 url("images/login_bg.jpg") no-repeat center;
 }
 
 .login {

@@ -13,9 +13,9 @@ if(isset($_POST['username']))
     else
     {
         $temp = $_SESSION['user']->SendFriendRequest($friendId, null);
-        if ($temp === USER_IS_ALREADY_FRIEND)
+        if ($temp === USERS_ARE_FRIENDS)
             echo 'USER_IS_ALREADY_FRIEND';
-        elseif ($temp === REQUEST_ALREADY_SENT)
+        elseif ($temp === FRIEND_REQUEST_ALREADY_SENT)
             echo 'REQUEST_ALREADY_SENT';
         elseif ($temp === false)
             echo 'FAILED';

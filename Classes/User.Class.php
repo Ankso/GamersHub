@@ -231,16 +231,19 @@ Class User
     }
     
     /**
-     * Adds a friend for this user. [NOT COMPLETELY IMPLEMENTED]
+     * Accepts a friend request for this user. [NOT COMPLETELY IMPLEMENTED]
      * @param integer $friendId The user's new friend ID
      * @return bool Returns true if success or false if failure.
      */
-    public function AddFriend($friendId)
+    public function AcceptFriend($friendId)
     {
         global $DATABASES, $SERVER_INFO;
         $DB = New Database($DATABASES['USERS']);
-        if ($DB->Execute("INSERT INTO user_friends VALUES (". $this->GetId() .", ". $friendId .")"))
-            return true;
+        // Remove the friend request
+        if ($DB->Execute("DELETE FROM user_friend_requests WHERE user_id = ". $this->GetId() ." AND requester_id = ". $friendId))
+            // Insert the new friends in the DB (both are friends now, we must insert 2 records, at least for now)
+            if ($DB->Execute("INSERT INTO user_friends VALUES (". $this->GetId() .", ". $friendId ."), (". $friendId) .", ". $this->GetId() .")")
+                return true;
         return false;
     }
     
@@ -270,7 +273,7 @@ Class User
         if ($result === false)
             return false;
         if (mysql_num_rows($result) === 0)
-            return -2;
+            return USER_HAS_NO_FRIENDS;
         $friends = array();
         while ($row = mysql_fetch_assoc($result))
             $friends[] = $row['friend_id'];
@@ -289,13 +292,18 @@ Class User
         if ($result === false)
             return false;
         if (mysql_num_rows($result) === 0)
-            return -2;
+            return USER_HAS_NO_FRIENDS;
         $friends = array();
         while ($row = mysql_fetch_assoc($result))
             $friends[] = $row['username'];
         return $friends;
     }
     
+    /**
+     * Determines if a user is friend of another user
+     * @param long $id The other user's unique ID
+     * @return CONST Returns USERS_ARENT_FRIENDS, USERS_ARE_FRIENDS or false if something fails.
+     */
     public function IsFriendOf($id)
     {
         global $DATABASES, $SERVER_INFO;
@@ -303,32 +311,56 @@ Class User
         $result = $DB->Execute("SELECT * FROM user_friends WHERE user_id = ". $this->GetId() ." AND friend_id = ". $id);
         if ($result === false)
             return false;
-        if (mysql_num_rows($result) === 0)
-            return false;
-        return true;
+        if (mysql_num_rows($result) > 0)
+            return USERS_ARE_FRIENDS;
+        return USERS_ARENT_FRIENDS;
     }
     
     /**
      * [INCOMPLETE] Sends a new friend request. Note that the target friend must be updated in real-time when the function is complete.
      * @param long $friendId The request target ID
      * @param string $message The message that the user sends to his new friend
-     * @return bool Returns true on success, USER_IS_ALREADY_FRIEND if the users are friends, RESQUEST_ALREADY_SENT if the friend request has been sent and is wayting for aproval, or false on failure
+     * @return bool Returns true on success, USER_IS_ALREADY_FRIEND if the users are friends, RESQUEST_ALREADY_SENT if the friend request has been sent and is waiting for aproval, or false on failure
      */
     public function SendFriendRequest($friendId, $message)
     {
         global $DATABASES, $SERVER_INFO;
         if ($this->IsFriendOf($friendId))
-            return -3;
+            return USERS_ARE_FRIENDS;
         $DB = new Database($DATABASES['USERS']);
         $result = $DB->Execute("SELECT user_id FROM user_friend_requests WHERE user_id = ". $friendId ." AND requester_id = ". $this->GetId());
         if ($result === false)
             return false;
         if (mysql_num_rows($result) > 0)
-            return -4;
+            return FRIEND_REQUEST_ALREADY_SENT;
         if ($DB->Execute("INSERT INTO user_friend_requests (user_id, requester_id, request_message) VALUES".
                 		 "(". $friendId .", ". $this->GetId() .", '". ((is_null($message)) ? ($this->Getusername() . " wants to be your friend!") : $message) ."')"))
             return true;
         return false;
+    }
+    
+    /**
+     * Gets all the friend requests for this user.
+     * @return array Returns a bidimensional array with the usernames (not IDs) and messages of the friend requests or false if failure.
+     */
+    public function GetFriendRequests()
+    {
+        global $DATABASES, $SERVER_INFO;
+        $DB = new Database($DATABASES['USERS']);
+        $result = $DB->Execute("SELECT a.username, b.message FROM user_data AS a, user_friend_requests AS b WHERE b.user_id = ". $this->GetId() ." AND a.id = b.requester_id");
+        if ($result === false)
+            return false;
+        if (mysql_num_rows($result) === 0)
+            return USER_HAS_NO_FRIEND_REQUESTS;
+        $friendRequests = array();
+        while ($row = mysql_fetch_assoc($result))
+        {
+            $friendRequests[] = array(
+                "username" => $row['username'],
+                "message"  => $row['message']
+            );
+        }
+        return $friendRequests;
     }
     
     private $_id;                // The user's unique ID
