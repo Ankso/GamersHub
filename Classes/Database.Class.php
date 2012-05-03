@@ -71,19 +71,18 @@ class Database
 	     *     );
 	     * so...
 	     */
-	    // If we have multiple sentences to be executed, 
-	    $results = array();
-	    $eCount = count($params);
-	    $vCount = count($params[0]);
+	    $results = array();                // The array of results
+	    $eCount = count($params);          // External count: represents the number of executions of the prepared statement
+	    $vCount = count($params[0]);       // Variables count: represents the number of variables * 2 that a prepared statement has
 	    for ($j = 0; $j < $eCount; ++$j)
 	    {
 	        for ($i = 0; $i < $vCount; ++$i)
 	        {
-	            $dynTypeIdentifier = "a". $i;
-	            $$dynTypeIdentifier = $params[$j][$i][0];
-	            $dynVar = "b". $i;
+	            // Here is the magic: we create one dynamic name variable for each variable on the prepared statement
+	            $dynVar = "a". $i;
 	            $$dynVar = $params[$j][$i][1];
-	            if (!$stmt->bind_param($$dynTypeIdentifier, $$dynVar))
+	            // And now we bind it
+	            if (!$stmt->bind_param($params[$j][$i][0], $$dynVar))
 	                return false;
 	        }
 	        if (!$stmt->execute())
@@ -117,6 +116,7 @@ class Database
 	            1 => $args[$i + 1]
 	            );
 	    }
+	    return true;
 	}
 	
 	private $_mysqli;
