@@ -1,6 +1,7 @@
 <?php
 require_once ($_SERVER['DOCUMENT_ROOT'] . "/../Common/SharedDefines.php");
 require_once ($_SERVER['DOCUMENT_ROOT'] . "/../Classes/Database.Class.php");
+require_once ($_SERVER['DOCUMENT_ROOT'] . "/../Common/PreparedStatements.php");
 
 Class User
 {
@@ -18,7 +19,7 @@ Class User
             die("Error initializing User Class: invalid source.");
             
         if (!$this->LoadFromDB())
-            die("Error initializing User Class: " . mysql_error());
+            die("Error initializing User Class");
     }
     
     /**
@@ -36,14 +37,13 @@ Class User
     private function LoadFromDB()
     {
         global $DATABASES, $SERVER_INFO;
-        $DB = New Database($DATABASES['USERS']);
-        $query;
+        $DB = new Database($DATABASES['USERS']);
+        var_dump($DB->BuildStmtArray("s", $this->_username));
         if (!isset($this->_id))
-            $query = "SELECT id, username, password_sha1, email, ip_v4, ip_v6 FROM user_data WHERE username = '". $this->_username ."'";
+            $result = $DB->ExecuteStmt(Statements::SELECT_USER_DATA_BY_USERNAME, $DB->BuildStmtArray("s", $this->_username));
         else
-            $query = "SELECT id, username, password_sha1, email, ip_v4, ip_v6 FROM user_data WHERE id = ". $this->_id;
-        $result = $DB->Execute($query);
-        if ($userData = $result->fetch_assoc())
+            $result = $DB->ExecuteStmt(Statements::SELECT_USER_DATA_BY_ID, $DB->BuildStmtArray("i", $this->_id));
+        if ($result && ($userData = $result->fetch_assoc()))
         {
             $this->_id = $userData['id'];
             $this->_username = $userData['username'];
@@ -66,12 +66,12 @@ Class User
     {
         global $DATABASES, $SERVER_INFO;
         $DB = New Database($DATABASES['USERS']);
-        $query;
+        $data;
         if (filter_var($this->GetLastIp(), FILTER_VALIDATE_IP, FILTER_FLAG_IPV4))
-            $query = "REPLACE INTO user_data VALUES (". $this->GetId() .", '". $this->GetUsername() ."', '". $this->GetPasswordSha1() ."', '". $this->GetEmail() ."', '". $this->GetLastIp() ."', NULL)";
+            $data = $DB->BuildStmtArray("isssss", $this->GetId(), $this->GetUsername(), $this->GetPasswordSha1(), $this->GetEmail(), $this->GetLastIp(), NULL);
         else
-            $query = "REPLACE INTO user_data VALUES (". $this->GetId() .", '". $this->GetUsername() ."', '". $this->GetPasswordSha1() ."', '". $this->GetEmail() ."', NULL, '". $this->GetLastIp() ."')";
-        if ($DB->Execute($query))
+            $data = $DB->BuildStmtArray("isssss", $this->GetId(), $this->GetUsername(), $this->GetPasswordSha1(), $this->GetEmail(), NULL, $this->GetLastIp());
+        if ($DB->ExecuteStmt(Statements::REPLACE_USER_DATA, $data))
             return true;
         return false;
     }
@@ -94,7 +94,7 @@ Class User
     {
         global $DATABASES, $SERVER_INFO;
         $DB = New Database($DATABASES['USERS']);
-        if ($DB->Execute("UPDATE user_data SET id = ". $newId ." WHERE id = ". $this_>GetId()))
+        if ($DB->ExecuteStmt(Statements::UPDATE_USER_DATA_ID, $DB->BuildStmtArray("ii", $newId, $this_>GetId())))
         {
             $this->_id = $newId;
             return true;
@@ -120,7 +120,7 @@ Class User
     {
         global $DATABASES, $SERVER_INFO;
         $DB = New Database($DATABASES['USERS']);
-        if ($DB->Execute("UPDATE user_data SET username = '". $newUsername ."' WHERE id = ". $this->GetId()))
+        if ($DB->ExecuteStmt(Statements::UPDATE_USER_DATA_USERNAME, $DB->BuildStmtArray("ss", $newUsername, $this->GetId())))
         {
             $this->_username = $newName;
             return true;
@@ -145,7 +145,7 @@ Class User
     {
         global $DATABASES, $SERVER_INFO;
         $DB = New Database($DATABASES['USERS']);
-        if ($DB->Execute("UPDATE user_data SET password_sha1 = '". $newPasswordSha1 ."' WHERE id = ". $this->GetId()))
+        if ($DB->ExecuteStmt(Statements::UPDATE_USER_DATA_PASSWORD, $DB->BuildStmtArray("ss", $newPasswordSha1, $this->GetId())))
         {
             $this->_passwordSha1 = $newPasswordSha1;
             return true;
@@ -171,7 +171,7 @@ Class User
     {
         global $DATABASES, $SERVER_INFO;
         $DB = New Database($DATABASES['USERS']);
-        if ($DB->Execute("UPDATE user_data SET email = '". $newEmail ."' WHERE id = ". $this->GetId()))
+        if ($DB->ExecuteStmt(Statements::UPDATE_USER_DATA_EMAIL, $DB->BuildStmtArray("ss", $newEmail, $this->GetId())))
         {
             $this->_email = $newEmail;
             return true;
@@ -196,7 +196,8 @@ Class User
     {
         global $DATABASES, $SERVER_INFO;
         $DB = New Database($DATABASES['USERS']);
-        if ($DB->Execute("UPDATE user_data SET ". filter_var($newIp, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) ? "ip_v4" : "ip_v5" ." = ". $newIp ." WHERE id = ". $this->GetId()))
+        if ($DB->ExecuteStmt((filter_var($newIp, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) ? Statements::UPDATE_USER_DATA_IPV4 : Statements::UPDATE_USER_DATA_IP_V6),
+        	$DB->BuildStmtArray("si", $newIp, $this->GetId())))
         {
             $this->_ip = $newIp;
             return true;
@@ -222,7 +223,7 @@ Class User
     {
         global $DATABASES, $SERVER_INFO;
         $DB = New Database($DATABASES['USERS']);
-        if ($DB->Execute("UPDATE user_data SET is_online = ". ($isOnline ? "1" : "0") ." WHERE id = ". $this->GetId()))
+        if ($DB->ExecuteStmt(Statements::UPDATE_USER_DATA_ONLINE, $DB->BuildStmtArray("ii", ($isOnline ? "1" : "0"), $this->GetId())))
         {
             $this->_isOnline = $isOnline;
             return true;
@@ -240,9 +241,9 @@ Class User
         global $DATABASES, $SERVER_INFO;
         $DB = New Database($DATABASES['USERS']);
         // Remove the friend request
-        if ($DB->Execute("DELETE FROM user_friend_requests WHERE user_id = ". $this->GetId() ." AND requester_id = ". $friendId))
+        if ($DB->ExecuteStmt(Statements::DELETE_USER_FRIEND_REQUEST, $DB->BuildStmtArray("ii", $this->GetId(), $friendId)))
             // Insert the new friends in the DB (both are friends now, we must insert 2 records, at least for now)
-            if ($DB->Execute("INSERT INTO user_friends VALUES (". $this->GetId() .", ". $friendId ."), (". $friendId) .", ". $this->GetId() .")")
+            if ($DB->ExecuteStmt(Statements::INSERT_USER_FRIEND_REQUEST, $DB->BuildStmtPackage(2, "ii", $this->GetId(), $friendId, $friendId, $this->GetId())))
                 return true;
         return false;
     }
@@ -256,7 +257,7 @@ Class User
     {
         global $DATABASES, $SERVER_INFO;
         $DB = New Database($DATABASES['USERS']);
-        if ($DB->Execute("DELETE FROM user_friends WHERE user_id = ". $this->GetId()." AND friend_id = ". $friendId))
+        if ($DB->ExecuteStmt(Statements::DELETE_USER_FRIEND, $DB->BuildStmtPackage(2, "ii", $this->GetId(), $friendId, $friendId, $this->GetId())))
             return true;
         return false;
     }
@@ -269,7 +270,7 @@ Class User
     {
         global $DATABASES, $SERVER_INFO;
         $DB = New Database($DATABASES['USERS']);
-        $result = $DB->Execute("SELECT friend_id FROM user_friends WHERE user_id = ". $this->GetId());
+        $result = $DB->ExecuteStmt(Statements::SELECT_USER_FRIENDS_BY_ID, $DB->BuildStmtArray("i", $this->GetId()));
         if ($result === false)
             return false;
         if ($result->num_rows === 0)
@@ -288,7 +289,7 @@ Class User
     {
         global $DATABASES, $SERVER_INFO;
         $DB = New Database($DATABASES['USERS']);
-        $result = $DB->Execute("SELECT a.username FROM user_data AS a, user_friends AS b WHERE b.friend_id = a.id AND b.user_id = ". $this->GetId());
+        $result = $DB->ExecuteStmt(Statements::SELECT_USER_FRIENDS_BY_USERNAME, $DB->BuildStmtArray("s", $this->GetId()));
         if ($result === false)
             return false;
         if ($result->num_rows === 0)
@@ -302,18 +303,18 @@ Class User
     /**
      * Determines if a user is friend of another user
      * @param long $id The other user's unique ID
-     * @return CONST Returns USERS_ARENT_FRIENDS, USERS_ARE_FRIENDS or false if something fails.
+     * @return bool Returns true if users are friends, else false.
      */
     public function IsFriendOf($id)
     {
         global $DATABASES, $SERVER_INFO;
         $DB = new Database($DATABASES['USERS']);
-        $result = $DB->Execute("SELECT * FROM user_friends WHERE user_id = ". $this->GetId() ." AND friend_id = ". $id);
+        $result = $DB->ExecuteStmt(Statements::SELECT_USER_FRIENDS_IS_FRIEND, $DB->BuildStmtArray("ii", $this->GetId(), $id));
         if ($result === false)
-            return false;
+            return false;    // An error must be triggered here, or logged at least
         if ($result->num_rows > 0)
-            return USERS_ARE_FRIENDS;
-        return USERS_ARENT_FRIENDS;
+            return true;
+        return false;
     }
     
     /**
@@ -328,13 +329,14 @@ Class User
         if ($this->IsFriendOf($friendId))
             return USERS_ARE_FRIENDS;
         $DB = new Database($DATABASES['USERS']);
-        $result = $DB->Execute("SELECT user_id FROM user_friend_requests WHERE user_id = ". $friendId ." AND requester_id = ". $this->GetId());
+        $result = $DB->ExecuteStmt(Statements::SELECT_USER_FRIEND_REQUEST_ID, $DB->BuildStmtArray("ii", $friendId, $this->GetId()));
         if ($result === false)
             return false;
         if ($result->num_rows > 0)
             return FRIEND_REQUEST_ALREADY_SENT;
-        if ($DB->Execute("INSERT INTO user_friend_requests (user_id, requester_id, request_message) VALUES".
-                		 "(". $friendId .", ". $this->GetId() .", '". ((is_null($message)) ? ($this->Getusername() . " wants to be your friend!") : $message) ."')"))
+        $result = $DB->ExecuteStmt(Statements::INSERT_USER_FRIEND_REQUEST,
+            $DB->BuildStmtArray("iis", $friendId, $this->Getid(), (is_null($message) ? ($this->Getusername() . " wants to be your friend!") : $message)));
+        if ($result)
             return true;
         return false;
     }
@@ -347,7 +349,7 @@ Class User
     {
         global $DATABASES, $SERVER_INFO;
         $DB = new Database($DATABASES['USERS']);
-        $result = $DB->Execute("SELECT a.username, b.message FROM user_data AS a, user_friend_requests AS b WHERE b.user_id = ". $this->GetId() ." AND a.id = b.requester_id");
+        $result = $DB->ExecuteStmt(Statements::SELECT_USER_FRIEND_REQUEST, $DB->BuildStmtArray("i", $this->GetId()));
         if ($result === false)
             return false;
         if ($result->num_rows === 0)

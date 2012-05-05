@@ -12,14 +12,14 @@ if(isset($_POST['username']))
         echo 'USER_DOESNT_EXISTS';
     else
     {
-        $temp = $_SESSION['user']->SendFriendRequest($friendId, null);
-        if ($temp === USERS_ARE_FRIENDS)
+        $res = $_SESSION['user']->SendFriendRequest($friendId, NULL);
+        if ($res === USERS_ARE_FRIENDS)
             echo 'USER_IS_ALREADY_FRIEND';
-        elseif ($temp === FRIEND_REQUEST_ALREADY_SENT)
+        elseif ($res === FRIEND_REQUEST_ALREADY_SENT)
             echo 'REQUEST_ALREADY_SENT';
-        elseif ($temp === false)
+        elseif ($res === false)
             echo 'FAILED';
-        elseif ($temp === true)
+        elseif ($res === true)
             echo 'SUCCESS';
         else
             echo 'FAILED';

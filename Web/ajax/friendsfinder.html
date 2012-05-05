@@ -49,7 +49,7 @@ function SendFriendRequest()
 	$.post("../core/friends/addfriend.php", {username: friendName}, function(data) {
 		if (data.length > 0)
 		{
-			if (data === 'FAILED')
+            if (data === 'FAILED')
 			{
 				message = 'There was an error sending your request. Please, try again soon.';
 				bgColor = '#FF0000';
@@ -59,7 +59,7 @@ function SendFriendRequest()
 				message = 'User not found!';
 				bgColor = '#FF0000';
 			}
-			else if (data === 'USER_ALREADY_IS_FRIEND')
+			else if (data === 'USER_IS_ALREADY_FRIEND')
 			{
 				message = friendName + " already is your friend!";
 			}
@@ -70,9 +70,9 @@ function SendFriendRequest()
 			}
 		}
 		else
-		{
-			message = 'There was a fatal error connecting to the server.';
-			bgColor = '#FF0000';
+        {
+            message = 'There was a fatal error connecting to the server.';
+		    bgColor = '#FF0000';
 		}
         $('#sent').text(message);
         $('#sent').css('background-color', bgColor);
@@ -85,6 +85,7 @@ function SendFriendRequest()
         font-family: Calibri;
         font-size: 11px;
         color: #FFFFFF;
+        background-color:#000000;
     }
     
     h3 {
@@ -102,7 +103,7 @@ function SendFriendRequest()
         margin-right:20%;
         align:center;
         background-color:transparent;
-        border-radius:1em;
+        border-radius:0.5em;
         border:2px solid #FFFFFF;
         color:#FFFFFF;
     }
@@ -127,7 +128,7 @@ function SendFriendRequest()
         margin-right:10%;
         color:#000000;
         text-align:center;
-        border-radius:1em;
+        border-radius:0.5em;
     }
     
     .button {
@@ -151,7 +152,7 @@ function SendFriendRequest()
     }
 </style>
 </head>
-<body bgcolor="#000000">
+<body>
 <div class="main" align="center">
 	<form>
 		<input class="input" type="text" value="" id="friendname" onkeyup="Lookup(this.value);" onblur="Fill();"/>

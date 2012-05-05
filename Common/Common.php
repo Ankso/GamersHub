@@ -1,6 +1,6 @@
 <?php
-require_once("F:/GamersNet/GamersNet_Beta/Common/SharedDefines.php");
-require_once("F:/GamersNet/GamersNet_Beta/Classes/Database.Class.php");
+require_once($_SERVER['DOCUMENT_ROOT'] . "/../Common/SharedDefines.php");
+require_once($_SERVER['DOCUMENT_ROOT'] . "/../Classes/Database.Class.php");
 
 /**
  * Encripts the password using the username as modifier.
@@ -21,12 +21,12 @@ function GetUsernameFromId($id)
 {
     global $DATABASES, $SERVER_INFO;
     $DB = new Database($DATABASES['USERS']);
-    $result = $DB->Execute("SELECT username FROM user_data WHERE id = ". $id);
+    $result = $DB->ExecuteStmt(Statements::SELECT_USER_DATA_USERNAME, $DB->BuildStmtArray("i", $id));
     if ($result)
     {
-        if($row = mysql_fetch_assoc($result))
+        if($row = $result->fetch_assoc())
             return $row['username'];
-        return -1;
+        return USER_DOESNT_EXISTS;
     }
     return false;
 }
@@ -40,12 +40,12 @@ function GetIdFromUsername($username)
 {
     global $DATABASES, $SERVER_INFO;
     $DB = new Database($DATABASES['USERS']);
-    $result = $DB->Execute("SELECT id FROM user_data WHERE username = '". $username ."'");
+    $result = $DB->ExecuteStmt(Statements::SELECT_USER_DATA_ID, $DB->BuildStmtArray("s", $username));
     if ($result)
     {
-        if ($row = mysql_fetch_assoc($result))
+        if ($row = $result->fetch_assoc())
             return $row['id'];
-        return -1;
+        return USER_DOESNT_EXISTS;
     }
     return false;
 }
