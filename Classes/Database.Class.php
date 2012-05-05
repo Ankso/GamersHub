@@ -55,17 +55,17 @@ class Database
         if (!($stmt = $this->_mysqli->prepare($query)))
             return false;
         /**
-	     * The $params structure is:
-	     * $params = array(
-	     *     0 => array(
-	     *         0 => "isi",
-	     *         1 => $myInt1,
-	     *         2 => $myString,
-	     *         3 => $myInt2
-	     *         )
-	     *     );
-	     * so...
-	     */
+         * The $params structure is:
+         * $params = array(
+         *     0 => array(
+         *         0 => "isi",
+         *         1 => $myInt1,
+         *         2 => $myString,
+         *         3 => $myInt2
+         *         )
+         *     );
+         * so...
+         */
         $results = array();                // The array of results
         $eCount = count($params);          // External count: represents the number of executions of the prepared statement
         for ($i = 0; $i < $eCount; ++$i)
@@ -88,12 +88,12 @@ class Database
         return $results;
     }
     
-	/**
-	 * Creates a valid array for one statement to use it when calling ExecuteStmt(). Multiple params can be sended.
-	 * @param string A valid type identifier(s) for stmt::bind_param (i, d, s, b)
-	 * @param mixed The variable(s) related with the previous type identifier(s).
-	 * @return bool Returns an array ready to use in Database::ExecuteStmt if success, false in case of failure.
-	 */
+    /**
+     * Creates a valid array for one statement to use it when calling ExecuteStmt(). Multiple params can be sended.
+     * @param string A valid type identifier(s) for stmt::bind_param (i, d, s, b)
+     * @param mixed The variable(s) related with the previous type identifier(s).
+     * @return bool Returns an array ready to use in Database::ExecuteStmt if success, false in case of failure.
+     */
     public function BuildStmtArray()
     {
         if (func_num_args() < 2)
@@ -112,9 +112,9 @@ class Database
      * Creates a valid array for multiple statements to use when calling ExecuteStmt(). It accepts multiple params.
      * @param integer $queryCount The number of times that the statement is going to be executed.
      * @param string A valid type identifier(s) for stmt::bind_param (i, d, s, b)
-	 * @param mixed The variable(s) related with the previous type identifier(s)
-	 * @param [..] 
-	 * @return bool Returns an array ready to use in Database::ExecuteStmt if success, false in case of failure.
+     * @param mixed The variable(s) related with the previous type identifier(s)
+     * @param [..] 
+     * @return bool Returns an array ready to use in Database::ExecuteStmt if success, false in case of failure.
      */
     public function BuildStmtPackage($queryCount)
     {
