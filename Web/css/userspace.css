@@ -12,5 +12,15 @@ body {
 	border:5px solid #FFFFFF;
 	width:60%;
 	height:90%;
-	margin-top:50px;
+	margin-top:10px;
+}
+
+.acceptFriend {
+	cursor:pointer;
+    color:#00FF00;
+}
+
+.declineFriend {
+	cursor:pointer;
+	color:#FF0000;
 }

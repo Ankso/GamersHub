@@ -7,7 +7,7 @@ require_once("../Classes/Database.Class.php");
 session_start();
 // If the user is logged in, redirect to his or her folder
 if (isset($_SESSION['user']))
-header("location:". $_SESSION['user']->GetUsername() ."/index.php");
+    header("location:". $_SESSION['user']->GetUsername());
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN">
 <html>

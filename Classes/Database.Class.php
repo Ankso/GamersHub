@@ -122,7 +122,7 @@ class Database
         // Extract $queryCount from the array
         array_shift($args);
         $varTypes = array_shift($args);  // the string representing the var types is only passed once.
-        $varCount = count($args);        // Ths represents the number of variables per stmt.
+        $varCount = count($args);        // This represents the number of variables per stmt.
         if ($varCount < 1 || !is_int($queryCount) || $queryCount === 0)
             return false;
         $StmtArray = array(
@@ -131,8 +131,8 @@ class Database
         for ($j = 0; $j < $queryCount; ++$j)
         {
             $StmtArray[$j][0] = $varTypes;
-            for ($i = 1; $i < ($varCount / $queryCount); ++$i)
-                    $StmtArray[$j][$i] = array_shift($args);
+            for ($i = 0; $i < ($varCount / $queryCount); ++$i)
+                    $StmtArray[$j][$i + 1] = array_shift($args);
         }
         return $StmtArray;
     }

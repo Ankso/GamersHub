@@ -195,7 +195,7 @@ Class User
     public function SetLastIp($newIp)
     {
         global $DATABASES, $SERVER_INFO;
-        $DB = New Database($DATABASES['USERS']);
+        $DB = new Database($DATABASES['USERS']);
         if ($DB->ExecuteStmt((filter_var($newIp, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) ? Statements::UPDATE_USER_DATA_IPV4 : Statements::UPDATE_USER_DATA_IP_V6),
         	$DB->BuildStmtArray("si", $newIp, $this->GetId())))
         {
@@ -222,7 +222,7 @@ Class User
     public function SetOnline($isOnline)
     {
         global $DATABASES, $SERVER_INFO;
-        $DB = New Database($DATABASES['USERS']);
+        $DB = new Database($DATABASES['USERS']);
         if ($DB->ExecuteStmt(Statements::UPDATE_USER_DATA_ONLINE, $DB->BuildStmtArray("ii", ($isOnline ? "1" : "0"), $this->GetId())))
         {
             $this->_isOnline = $isOnline;
@@ -239,12 +239,27 @@ Class User
     public function AcceptFriend($friendId)
     {
         global $DATABASES, $SERVER_INFO;
-        $DB = New Database($DATABASES['USERS']);
+        $DB = new Database($DATABASES['USERS']);
+        // Insert the new friends in the DB (both are friends now, we must insert 2 records, at least for now)
+        if ($DB->ExecuteStmt(Statements::INSERT_USER_FRIEND, $DB->BuildStmtPackage(2, "ii", $this->GetId(), $friendId, $friendId, $this->GetId())))
+            // Remove the friend request
+            if ($DB->ExecuteStmt(Statements::DELETE_USER_FRIEND_REQUEST, $DB->BuildStmtArray("ii", $this->GetId(), $friendId)))
+                return true;
+        return false;
+    }
+    
+    /**
+     * Declines a user friend request.
+     * @param long $friendId The declined friend's ID
+     * @return bool Returns true on success, or false if failure.
+     */
+    public function DeclineFriendRequest($friendId)
+    {
+        global $DATABASES, $SERVER_INFO;
+        $DB = new Database($DATABASES['USERS']);
         // Remove the friend request
         if ($DB->ExecuteStmt(Statements::DELETE_USER_FRIEND_REQUEST, $DB->BuildStmtArray("ii", $this->GetId(), $friendId)))
-            // Insert the new friends in the DB (both are friends now, we must insert 2 records, at least for now)
-            if ($DB->ExecuteStmt(Statements::INSERT_USER_FRIEND_REQUEST, $DB->BuildStmtPackage(2, "ii", $this->GetId(), $friendId, $friendId, $this->GetId())))
-                return true;
+            return true;
         return false;
     }
     
@@ -256,7 +271,7 @@ Class User
     public function RemoveFriend($friendId)
     {
         global $DATABASES, $SERVER_INFO;
-        $DB = New Database($DATABASES['USERS']);
+        $DB = new Database($DATABASES['USERS']);
         if ($DB->ExecuteStmt(Statements::DELETE_USER_FRIEND, $DB->BuildStmtPackage(2, "ii", $this->GetId(), $friendId, $friendId, $this->GetId())))
             return true;
         return false;
@@ -269,7 +284,7 @@ Class User
     public function GetAllFriendsById()
     {
         global $DATABASES, $SERVER_INFO;
-        $DB = New Database($DATABASES['USERS']);
+        $DB = new Database($DATABASES['USERS']);
         $result = $DB->ExecuteStmt(Statements::SELECT_USER_FRIENDS_BY_ID, $DB->BuildStmtArray("i", $this->GetId()));
         if ($result === false)
             return false;
@@ -288,7 +303,7 @@ Class User
     public function GetAllFriendsByUsername()
     {
         global $DATABASES, $SERVER_INFO;
-        $DB = New Database($DATABASES['USERS']);
+        $DB = new Database($DATABASES['USERS']);
         $result = $DB->ExecuteStmt(Statements::SELECT_USER_FRIENDS_BY_USERNAME, $DB->BuildStmtArray("s", $this->GetId()));
         if ($result === false)
             return false;

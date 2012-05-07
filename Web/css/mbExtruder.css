@@ -132,9 +132,9 @@
 }
 
 .extruder.left{
-    height:87%;
-    margin-left:79.5%;
-    margin-top:50px;
+    height:90%;
+    margin-left:79.75%;
+    margin-top:65px;
     background:url("../js/elements/extruder_blank.png");
 }
 
@@ -184,9 +184,9 @@
 }
 
 .extruder.right{
-    height:87%;
-    margin-right:79.5%;
-    margin-top:50px;
+    height:90%;
+    margin-right:79.75%;
+    margin-top:65px;
     background:url("../js/elements/extruder_blank.png");
 }
 

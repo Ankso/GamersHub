@@ -15,6 +15,7 @@ if (!isset($_SESSION['user']))
 <title><?php echo $_GET['username'] ?>'s profile - GamersNet</title>
 <link href="css/mbExtruder.css" media="all" rel="stylesheet" type="text/css">
 <link href="css/userspace.css" media="all" rel="stylesheet" type="text/css">
+<link href="css/main.css" media="all" rel="stylesheet" type="text/css">
 <script type="text/javascript" src="js/inc/jquery.latest.js"></script>
 <script type="text/javascript" src="js/inc/jquery.hoverIntent.min.js"></script>
 <script type="text/javascript" src="js/inc/jquery.metadata.js"></script>
@@ -73,21 +74,55 @@ if (!isset($_SESSION['user']))
     	});
 	});
 </script>
+<script type="text/javascript">
+function ProcessFriendRequest(event, friendName, action)
+{
+    var message = "Server error, please try again soon.";
+    var theClass = "declineFriend";
+    $.post("../core/friends/addfriend.php", {username: friendName, action: action}, function(data) {
+		if (data.length > 0)
+		{
+			if (data == "SUCCESS")
+			{
+			    if (action = 'a')
+			    {
+					message = "Accepted!";
+					theClass = "acceptFriend";
+				}
+				else
+					message = "Declined";
+			}
+		}
+	    event.target.parentNode.outerHTML = '<div><a class="' + theClass + '">' + message + '</a></div>';
+	});
+}
+</script>
 </head>
 <body>
+<?php //PrintTopBar(); ?>
 <div align="center">
-<table class="mainContent">
-	<tr>
-		<td><?php
-            // Check if the user is the space's owner
-            if ($_GET['username'] == $_SESSION['user']->GetUsername())
-                echo "Loading your personal space...<br><a href=\"logout.php\">Logout</a>";
-            else
-                echo "Loading your friend's main page...<br><a href=\"logout.php\">Logout</a>";
-            
-            ?>
-	</tr>
-</table>
+<div class="mainContent">
+<?php
+// Check if the user is the space's owner
+if ($_GET['username'] == $_SESSION['user']->GetUsername())
+{
+    echo "This is your personal space...<br/><a href=\"logout.php\">Logout</a><br/>";
+    $friendRequests = $_SESSION['user']->GetFriendRequests();
+    if ($friendRequests === false)
+        echo "<br/>There was a problem loading the friend requests sended to you.<br/>";
+    elseif ($friendRequests === USER_HAS_NO_FRIEND_REQUESTS)
+        echo "<br/>You have no friend requests<br/>";
+    else
+    {
+        foreach ($friendRequests as $i => $value)
+            echo "<div>New friend request from ", $friendRequests[$i]['username'], "! <a onclick=\"ProcessFriendRequest(event, '", $friendRequests[$i]['username'], "', 'a')\" class=\"acceptFriend\">Accept</a> - <a onclick=\"ProcessFriendRequest(event, '", $friendRequests[$i]['username'], "', 'd')\" class=\"declineFriend\">Decline</a></div>";
+        echo "<br/>";
+    }
+}
+else
+echo "This is your friend's main page...<br><a href=\"logout.php\">Logout</a>";
+?>
+</div>
 </div>
 <div id="friendsTab" class="a {title:'My friends'}">
 <div id="newFriend" class="voice {panel: 'ajax/friendsfinder.html'}"><span class="label">Add New Friend +</span></div>

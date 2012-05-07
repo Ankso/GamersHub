@@ -1,0 +1,39 @@
+@CHARSET "ISO-8859-1";
+
+body {
+    margin: 0px 0px 0px 0px;
+}
+
+/* Top bar */
+#topbar_left {
+    margin-top:0px;
+    margin-left:20%;
+    float:left;
+    background:#000000 url("../images/topbar_left.jpg") no-repeat center;
+    height:47px;
+    width:21px;
+}
+
+#topbar_center {
+    margin-top:0px;
+    margin-left:20%;
+    margin-right:20%;
+    background:#000000 url("../images/topbar_center.jpg") repeat-x center;
+    height:47px;
+}
+
+#topbar_right {
+    margin-top:0px;
+    margin-right:20%;
+    float:right;
+    background:#000000 url("../images/topbar_right.jpg") no-repeat center;
+    height:47px;
+    width:21px;
+}
+
+#topbar {
+	position:absolute;
+    height:51px;
+    width:100%;
+    background:#000000 url("../images/topbar.png") repeat-x center;
+}

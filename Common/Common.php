@@ -49,4 +49,10 @@ function GetIdFromUsername($username)
     }
     return false;
 }
+
+function PrintTopBar()
+{
+    echo '<div id="topbar"></div>';
+}
+
 ?>

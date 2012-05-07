@@ -49,26 +49,27 @@ else
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=Cp1252">
 <title>GamersNet - Login</title>
+<link href="css/main.css" media="all" rel="stylesheet" type="text/css">
 <style type="text/css">
 body {
 	font:17px Calibri;
-	background:#000000 url("images/login_bg.jpg") no-repeat center;
+	background:#000000 url("images/login_bg.png") no-repeat center center fixed;
 }
 
 .login {
 	text-align:center;
 	color:#FFFFFF;
-	position:relative;
-	margin-top:17%;
-	margin-left:41%;
-	margin-right:41%;
-	width:18%;
+	position:absolute;
+	margin-top:38.5%;
+	margin-left:40%;
+	margin-right:40%;
+	width:20%;
 	border:2px solid #FFFFFF;
 	border-radius:1em;
 }
 
 .lblInput {
-	color: #FFFFFF;
+	color:#FFFFFF;
 }
 
 .input {
@@ -78,6 +79,7 @@ body {
 </style>
 </head>
 <body>
+<?php PrintTopBar(); ?>
 <div class="login">
 <?php
 PrintForm();

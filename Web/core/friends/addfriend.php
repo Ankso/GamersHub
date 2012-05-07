@@ -1,28 +1,19 @@
 <?php
-require_once($_SERVER['DOCUMENT_ROOT'] . "/../Common/Common.php");
-require_once($_SERVER['DOCUMENT_ROOT'] . "/../Classes/User.Class.php");
-
+require_once($_SERVER['DOCUMENT_ROOT'] . "/../classes/User.Class.php");
+require_once($_SERVER['DOCUMENT_ROOT'] . "/../common/Common.php");
 session_start();
-if(isset($_POST['username']))
+if (!isset($_POST['username']) || !isset($_POST['action']) || !isset($_SESSION['user']))
+    die("FAILED");
+
+if ($_POST['action'] === 'a')
 {
-    $friendId = GetIdFromUsername($_POST['username']);
-    if ($friendId === false)
-        echo 'FAILED';
-    elseif ($friendId === USER_DOESNT_EXISTS)
-        echo 'USER_DOESNT_EXISTS';
-    else
-    {
-        $res = $_SESSION['user']->SendFriendRequest($friendId, NULL);
-        if ($res === USERS_ARE_FRIENDS)
-            echo 'USER_IS_ALREADY_FRIEND';
-        elseif ($res === FRIEND_REQUEST_ALREADY_SENT)
-            echo 'REQUEST_ALREADY_SENT';
-        elseif ($res === false)
-            echo 'FAILED';
-        elseif ($res === true)
-            echo 'SUCCESS';
-        else
-            echo 'FAILED';
-    }
+    if ($_SESSION['user']->AcceptFriend(GetIdFromUsername($_POST['username'])))
+        die("SUCCESS");
 }
+elseif ($_POST['action'] === 'd')
+{
+    if ($_SESSION['user']->DeclineFriendRequest(GetIdFromUsername($_POST['username'])))
+        die("SUCCESS");
+}
+echo "FAILED";
 ?>

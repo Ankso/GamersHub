@@ -46,7 +46,7 @@ function SendFriendRequest()
 	}
 	var message = 'Request sent!';
 	var bgColor = '#00CC00';
-	$.post("../core/friends/addfriend.php", {username: friendName}, function(data) {
+	$.post("../core/friends/sendfriendrequest.php", {username: friendName}, function(data) {
 		if (data.length > 0)
 		{
             if (data === 'FAILED')
