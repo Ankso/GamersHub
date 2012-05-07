@@ -1,5 +1,20 @@
 GamersNet Proyect README:
 
+Documentation:
+    - PHP: http://www.php.net/manual/es/
+
+    - Ajax:
+        - Definition: http://es.wikipedia.org/wiki/AJAX
+        - Tutorial (Javascript): http://www.librosweb.es/ajax/capitulo1.html
+        - Javascript: http://www.w3schools.com/js/
+        - HTML: http://www.w3schools.com/html/default.asp
+        - CSS: http://www.w3schools.com/css/default.asp
+        - JQuery (Javascript): http://jquery.com/
+    
+    - MySQL: http://dev.mysql.com/doc/refman/5.0/es/index.html
+
+    - **Google**: http://google.com
+
 PHP coding standards:
     - Variable names:
         - Normal variables must be named like this:
