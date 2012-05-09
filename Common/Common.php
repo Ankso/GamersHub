@@ -58,7 +58,7 @@ function PrintTopBar($user)
 	echo '    </div>', "\n";
 	echo '    <div class="topbarRight">', "\n";
 	if (!is_null($user) && isset($user))
-	    echo '        <a href="logout.php"><img src="images/logout.png" height="40px" width="40" alt="Logout" style="margin-top:4px; margin-right:15px;"/></a>', "\n";
+	    echo '        <a onclick="function(event) {event.preventDefault(); $(\'body\').fadeOut(1000, function() {window.location = \'logout.php\';});}" href="logout.php"><img src="images/logout.png" height="40px" width="40" alt="Logout" style="margin-top:4px; margin-right:15px;"/></a>', "\n";
 	echo '    </div>', "\n";
     echo '</div>', "\n";
 }

@@ -1,48 +1,11 @@
 <?php
-require_once("../Classes/Database.Class.php");
 require_once("../Classes/User.Class.php");
-require_once("../Common/SharedDefines.php");
 require_once("../Common/Common.php");
 
-function PrintForm()
-{
-    echo "<form action=\"login.php\" method=\"post\">";
-	echo "    <br><label class=\"lblInput\">Username: </label><br/><input type=\"text\" name=\"username\" class=\"input\">";
-	echo "    <br><label class=\"lblInput\">Password: </label><br/><input type=\"password\" name=\"password\" class=\"input\">";
-	echo "    <br><input type=\"submit\" value=\"Login\">";
-	echo "</form>";
-}
-
 session_start();
-
 // If user is already loged in, redirect to his or her main page
 if (isset($_SESSION['user']))
     header("location:". $_SESSION['user']->GetUsername());
-else
-{
-    if ($_POST)
-    {
-        $username = $_POST['username'];
-        $password = $_POST['password'];
-        
-        $query = "SELECT username, password_sha1 FROM user_data WHERE username = '". $username ."'";
-    	$DB = New Database($DATABASES['USERS']);
-    	if ($result = $DB->Execute($query));
-    	{
-    	    if ($row = $result->fetch_assoc())            // If we have a coincidence...
-    	    {
-    	        if ($row['password_sha1'] === CreateSha1Pass($username, $password))    // The passwords match
-    	        {
-    	            // Create the user object
-    	            $user = New User($username);
-    	            $user->SetOnline(true);
-    	            $_SESSION['user'] = $user;
-    	            header("location:". $user->GetUsername());
-    	        }
-    	    }
-    	}
-    }
-}
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN">
 <html>
@@ -58,7 +21,6 @@ else
 	margin-left:40%;
 	margin-right:40%;
 	width:360px;
-	height:190px;
 	border:2px solid #FFFFFF;
 	border-radius:1em;
 }
@@ -67,9 +29,25 @@ else
 	color:#FFFFFF;
 }
 
-.input {
+.inputUser, .inputPass {
 	text-align:center;
 	border-radius:1em;
+}
+
+.loginButton {
+	border:2px #333333 solid;
+	border-radius:1em;
+	width:80px;
+	margin-left:140px;
+}
+
+.loginButton:hover {
+	background-color:#222222;
+	cursor:pointer;
+}
+
+#loginError {
+	color:#FF0000;
 }
 </style>
 <script type="text/javascript" src="js/inc/jquery.latest.js"></script>
@@ -85,7 +63,7 @@ function LoginClick(event)
 {
 	event.preventDefault();
 	linkLocation = this.href;
-	$("body").fadeOut(1000, Redirect);
+	$("body").fadeOut(1000, function() {window.location = linkLocation;});
 }
 
 function Redirect()
@@ -95,24 +73,46 @@ function Redirect()
 
 function SetLoginTopMargin()
 {
-    var htop = ($(window).height() - 240) / 2;
+    var htop = ($(window).height() - 250) / 2;
     $('div.login').css('margin-top', htop.toString() + 'px')
     setTimeout("SetLoginTopMargin()", 100);
 }
 
+function SendLogin(event)
+{
+	var userName = $('.inputUser').val();
+	var password = $('.inputPass').val();
+	if (userName == '' || password == '')
+		$('#loginError').text("You must fill both username and password fields!");
+	else
+	{
+    	$.post("core/sessions/initialize.php", {username: userName, password: password}, function(data) {
+    		if (data.length > 0)
+    		{
+    			if (data == "SUCCESS")
+    			    $('body').fadeOut(1000, function() {window.location = '/' + userName;});
+    			else if (data == "INCORRECT")
+    				$('#loginError').text("Incorrect username or password");
+    			else if (data == "FAILED")
+    				$('#loginError').text("Error connecting to the login server, please try again soon");
+    		}
+    		else
+    			$('#loginError').text("Unknown error, please try again soon.");
+    	});
+	}
+}
 $(document).ready(FadeIn);
 </script>
 </head>
 <body>
 <?php PrintTopBar(NULL); ?>
 <div class="login">
-<?php
-PrintForm();
-if ($_POST)
-{
-    echo "Incorrect username or password";
-}
-?>
+<form>
+	<br><label class="lblInput">Username: </label><br/><input type="text" class="inputUser">
+	<br><label class="lblInput">Password: </label><br/><input type="password" class="inputPass">
+</form>
+<div class="loginButton" onclick="SendLogin(event);">Connect</div>
+<span id="loginError"></span>
 <p class="newAccount">You don't have an account? Create it <a href="register.php">here</a>!</p>
 </div>
 </body>

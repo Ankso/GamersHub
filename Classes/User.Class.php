@@ -38,7 +38,6 @@ Class User
     {
         global $DATABASES, $SERVER_INFO;
         $DB = new Database($DATABASES['USERS']);
-        var_dump($DB->BuildStmtArray("s", $this->_username));
         if (!isset($this->_id))
             $result = $DB->ExecuteStmt(Statements::SELECT_USER_DATA_BY_USERNAME, $DB->BuildStmtArray("s", $this->_username));
         else
