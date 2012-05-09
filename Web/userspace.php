@@ -97,16 +97,23 @@ function ProcessFriendRequest(event, friendName, action)
 	});
 }
 </script>
+<script type="text/javascript">
+function FadeIn()
+{
+    $("body").css("display", "none");
+    $("body").fadeIn(2000);
+}
+$(document).ready(FadeIn);
+</script>
 </head>
 <body>
-<?php //PrintTopBar(); ?>
-<div align="center">
+<?php PrintTopBar($_SESSION['user']); ?>
 <div class="mainContent">
 <?php
 // Check if the user is the space's owner
 if ($_GET['username'] == $_SESSION['user']->GetUsername())
 {
-    echo "This is your personal space...<br/><a href=\"logout.php\">Logout</a><br/>";
+    echo "This is your personal space...<br/>";
     $friendRequests = $_SESSION['user']->GetFriendRequests();
     if ($friendRequests === false)
         echo "<br/>There was a problem loading the friend requests sended to you.<br/>";
@@ -120,9 +127,8 @@ if ($_GET['username'] == $_SESSION['user']->GetUsername())
     }
 }
 else
-echo "This is your friend's main page...<br><a href=\"logout.php\">Logout</a>";
+echo "This is your friend's main page...<br>";
 ?>
-</div>
 </div>
 <div id="friendsTab" class="a {title:'My friends'}">
 <div id="newFriend" class="voice {panel: 'ajax/friendsfinder.html'}"><span class="label">Add New Friend +</span></div>

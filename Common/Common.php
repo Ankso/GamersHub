@@ -50,9 +50,17 @@ function GetIdFromUsername($username)
     return false;
 }
 
-function PrintTopBar()
+function PrintTopBar($user)
 {
-    echo '<div id="topbar"></div>';
+    echo '<div id="topbar">', "\n";
+	echo '    <div class="topbarLeft">', "\n";
+	echo '        <a href="login.php"><img src="images/blog_button.png" alt="Blog"/></a>', "\n";
+	echo '    </div>', "\n";
+	echo '    <div class="topbarRight">', "\n";
+	if (!is_null($user) && isset($user))
+	    echo '        <a href="logout.php"><img src="images/logout.png" height="40px" width="40" alt="Logout" style="margin-top:4px; margin-right:15px;"/></a>', "\n";
+	echo '    </div>', "\n";
+    echo '</div>', "\n";
 }
 
 ?>

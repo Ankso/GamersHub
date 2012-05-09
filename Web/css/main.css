@@ -1,39 +1,30 @@
 @CHARSET "ISO-8859-1";
 
+html {
+    background-color:#000000;
+}
+
 body {
-    margin: 0px 0px 0px 0px;
+	font:17px Calibri;
+	color:#FFFFFF;
+    margin:0px 0px 0px 0px;
+    background:#000000 url("../images/bg.png") no-repeat center center fixed;
 }
 
 /* Top bar */
-#topbar_left {
-    margin-top:0px;
-    margin-left:20%;
-    float:left;
-    background:#000000 url("../images/topbar_left.jpg") no-repeat center;
-    height:47px;
-    width:21px;
-}
-
-#topbar_center {
-    margin-top:0px;
-    margin-left:20%;
-    margin-right:20%;
-    background:#000000 url("../images/topbar_center.jpg") repeat-x center;
-    height:47px;
-}
-
-#topbar_right {
-    margin-top:0px;
-    margin-right:20%;
-    float:right;
-    background:#000000 url("../images/topbar_right.jpg") no-repeat center;
-    height:47px;
-    width:21px;
-}
-
 #topbar {
 	position:absolute;
     height:51px;
     width:100%;
     background:#000000 url("../images/topbar.png") repeat-x center;
+}
+
+.topbarLeft {
+	float:left;
+    height:51px;
+}
+
+.topbarRight {
+    float:right;
+    height:51px;
 }

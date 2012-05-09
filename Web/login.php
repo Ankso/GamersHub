@@ -51,19 +51,14 @@ else
 <title>GamersNet - Login</title>
 <link href="css/main.css" media="all" rel="stylesheet" type="text/css">
 <style type="text/css">
-body {
-	font:17px Calibri;
-	background:#000000 url("images/login_bg.png") no-repeat center center fixed;
-}
-
 .login {
 	text-align:center;
 	color:#FFFFFF;
 	position:absolute;
-	margin-top:38.5%;
 	margin-left:40%;
 	margin-right:40%;
-	width:20%;
+	width:360px;
+	height:190px;
 	border:2px solid #FFFFFF;
 	border-radius:1em;
 }
@@ -77,9 +72,39 @@ body {
 	border-radius:1em;
 }
 </style>
+<script type="text/javascript" src="js/inc/jquery.latest.js"></script>
+<script type="text/javascript">
+function FadeIn()
+{
+    SetLoginTopMargin();
+    $("body").css("display", "none");
+    $("body").fadeIn(2000);
+}
+
+function LoginClick(event)
+{
+	event.preventDefault();
+	linkLocation = this.href;
+	$("body").fadeOut(1000, Redirect);
+}
+
+function Redirect()
+{
+    window.location = linkLocation;
+}
+
+function SetLoginTopMargin()
+{
+    var htop = ($(window).height() - 240) / 2;
+    $('div.login').css('margin-top', htop.toString() + 'px')
+    setTimeout("SetLoginTopMargin()", 100);
+}
+
+$(document).ready(FadeIn);
+</script>
 </head>
 <body>
-<?php PrintTopBar(); ?>
+<?php PrintTopBar(NULL); ?>
 <div class="login">
 <?php
 PrintForm();

@@ -14,22 +14,36 @@ if (isset($_SESSION['user']))
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=Cp1252">
 <title>GamersNet - Register</title>
+<link href="css/main.css" media="all" rel="stylesheet" type="text/css">
+<style type="text/css">
+.register {
+	position:absolute;
+	width:350px;
+	margin-left:40%;
+	margin-right:40%;
+	margin-top:200px;
+	text-align:center;
+	border:2px #FFFFFF solid;
+	border-radius:1em;
+}
+</style>
 </head>
 <body>
-<div align="Center">
+<?php PrintTopBar(NULL); ?>
+<div class="register">
 <?php
 function PrintForm()
 {
     echo "<form action=\"register.php\" method=\"post\">";
-    echo "    <br>Username: <input type=\"text\" name=\"username\">";
-    echo "    <br>E-mail: <input type=\"text\" name=\"email\">";
-    echo "    <br>Password: <input type=\"password\" name=\"password\">";
-    echo "    <br>Retype password: <input type=\"password\" name=\"password_check\">";
-    echo "    <br><input type=\"submit\" name=\"user_register\">";
+    echo "    <br/>Username: <input type=\"text\" name=\"username\"/>";
+    echo "    <br/>E-mail: <input type=\"text\" name=\"email\"/>";
+    echo "    <br/>Password: <input type=\"password\" name=\"password\"/>";
+    echo "    <br/>Retype password: <input type=\"password\" name=\"password_check\"/>";
+    echo "    <br/><input type=\"submit\" name=\"user_register\"/>";
     echo "</form>";
 }
 
-if ($_POST)
+if (isset($_POST['username']) && isset($_POST['email']) && isset($_POST['password']) && isset($_POST['password_check']))
 {
     $username = $_POST['username'];
     $email = $_POST['email'];

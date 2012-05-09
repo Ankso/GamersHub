@@ -1,18 +1,18 @@
 @CHARSET "ISO-8859-1";
 
-body {
-	background:#000000 url("../images/bg_test.jpg") no-repeat center;
-	color:white;
-	font:20px Calibri;
+.global {
 }
 
 .mainContent {
+	position:absolute;
 	font: 20px Calibri;
 	text-align:center;
 	border:5px solid #FFFFFF;
 	width:60%;
 	height:90%;
-	margin-top:10px;
+	margin-top:65px;
+	margin-left:20%;
+	margin-right:20%;
 }
 
 .acceptFriend {
