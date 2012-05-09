@@ -65,7 +65,7 @@ Class User
     private function SaveToDB()
     {
         global $DATABASES, $SERVER_INFO;
-        $DB = New Database($DATABASES['USERS']);
+        $DB = new Database($DATABASES['USERS']);
         $data;
         if (filter_var($this->GetLastIp(), FILTER_VALIDATE_IP, FILTER_FLAG_IPV4))
             $data = $DB->BuildStmtArray("isssss", $this->GetId(), $this->GetUsername(), $this->GetPasswordSha1(), $this->GetEmail(), $this->GetLastIp(), NULL);
@@ -93,7 +93,7 @@ Class User
     private function SetId($newId)
     {
         global $DATABASES, $SERVER_INFO;
-        $DB = New Database($DATABASES['USERS']);
+        $DB = new Database($DATABASES['USERS']);
         if ($DB->ExecuteStmt(Statements::UPDATE_USER_DATA_ID, $DB->BuildStmtArray("ii", $newId, $this_>GetId())))
         {
             $this->_id = $newId;
@@ -119,7 +119,7 @@ Class User
     public function SetUsername($newUsername)
     {
         global $DATABASES, $SERVER_INFO;
-        $DB = New Database($DATABASES['USERS']);
+        $DB = new Database($DATABASES['USERS']);
         if ($DB->ExecuteStmt(Statements::UPDATE_USER_DATA_USERNAME, $DB->BuildStmtArray("ss", $newUsername, $this->GetId())))
         {
             $this->_username = $newName;
@@ -144,7 +144,7 @@ Class User
     public function SetPasswordSha1($newPasswordSha1)
     {
         global $DATABASES, $SERVER_INFO;
-        $DB = New Database($DATABASES['USERS']);
+        $DB = new Database($DATABASES['USERS']);
         if ($DB->ExecuteStmt(Statements::UPDATE_USER_DATA_PASSWORD, $DB->BuildStmtArray("ss", $newPasswordSha1, $this->GetId())))
         {
             $this->_passwordSha1 = $newPasswordSha1;
@@ -170,7 +170,7 @@ Class User
     public function SetEmail($newEmail)
     {
         global $DATABASES, $SERVER_INFO;
-        $DB = New Database($DATABASES['USERS']);
+        $DB = new Database($DATABASES['USERS']);
         if ($DB->ExecuteStmt(Statements::UPDATE_USER_DATA_EMAIL, $DB->BuildStmtArray("ss", $newEmail, $this->GetId())))
         {
             $this->_email = $newEmail;
