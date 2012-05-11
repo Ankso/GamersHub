@@ -98,6 +98,12 @@ function ProcessFriendRequest(event, friendName, action)
 }
 </script>
 <script type="text/javascript">
+function FadeOut(event, redirectUrl)
+{
+	event.preventDefault();
+	$('body').fadeOut(1000, function() { window.location = redirectUrl; });
+}
+
 function FadeIn()
 {
     $("body").css("display", "none");
@@ -109,8 +115,36 @@ $(document).ready(FadeIn);
 <body>
 <?php PrintTopBar($_SESSION['user']); ?>
 <div class="mainContent">
+	<div class="mainBoard">
+		<div class="mainLivestream">
+			<div class="videoWindow">
+				<br/><br/><br/><br/><br/><br/><br/>-- Here is your live streaming video (640x360) --
+			</div>
+			<div class="videoComments">
+				<br/><br/>-- Live comments about the livestream here --<br/><br/><br/>
+			</div>
+		</div>
+		<div class="commentsBoard">
+			<br/></br>-- Live comments written by you here, independent from the streaming --<br/><br/><br/></br><br/></br><br/></br><br/></br><br/>
+		</div>
+		<div class="clansBoard">
+			<br/></br>-- Live comments written by your clan(s) here, independent from your comments --<br/><br/><br/>
+		</div>
+	</div>
+	<div class="profileBoard">
+		<div class="profileInfo">
+			<br/><br/><br/><br/><br/>-- YOUR AVATAR --
+		</div>
+		<div class="latestNews">
+			<br/><br/><br/><br/><br/><br/><br/>-- The latest news in real-time about your friends, clans, games... --
+		</div>
+		<div class="customAdvert">
+			<br/>-- An advertisement may be? --<br/><br/>
+		</div>
+	</div>
 <?php
 // Check if the user is the space's owner
+/*
 if ($_GET['username'] == $_SESSION['user']->GetUsername())
 {
     echo "This is your personal space...<br/>";
@@ -127,7 +161,8 @@ if ($_GET['username'] == $_SESSION['user']->GetUsername())
     }
 }
 else
-echo "This is your friend's main page...<br>";
+    echo "This is your friend's main page...<br>";
+*/
 ?>
 </div>
 <div id="friendsTab" class="a {title:'My friends'}">
@@ -151,6 +186,6 @@ for ($i = 1; $i < 5; ++$i)
     echo '    <div id="clan" class="voice {panel: \'core/clans/clansmenutab.php\'}"><span class="label"><a class="label">Clan', $i, '</a></span></div>', "\n";
 ?>
 </div>
-<div id="mySpaceTab" class="a {title: 'My Space'}"></div>
+<div id="mySpaceTab" class="a {title: 'My games'}"></div>
 </body>
 </html>

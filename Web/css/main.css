@@ -9,6 +9,7 @@ body {
 	color:#FFFFFF;
     margin:0px 0px 0px 0px;
     background:#000000 url("../images/bg.png") no-repeat center center fixed;
+    overflow-x:hidden;
 }
 
 /* Top bar */
@@ -27,4 +28,25 @@ body {
 .topbarRight {
     float:right;
     height:51px;
+}
+
+#topbarButton {
+	height:25px;
+	min-width:90px;
+    margin-top:10px;
+    margin-left:10px;
+    text-align:center;
+    border:2px #555555 solid;
+    border-radius:0.7em;
+    box-shadow:2px 0 4px #111111;
+}
+
+.newFriendRequests {
+	float:left;
+	margin-right:10px;
+}
+
+#topbarButton:hover {
+    cursor:pointer;
+    background-color:#333333;
 }

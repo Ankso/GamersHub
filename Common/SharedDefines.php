@@ -17,7 +17,7 @@ define("FRIEND_REQUEST_ALREADY_SENT", -6);
  */
 // DB server connection info
 $SERVER_INFO = array(
-    'HOST'     => "localhost",  // MySQL Server address
+    'HOST'     => "localhost",  // MySQL Server host address
     'USERNAME' => "root",       // MySQL Server user
     'PASSWORD' => "password",   // MySQL Server password
 );

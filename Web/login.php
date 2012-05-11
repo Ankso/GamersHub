@@ -18,11 +18,12 @@ if (isset($_SESSION['user']))
 	text-align:center;
 	color:#FFFFFF;
 	position:absolute;
-	margin-left:40%;
-	margin-right:40%;
+	margin-left:50%;
+	margin-right:50%;
 	width:360px;
-	border:2px solid #FFFFFF;
+	border:2px solid #444444;
 	border-radius:1em;
+	box-shadow:3px 0 5px #000000;
 }
 
 .lblInput {
@@ -36,6 +37,7 @@ if (isset($_SESSION['user']))
 
 .loginButton {
 	border:2px #333333 solid;
+	background-color:#000000;
 	border-radius:1em;
 	width:80px;
 	margin-left:140px;
@@ -59,26 +61,21 @@ function FadeIn()
     $("body").fadeIn(2000);
 }
 
-function LoginClick(event)
-{
-	event.preventDefault();
-	linkLocation = this.href;
-	$("body").fadeOut(1000, function() {window.location = linkLocation;});
-}
-
-function Redirect()
-{
-    window.location = linkLocation;
-}
-
 function SetLoginTopMargin()
 {
     var htop = ($(window).height() - 250) / 2;
-    $('div.login').css('margin-top', htop.toString() + 'px')
-    setTimeout("SetLoginTopMargin()", 100);
+    $('div.login').css('margin-top', htop.toString() + 'px');
+    setTimeout("SetLoginLeftMargin()", 100);
 }
 
-function SendLogin(event)
+function SetLoginLeftMargin()
+{
+	var wleft = ($(window).width() - 360) / 2;
+	$('div.login').css('margin-left', wleft.toString() + 'px');
+	setTimeout("SetLoginTopMargin()", 100);
+}
+
+function SendLogin()
 {
 	var userName = $('.inputUser').val();
 	var password = $('.inputPass').val();
@@ -101,6 +98,13 @@ function SendLogin(event)
     	});
 	}
 }
+
+function PasswordOnKeyDown(event)
+{
+    if (event.keyCode == 13)
+        SendLogin();
+}
+
 $(document).ready(FadeIn);
 </script>
 </head>
@@ -109,9 +113,9 @@ $(document).ready(FadeIn);
 <div class="login">
 <form>
 	<br><label class="lblInput">Username: </label><br/><input type="text" class="inputUser">
-	<br><label class="lblInput">Password: </label><br/><input type="password" class="inputPass">
+	<br><label class="lblInput">Password: </label><br/><input type="password" class="inputPass" onkeydown="PasswordOnKeyDown(event);">
 </form>
-<div class="loginButton" onclick="SendLogin(event);">Connect</div>
+<div class="loginButton" onclick="SendLogin();">Connect</div>
 <span id="loginError"></span>
 <p class="newAccount">You don't have an account? Create it <a href="register.php">here</a>!</p>
 </div>

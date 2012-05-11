@@ -52,15 +52,35 @@ function GetIdFromUsername($username)
 
 function PrintTopBar($user)
 {
+    $isLoggedIn = (!is_null($user) && isset($user));
+    // Create some vars with data for use in the topbar
+    $friendRequestsCount;
+    if ($isLoggedIn)
+    {
+        $friendRequestsCount = $user->GetFriendRequestsCount();
+        if ($friendRequestsCount === false)
+            $friendRequestsCount = "Unknown";
+    }
     echo '<div id="topbar">', "\n";
-	echo '    <div class="topbarLeft">', "\n";
-	echo '        <a href="login.php"><img src="images/blog_button.png" alt="Blog"/></a>', "\n";
+	echo '    <div style="margin-right:20%; margin-left:20%; width:60%; height:51px; position:absolute;">', "\n";
+	echo '        <div class="topbarLeft">', "\n";
+	echo '            <div style="float:left; border-right:2px #333333 solid;"><a href="login.php"><img style="margin-right:10px;" src="images/blog_button.png" alt="Blog"/></a></div>', "\n";
+	if ($isLoggedIn)
+	{
+    	echo '            <div id="topbarButton" style="float:right;">My games</div>', "\n";
+    	echo '            <div id="topbarButton" style="float:right;">Social</div>', "\n";
+    	echo '            <div id="topbarButton" style="float:right;">My account</div>', "\n";
+	}
+	echo '        </div>', "\n";
+	echo '        <div class="topbarRight">', "\n";
+	if ($isLoggedIn)
+	{
+	    echo '            <div id="topbarButton" class="newFriendRequests">&nbsp;[', $friendRequestsCount, '] Friend requests&nbsp;</div>', "\n";
+	    echo '            <div style="float:right; border-left:2px #333333 solid;height:51px; width:40px;"><a href="logout.php" onclick="FadeOut(event, \'logout.php\');"><img src="images/logout.png" height="30px" width="30px" alt="Logout" style="margin-top:10px; float:right;"/></a></div>', "\n";
+	}
+	echo '        </div>', "\n";
 	echo '    </div>', "\n";
-	echo '    <div class="topbarRight">', "\n";
-	if (!is_null($user) && isset($user))
-	    echo '        <a onclick="function(event) {event.preventDefault(); $(\'body\').fadeOut(1000, function() {window.location = \'logout.php\';});}" href="logout.php"><img src="images/logout.png" height="40px" width="40" alt="Logout" style="margin-top:4px; margin-right:15px;"/></a>', "\n";
-	echo '    </div>', "\n";
-    echo '</div>', "\n";
+	echo '</div>', "\n";
 }
 
 ?>

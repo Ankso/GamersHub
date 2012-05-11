@@ -39,7 +39,7 @@
 
 .extruder.left{
     height:90%;
-    margin-left:79.75%;
+    margin-left:80.5%;
     margin-top:65px;
     background:url("../js/elements/extruder_blank.png");
 }
@@ -51,7 +51,7 @@
 }
 
 .extruder.left .content{
-    border-right:3px solid #FFFFFF;
+    border:2px solid #FFFFFF;
 }
 
 .extruder.left .ext_wrapper{
@@ -91,16 +91,13 @@
 
 .extruder.right{
     height:90%;
-    margin-right:79.75%;
+    margin-right:80%;
     margin-top:65px;
     background:url("../js/elements/extruder_blank.png");
 }
 
 .extruder.right .content{
     border:2px solid #FFFFFF;
-    border-top:5px solid #FFFFFF;
-    border-bottom:5px solid #FFFFFF;
-    background-color:rgba(0, 0, 0, 0.5);
 }
 
 .extruder.right.open .content{

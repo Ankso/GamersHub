@@ -379,6 +379,21 @@ Class User
         return $friendRequests;
     }
     
+    /**
+     * Gets the total amount of friend requests for this user.
+     * @return integer Returns the number of friend requests for this user, or false in case of failure.
+     */
+    public function GetFriendRequestsCount()
+    {
+        global $DATABASES, $SERVER_INFO;
+        $DB = new Database($DATABASES['USERS']);
+        $result = $DB->ExecuteStmt(Statements::SELECT_USER_FRIEND_REQUESTS_COUNT, $DB->BuildStmtArray("i", $this->GetId()));
+        if ($result === false)
+            return false;
+        $row = $result->fetch_assoc();
+        return $row['total'];
+    }
+    
     private $_id;                // The user's unique ID
     private $_username;          // The user's username (nickname)
     private $_passwordSha1;      // The encripted user's password
