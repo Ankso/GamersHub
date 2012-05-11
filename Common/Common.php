@@ -1,6 +1,6 @@
 <?php
-require_once($_SERVER['DOCUMENT_ROOT'] . "/../Common/SharedDefines.php");
-require_once($_SERVER['DOCUMENT_ROOT'] . "/../Classes/Database.Class.php");
+require_once($_SERVER['DOCUMENT_ROOT'] . "/../common/SharedDefines.php");
+require_once($_SERVER['DOCUMENT_ROOT'] . "/../classes/Database.Class.php");
 
 /**
  * Encripts the password using the username as modifier.
@@ -75,7 +75,10 @@ function PrintTopBar($user)
 	echo '        <div class="topbarRight">', "\n";
 	if ($isLoggedIn)
 	{
-	    echo '            <div id="topbarButton" class="newFriendRequests">&nbsp;[', $friendRequestsCount, '] Friend requests&nbsp;</div>', "\n";
+	    if ($friendRequestsCount === 0)
+	        echo '            <div id="topbarButton" class="newFriendRequests">&nbsp;No friend requests&nbsp;</div>', "\n";
+	    elseif (is_integer($friendRequestsCount) && $friendRequestsCount > 0)
+	        echo '            <div id="topbarButton" class="newFriendRequests">&nbsp;<a id="friendRequests" href="ajax/friendrequests.php">New friend requests!</a>&nbsp;</div>', "\n";
 	    echo '            <div style="float:right; border-left:2px #333333 solid;height:51px; width:40px;"><a href="logout.php" onclick="FadeOut(event, \'logout.php\');"><img src="images/logout.png" height="30px" width="30px" alt="Logout" style="margin-top:10px; float:right;"/></a></div>', "\n";
 	}
 	echo '        </div>', "\n";

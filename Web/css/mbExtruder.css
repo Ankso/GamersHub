@@ -89,6 +89,10 @@
     background:#000000;
 }
 
+.extruder.left .flap .flapLabel .flip_label{
+    margin-top:70%;
+}
+
 .extruder.right{
     height:90%;
     margin-right:80%;

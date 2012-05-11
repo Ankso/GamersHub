@@ -21,6 +21,7 @@
     width:70%;
     float:left;
     border:2px #00FF00 solid;
+    border-radius:0.5em;
     padding-bottom:7px;
 }
 
@@ -29,6 +30,7 @@
     width:29%;
     float:right;
     border:2px #00FF00 solid;
+    border-radius:0.5em;
     padding-bottom:7px;
 }
 
@@ -57,7 +59,7 @@
     margin-right:1%;
     margin-top:7px;
     margin-bottom:7px;
-    border:2px #FF0000 solid;
+    border:2px #0000FF solid;
     border-radius:0.5em;
 }
 

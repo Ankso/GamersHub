@@ -1,7 +1,7 @@
 <?php
-require_once ($_SERVER['DOCUMENT_ROOT'] . "/../Common/SharedDefines.php");
-require_once ($_SERVER['DOCUMENT_ROOT'] . "/../Classes/Database.Class.php");
-require_once ($_SERVER['DOCUMENT_ROOT'] . "/../Common/PreparedStatements.php");
+require_once ($_SERVER['DOCUMENT_ROOT'] . "/../common/SharedDefines.php");
+require_once ($_SERVER['DOCUMENT_ROOT'] . "/../classes/Database.Class.php");
+require_once ($_SERVER['DOCUMENT_ROOT'] . "/../common/PreparedStatements.php");
 
 Class User
 {
@@ -296,8 +296,8 @@ Class User
     }
     
     /**
-     * Returns a numeric array containing all the usernames of the user's friends.
-     * @return array Returns an array with the user's friends username, the constant USER_HAS_NO_FRIENDS if the user has no friends or false if something fails.
+     * Returns a numeric array containing all the usernames of the user's friends and they status (online, offline, and soon AFK)
+     * @return array Returns a bidimensional array with the each friend's username and status, the constant USER_HAS_NO_FRIENDS if the user has no friends or false if something fails.
      */
     public function GetAllFriendsByUsername()
     {
@@ -310,7 +310,12 @@ Class User
             return USER_HAS_NO_FRIENDS;
         $friends = array();
         while ($row = $result->fetch_assoc())
-            $friends[] = $row['username'];
+        {
+            $friends[] = array(
+                0 => $row['username'],
+                1 => $row['is_online']
+            );
+        }
         return $friends;
     }
     

@@ -1,5 +1,5 @@
 <?php
-require_once($_SERVER['DOCUMENT_ROOT'] . "/../Common/SharedDefines.php");
+require_once($_SERVER['DOCUMENT_ROOT'] . "/../common/SharedDefines.php");
 
 /**
  * Main Database Class. Handles all Database tasks like conection, query execution, etc, using the mysqli library.

@@ -1,14 +1,14 @@
 <?php 
-require_once("../Common/SharedDefines.php");
-require_once("../Common/Common.php");
-require_once("../Classes/Database.Class.php");
-require_once("../Classes/User.Class.php");
+require_once("../common/SharedDefines.php");
+require_once("../common/Common.php");
+require_once("../classes/Database.Class.php");
+require_once("../classes/User.Class.php");
 
 session_start();
 if (!isset($_SESSION['user']))
     header("location:login.php");
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -16,22 +16,26 @@ if (!isset($_SESSION['user']))
 <link href="css/mbExtruder.css" media="all" rel="stylesheet" type="text/css">
 <link href="css/userspace.css" media="all" rel="stylesheet" type="text/css">
 <link href="css/main.css" media="all" rel="stylesheet" type="text/css">
+<link href="css/fancyboxjQuery.css" rel="stylesheet" type="text/css" media="screen" />
 <script type="text/javascript" src="js/inc/jquery.latest.js"></script>
 <script type="text/javascript" src="js/inc/jquery.hoverIntent.min.js"></script>
 <script type="text/javascript" src="js/inc/jquery.metadata.js"></script>
 <script type="text/javascript" src="js/inc/jquery.mb.flipText.js"></script>
 <script type="text/javascript" src="js/inc/mbExtruder.js"></script>
+<script type="text/javascript" src="js/inc/jquery.fancybox-1.3.4.js"></script>
+<script type="text/javascript" src="js/inc/jquery.mousewheel-3.0.4.pack.js"></script>
 <script type="text/javascript">
+	// Tabs scripts \\
 	$(function(){
 		$("#friendsTab").buildMbExtruder({
 		positionFixed: true,
 		sensibility:700,
-		autoOpenTime: 1,
+		autoOpenTime: 10,
       	position:"right",
         width:230,
         flapDim:"200",
         extruderOpacity:1,
-        autoCloseTime:0,
+        autoCloseTime:500,
         slideTimer:200,
         closeOnExternalClick:false,
         onExtClose:function(){},
@@ -47,7 +51,7 @@ if (!isset($_SESSION['user']))
         width:230,
         flapDim:"200",
         extruderOpacity:1,
-        autoOpenTime:1,
+        autoOpenTime:10,
         autoCloseTime:500,
         slideTimer:200,
         closeOnExternalClick:false,
@@ -57,10 +61,10 @@ if (!isset($_SESSION['user']))
     	});
 	});
 	$(function(){
-		$("#mySpaceTab").buildMbExtruder({
+		$("#myGamesTab").buildMbExtruder({
 		positionFixed: true,
 		sensibility:700,
-		autoOpenTime: 1,
+		autoOpenTime: 10,
       	position:"left",
         width:230,
         flapDim:"200",
@@ -73,31 +77,7 @@ if (!isset($_SESSION['user']))
         onExtContentLoad: function(){}
     	});
 	});
-</script>
-<script type="text/javascript">
-function ProcessFriendRequest(event, friendName, action)
-{
-    var message = "Server error, please try again soon.";
-    var theClass = "declineFriend";
-    $.post("../core/friends/addfriend.php", {username: friendName, action: action}, function(data) {
-		if (data.length > 0)
-		{
-			if (data == "SUCCESS")
-			{
-			    if (action = 'a')
-			    {
-					message = "Accepted!";
-					theClass = "acceptFriend";
-				}
-				else
-					message = "Declined";
-			}
-		}
-	    event.target.parentNode.outerHTML = '<div><a class="' + theClass + '">' + message + '</a></div>';
-	});
-}
-</script>
-<script type="text/javascript">
+
 function FadeOut(event, redirectUrl)
 {
 	event.preventDefault();
@@ -109,7 +89,11 @@ function FadeIn()
     $("body").css("display", "none");
     $("body").fadeIn(2000);
 }
-$(document).ready(FadeIn);
+
+$(document).ready(function() {
+	FadeIn();
+	$("a#friendRequests").fancybox();
+});
 </script>
 </head>
 <body>
@@ -176,7 +160,7 @@ elseif ($friendsList === false)
 else
 {
     foreach ($friendsList as $i => $value)
-        echo '    <div id="friend" class="voice {panel: \'core/friends/friendmenutab.php\'}"><span class="label"><a class="label">', $friendsList[$i], '</a></span></div>', "\n";
+        echo '    <div id="friend" class="voice {panel: \'core/friends/friendmenutab.php\'}"><span class="label"><img src="images/'. ($friendsList[$i][1] ? "friend_online" : "friend_offline") .'.png" style="margin-top:3px;"/><a class="label">', $friendsList[$i][0], '</a></span></div>', "\n";
 }
 ?>
 </div>
@@ -186,6 +170,6 @@ for ($i = 1; $i < 5; ++$i)
     echo '    <div id="clan" class="voice {panel: \'core/clans/clansmenutab.php\'}"><span class="label"><a class="label">Clan', $i, '</a></span></div>', "\n";
 ?>
 </div>
-<div id="mySpaceTab" class="a {title: 'My games'}"></div>
+<div id="myGamesTab" class="a {title: 'My games'}"></div>
 </body>
 </html>

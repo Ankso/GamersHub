@@ -1,9 +1,9 @@
 <?php
-require_once($_SERVER['DOCUMENT_ROOT'] . "/../Classes/User.Class.php");
-require_once($_SERVER['DOCUMENT_ROOT'] . "/../Common/SharedDefines.php");
-require_once($_SERVER['DOCUMENT_ROOT'] . "/../Classes/Database.Class.php");
-require_once($_SERVER['DOCUMENT_ROOT'] . "/../Common/Common.php");
-require_once($_SERVER['DOCUMENT_ROOT'] . "/../Common/PreparedStatements.php");
+require_once($_SERVER['DOCUMENT_ROOT'] . "/../classes/User.Class.php");
+require_once($_SERVER['DOCUMENT_ROOT'] . "/../common/SharedDefines.php");
+require_once($_SERVER['DOCUMENT_ROOT'] . "/../classes/Database.Class.php");
+require_once($_SERVER['DOCUMENT_ROOT'] . "/../common/Common.php");
+require_once($_SERVER['DOCUMENT_ROOT'] . "/../common/PreparedStatements.php");
 
 session_start();
 

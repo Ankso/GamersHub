@@ -9,7 +9,7 @@ body {
 	color:#FFFFFF;
     margin:0px 0px 0px 0px;
     background:#000000 url("../images/bg.png") no-repeat center center fixed;
-    overflow-x:hidden;
+    /*overflow-x:hidden;*/
 }
 
 /* Top bar */
@@ -17,6 +17,7 @@ body {
 	position:absolute;
     height:51px;
     width:100%;
+    min-width:950px;
     background:#000000 url("../images/topbar.png") repeat-x center;
 }
 
@@ -44,6 +45,14 @@ body {
 .newFriendRequests {
 	float:left;
 	margin-right:10px;
+}
+
+#friendRequests:link {
+	color:#FFFFFF;
+}
+
+#friendRequests:visited {
+	color:#FFFFFF;
 }
 
 #topbarButton:hover {
