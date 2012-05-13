@@ -93,6 +93,7 @@ function FadeIn()
 $(document).ready(function() {
 	FadeIn();
 	$("a#friendRequests").fancybox();
+	$("a.removeFriend").fancybox();
 });
 </script>
 </head>
@@ -160,7 +161,7 @@ elseif ($friendsList === false)
 else
 {
     foreach ($friendsList as $i => $value)
-        echo '    <div id="friend" class="voice {panel: \'core/friends/friendmenutab.php\'}"><span class="label"><img src="images/'. ($friendsList[$i][1] ? "friend_online" : "friend_offline") .'.png" style="margin-top:3px;"/><a class="label">', $friendsList[$i][0], '</a></span></div>', "\n";
+        echo '    <div id="friend" class="voice {panel: \'core/friends/friendmenutab.php?friendName='. $friendsList[$i][0] .'\'}"><span class="label"><img src="images/'. ($friendsList[$i][1] ? "friend_online" : "friend_offline") .'.png" style="margin-top:3px;"/><a class="label" href="../', $friendsList[$i][0], '">', $friendsList[$i][0], '</a></span></div>', "\n";
 }
 ?>
 </div>

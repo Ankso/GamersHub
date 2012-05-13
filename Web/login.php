@@ -92,6 +92,8 @@ function SendLogin()
     				$('#loginError').text("Incorrect username or password");
     			else if (data == "FAILED")
     				$('#loginError').text("Error connecting to the login server, please try again soon");
+    			else
+    				$('#loginError').text("Error connecting to the main server, please try again soon");
     		}
     		else
     			$('#loginError').text("Unknown error, please try again soon.");

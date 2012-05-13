@@ -271,6 +271,7 @@ Class User
     {
         global $DATABASES, $SERVER_INFO;
         $DB = new Database($DATABASES['USERS']);
+        // We must "set as removed" - beacuse we aren't going to remove anything at all - all the private messages and other kind of archives that the users may have
         if ($DB->ExecuteStmt(Statements::DELETE_USER_FRIEND, $DB->BuildStmtPackage(2, "ii", $this->GetId(), $friendId, $friendId, $this->GetId())))
             return true;
         return false;
