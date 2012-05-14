@@ -1,4 +1,5 @@
 <?php
+// This class acts as an enum
 class Statements
 {
     // Basic load/save user data queries
@@ -7,7 +8,7 @@ class Statements
     const REPLACE_USER_DATA                 = "REPLACE INTO user_data VALUES (?, ?, ?, ?, ?, ?, ?)";
     const SELECT_USER_DATA_ID               = "SELECT id FROM user_data WHERE username = ?";
     const SELECT_USER_DATA_USERNAME         = "SELECT username FROM user_data WHERE id = ?";
-    // For user's data updates functions
+    // For user's data updates and profile changers functions
     const UPDATE_USER_DATA_ID               = "UPDATE user_data SET id = ? WHERE id = ?";
     const UPDATE_USER_DATA_USERNAME         = "UPDATE user_data SET username = ? WHERE id = ?";
     const UPDATE_USER_DATA_PASSWORD         = "UPDATE user_data SET password_sha1 = ? WHERE id = ?";
@@ -15,6 +16,9 @@ class Statements
     const UPDATE_USER_DATA_IPV4             = "UPDATE user_data SET ip_v4 = ? WHERE id = ?";
     const UPDATE_USER_DATA_IPV6             = "UPDATE user_data SET ip_v6 = ? WHERE id = ?";
     const UPDATE_USER_DATA_ONLINE           = "UPDATE user_data SET is_online = ? WHERE id = ?";
+    const INSERT_USER_AVATARS_PATH          = "INSERT INTO user_avatars VALUES (?, ?)";
+    const UPDATE_USER_AVATARS_PATH          = "UPDATE user_avatars SET avatar_path = ? WHERE user_id = ?";
+    const SELECT_USER_AVATARS_PATH          = "SELECT avatar_path FROM user_avatars WHERE user_id = ?";
     // Friends system
     const DELETE_USER_FRIEND_REQUEST        = "DELETE FROM user_friend_requests WHERE user_id = ? AND requester_id = ?";
     const INSERT_USER_FRIEND                = "INSERT INTO user_friends VALUES (?, ?)";

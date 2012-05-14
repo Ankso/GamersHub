@@ -28,53 +28,54 @@ if (!isset($_SESSION['user']))
 	// Tabs scripts \\
 	$(function(){
 		$("#friendsTab").buildMbExtruder({
-		positionFixed: true,
-		sensibility:700,
-		autoOpenTime: 10,
-      	position:"right",
-        width:230,
-        flapDim:"200",
-        extruderOpacity:1,
-        autoCloseTime:500,
-        slideTimer:200,
-        closeOnExternalClick:false,
-        onExtClose:function(){},
-        onExtOpen:function(){},
-        onExtContentLoad: function(){}
+    		positionFixed: true,
+    		sensibility:700,
+    		autoOpenTime: 10,
+          	position:"right",
+            width:230,
+            flapDim:"200",
+            extruderOpacity:1,
+            autoCloseTime:500,
+            slideTimer:200,
+            closeOnExternalClick:false,
+            onExtClose:function(){},
+            onExtOpen:function(){},
+            onExtContentLoad: function(){}
     	});
 	});
 	$(function(){
 		$("#clansTab").buildMbExtruder({
-		positionFixed:true,
-		sensibility:700,
-      	position:"right",
-        width:230,
-        flapDim:"200",
-        extruderOpacity:1,
-        autoOpenTime:10,
-        autoCloseTime:500,
-        slideTimer:200,
-        closeOnExternalClick:false,
-        onExtClose:function(){},
-        onExtOpen:function(){},
-        onExtContentLoad: function(){}
+    		positionFixed:true,
+    		sensibility:700,
+          	position:"right",
+            width:230,
+            flapDim:"200",
+            extruderOpacity:1,
+            autoOpenTime:10,
+            autoCloseTime:500,
+            slideTimer:200,
+            closeOnExternalClick:false,
+            onExtClose:function(){},
+            onExtOpen:function(){},
+            onExtContentLoad: function(){}
     	});
 	});
 	$(function(){
 		$("#myGamesTab").buildMbExtruder({
-		positionFixed: true,
-		sensibility:700,
-		autoOpenTime: 10,
-      	position:"left",
-        width:230,
-        flapDim:"200",
-        extruderOpacity:1,
-        autoCloseTime:500,
-        slideTimer:200,
-        closeOnExternalClick:false,
-        onExtClose:function(){},
-        onExtOpen:function(){},
-        onExtContentLoad: function(){}
+    		positionFixed: true,
+    		sensibility:700,
+    		autoOpenTime: 10,
+          	position:"left",
+            width:230,
+            flapDim:"200",
+            extruderOpacity:1,
+            autoCloseTime:500,
+            slideTimer:200,
+            textOrientation:"tb",
+            closeOnExternalClick:false,
+            onExtClose:function(){},
+            onExtOpen:function(){},
+            onExtContentLoad: function(){}
     	});
 	});
 
@@ -94,6 +95,7 @@ $(document).ready(function() {
 	FadeIn();
 	$("a#friendRequests").fancybox();
 	$("a.removeFriend").fancybox();
+	$("a#changeAvatar").fancybox();
 });
 </script>
 </head>
@@ -118,7 +120,11 @@ $(document).ready(function() {
 	</div>
 	<div class="profileBoard">
 		<div class="profileInfo">
-			<br/><br/><br/><br/><br/>-- YOUR AVATAR --
+			<div class="imgAvatar">
+				<div style="background:transparent url('<?php echo $_SESSION['user']->GetAvatarHostPath(); ?>') no-repeat center center; background-size:100%; height:200px; width:200px; border-radius:0.5em;">
+					<div class="editAvatar"><a id="changeAvatar" href="ajax/changeavatar.php"><img src="images/edit.png" alt="Edit" style="height:22px;width:22px;margin-top:3px;"/></a></div>
+				</div>
+			</div>
 		</div>
 		<div class="latestNews">
 			<br/><br/><br/><br/><br/><br/><br/>-- The latest news in real-time about your friends, clans, games... --
@@ -172,5 +178,13 @@ for ($i = 1; $i < 5; ++$i)
 ?>
 </div>
 <div id="myGamesTab" class="a {title: 'My games'}"></div>
+<!--
+<div id="chatWindows" class="chatWindows">
+	<div style="float:right; height:40px;">
+		<div class="chatTab">ChatTab#1</div>
+		<div class="chatTab">ChatTab#2</div>
+	</div>
+</div>
+-->
 </body>
 </html>

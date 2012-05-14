@@ -14,11 +14,12 @@ body {
 
 /* Top bar */
 #topbar {
-	position:absolute;
+	position:fixed;
     height:51px;
     width:100%;
     min-width:950px;
     background:#000000 url("../images/topbar.png") repeat-x center;
+    z-index:100;
 }
 
 .topbarLeft {
@@ -58,4 +59,26 @@ body {
 #topbarButton:hover {
     cursor:pointer;
     background-color:#333333;
+}
+
+/* Chat windows related */
+
+.chatWindows {
+	position:fixed;
+    width:99%;
+    height:40px;
+    bottom:0px;
+    z-index:100;
+}
+
+.chatTab {
+    float:left;
+    border:1px #FFFFFF solid;
+    padding:5px 5px 5px 5px;
+    background-color:#222222;
+    margin-right:5px;
+}
+
+.chatTab:hover {
+    cursor:pointer;
 }

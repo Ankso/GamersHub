@@ -81,7 +81,10 @@
     border-radius:0.5em;
 }
 
+/* Profile info and modification */
+
 .profileInfo {
+	text-align:center;
     width:96%;
     min-height:300px;
     margin-left:2%;
@@ -89,6 +92,35 @@
     margin-top:5px;
     border:2px #FF0000 solid;
     border-radius:0.5em;
+}
+
+.imgAvatar {
+	text-align:center;
+	height:200px;
+	width:200px;
+	margin:10px 10px 10px 10px;
+    margin:0 auto;
+    margin-top:10px;
+}
+
+.editAvatar {
+	text-align:right;
+	padding-right:4px;
+	height:28px;
+	width:40px;
+	margin-top:172px;
+	position:relative;
+    float:right;
+    background-color:#333333;
+    color:rgba(255,255,255,0.2);
+    border-top-left-radius:2em;
+    border-bottom-right-radius:0.5em;
+    opacity:0.5;
+}
+
+.editAvatar:hover {
+    cursor:pointer;
+    opacity:1;
 }
 
 .latestNews {

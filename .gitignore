@@ -4,3 +4,5 @@
 .settings/*
 .buildpath
 .project
+web/images/users/*
+php_debug.log

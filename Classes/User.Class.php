@@ -75,6 +75,10 @@ Class User
         return false;
     }
     
+    /***********************************************************\
+    *  	                    PROFILE SYSTEM                      *
+    \***********************************************************/
+    
     /**
      * Gets the user's unique ID
      * @return long Returns a long unsigned integer representing the user's ID
@@ -214,7 +218,7 @@ Class User
     }
     
     /**
-     * Changes the user's online status
+     * Changes the user's online status.
      * @param bool $isOnline
      * @return bool Returns true if success or false if failure.
      */
@@ -231,8 +235,59 @@ Class User
     }
     
     /**
+     * Sets the avatar path for this user.
+     * @param string $avatarPath The avatar's relative path from the root server directory.
+     * @return bool Returns true on success or false if failure.
+     */
+    public function SetAvatarPath($avatarPath)
+    {
+        global $DATABASES, $SERVER_INFO;
+        $avatarPath = "http://". $_SERVER['HTTP_HOST'] ."/". $avatarPath;
+        $DB = new Database($DATABASES['USERS']);
+        if (($result = $DB->ExecuteStmt(Statements::SELECT_USER_AVATARS_PATH, $DB->BuildStmtArray("i", $this->GetId()))))
+        {
+            if ($result->num_rows === 0)
+            {
+                if (($result = $DB->ExecuteStmt(Statements::INSERT_USER_AVATARS_PATH, $DB->BuildStmtArray("is", $this->GetId(), $avatarPath))))
+                    return true;
+            }
+            else
+            {
+                if ($DB->ExecuteStmt(Statements::UPDATE_USER_AVATARS_PATH, $DB->BuildStmtArray("si", $avatarPath, $this->GetId())))
+                    return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Gets the url for the avatar of this user.
+     * @return mixed Returns a string with the full url to the avatar's location, a string representing a relative path if the avatar is the default one, or false if something fails.
+     */
+    public function GetAvatarHostPath()
+    {
+        global $DATABASES, $SERVER_INFO;
+        $DB = new Database($DATABASES['USERS']);
+        if (($result = $DB->ExecuteStmt(Statements::SELECT_USER_AVATARS_PATH, $DB->BuildStmtArray("i", $this->GetId()))))
+        {
+            if ($result->num_rows > 0)
+            {
+                $row = $result->fetch_assoc();
+                return $row['avatar_path'];
+            }
+            else
+                return "/images/default_avatar.png";
+        }
+        return false;
+    }
+    
+    /***********************************************************\
+    *  	                    FRIENDS SYSTEM                      *
+    \***********************************************************/
+    
+    /**
      * Accepts a friend request for this user. [NOT COMPLETELY IMPLEMENTED]
-     * @param integer $friendId The user's new friend ID
+     * @param integer $friendId The user's new friend ID.
      * @return bool Returns true if success or false if failure.
      */
     public function AcceptFriend($friendId)

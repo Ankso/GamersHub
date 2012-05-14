@@ -3,6 +3,7 @@
  * General
  */
 define("USER_DOESNT_EXISTS", -1);
+define("GAME_DOESNT_EXISTS", -1);
 /**
  * Friends System
  */
@@ -25,5 +26,6 @@ $SERVER_INFO = array(
 // Databases's names
 $DATABASES = array(
     'USERS' => "users",
+    'GAMES' => "games",
 );
 ?>

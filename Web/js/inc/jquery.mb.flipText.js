@@ -67,7 +67,7 @@
           var onClick= el.attr("onclick") || el.attr("href");
           var clickScript= onClick?"<div class='pointer' style='position:absolute;top:0;left:0;width:100%;height:100%;background:transparent'/>":"";
 
-          label=$("<object class='flip_label' style='height:"+h+"px; width:"+w+"px;' type='image/svg+xml' data='data:image/svg+xml; charset=utf-8 ," +
+          label=$("<object class='flip_label' style='height:"+h+"px; width:"+ (w - 2) +"px;' type='image/svg+xml' data='data:image/svg+xml; charset=utf-8 ," +
                   "<svg xmlns=\"http://www.w3.org/2000/svg\">" +
                   "<rect x=\"0\" y=\"0\" width=\""+w+"px\" height=\""+h+"px\" fill=\""+bgcol+"\" stroke=\"none\"/>"+
                   "<text  x=\"-"+xFix+"\" y=\""+yFix+"\" font-family=\""+fontfamily+"\"  fill=\""+fontcolor+"\" font-size=\""+fontsize+"\"  style=\"text-anchor: "+ta+"; " +
