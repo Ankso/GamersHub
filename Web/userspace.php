@@ -5,8 +5,35 @@ require_once("../classes/Database.Class.php");
 require_once("../classes/User.Class.php");
 
 session_start();
+// Check if the user is logged in
 if (!isset($_SESSION['user']))
+{
     header("location:login.php");
+    exit();
+}
+// Check if the user is accessing a specified profile
+if (!isset($_GET['username']))
+{
+    header("location:index.php");
+    exit();
+}
+// Check if the username is a valid one
+if (GetIdFromUsername($_GET['username']) === false)
+{
+    header("location:index.php");
+    exit();
+}
+// Determine if the user is the owner of the space
+if ($_SESSION['user']->GetUsername() === $_GET['username'])
+{
+    $spaceOwner = $_SESSION['user'];
+    $isOwner = true;
+}
+else
+{
+    $spaceOwner = new User($_GET['username']);
+    $isOwner = false;
+}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -91,11 +118,32 @@ function FadeIn()
     $("body").fadeIn(2000);
 }
 
+function ShowProfileDetails(userName)
+{
+    $('div.editProfileButton').remove();
+    $.post("ajax/profiledetails.php", {username: userName}, function(data) {
+		if (data.length > 0)
+		{
+			$('div.profileInfo').append(data);
+			$('div.profileInfo').append('<div class="editProfileButton" onclick="HideProfileDetails();">Hide</div>');
+		}
+		else
+			$('div.profileInfo').append('<div style="text-align:center; color:#FF0000;">Error while connecting to the server</div>');
+	});
+}
+
+function HideProfileDetails()
+{
+    $('div.editProfileButton').remove();
+    $('#profileDetails').remove();
+    $('div.profileInfo').append('<div class="editProfileButton" onclick="ShowProfileDetails(\'<?php echo $spaceOwner->GetUsername(); ?>\');">Edit profile</div>');
+}
+
 $(document).ready(function() {
 	FadeIn();
 	$("a#friendRequests").fancybox();
 	$("a.removeFriend").fancybox();
-	$("a#changeAvatar").fancybox();
+	<?php if ($isOwner) echo '$("a#changeAvatar").fancybox();'; ?>
 });
 </script>
 </head>
@@ -121,10 +169,11 @@ $(document).ready(function() {
 	<div class="profileBoard">
 		<div class="profileInfo">
 			<div class="imgAvatar">
-				<div style="background:transparent url('<?php echo $_SESSION['user']->GetAvatarHostPath(); ?>') no-repeat center center; background-size:100%; height:200px; width:200px; border-radius:0.5em;">
-					<div class="editAvatar"><a id="changeAvatar" href="ajax/changeavatar.php"><img src="images/edit.png" alt="Edit" style="height:22px;width:22px;margin-top:3px;"/></a></div>
+				<div style="background:transparent url('<?php echo $spaceOwner->GetAvatarHostPath(); ?>') no-repeat center center; background-size:100%; height:200px; width:200px; border-radius:0.5em;">
+					<?php if ($isOwner) echo '<div class="editAvatar"><a id="changeAvatar" href="ajax/changeavatar.php"><img src="images/edit.png" alt="Edit" style="height:22px;width:22px;margin-top:3px;"/></a></div>'; ?>
 				</div>
 			</div>
+			<div class="editProfileButton" onclick="ShowProfileDetails('<?php echo $spaceOwner->GetUsername(); ?>');"><?php echo ($isOwner ? 'Edit profile' : 'View profile'); ?></div>
 		</div>
 		<div class="latestNews">
 			<br/><br/><br/><br/><br/><br/><br/>-- The latest news in real-time about your friends, clans, games... --
@@ -133,28 +182,6 @@ $(document).ready(function() {
 			<br/>-- An advertisement may be? --<br/><br/>
 		</div>
 	</div>
-<?php
-// Check if the user is the space's owner
-/*
-if ($_GET['username'] == $_SESSION['user']->GetUsername())
-{
-    echo "This is your personal space...<br/>";
-    $friendRequests = $_SESSION['user']->GetFriendRequests();
-    if ($friendRequests === false)
-        echo "<br/>There was a problem loading the friend requests sended to you.<br/>";
-    elseif ($friendRequests === USER_HAS_NO_FRIEND_REQUESTS)
-        echo "<br/>You have no friend requests<br/>";
-    else
-    {
-        foreach ($friendRequests as $i => $value)
-            echo "<div>New friend request from ", $friendRequests[$i]['username'], "! <a onclick=\"ProcessFriendRequest(event, '", $friendRequests[$i]['username'], "', 'a')\" class=\"acceptFriend\">Accept</a> - <a onclick=\"ProcessFriendRequest(event, '", $friendRequests[$i]['username'], "', 'd')\" class=\"declineFriend\">Decline</a></div>";
-        echo "<br/>";
-    }
-}
-else
-    echo "This is your friend's main page...<br>";
-*/
-?>
 </div>
 <div id="friendsTab" class="a {title:'My friends'}">
 <div id="newFriend" class="voice {panel: 'ajax/friendsfinder.html'}"><span class="label">Add New Friend +</span></div>

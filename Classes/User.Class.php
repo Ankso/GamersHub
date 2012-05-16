@@ -281,6 +281,47 @@ Class User
         return false;
     }
     
+    /**
+     * Gets the detailed data of a user from the DB
+     * @return array Returns an array containing the detailed data, or false if something fails. See the "Profile system" constants defined in SharedDefines.php
+     */
+    public function GetDetailedUserData()
+    {
+        global $DATABASES, $SERVER_INFO;
+        $DB = new Database($DATABASES['USERS']);
+        if (($result = $DB->ExecuteStmt(Statements::SELECT_USER_DETAILED_DATA, $DB->BuildStmtArray("i", $this->GetId()))))
+        {
+            if (($row = $result->fetch_assoc()))
+                return array(
+                    USER_DETAILS_BIO      => $row['bio'],
+                    USER_DETAILS_BIRTHDAY => $row['birthday'],
+                    USER_DETAILS_COUNTRY  => $row['country'],
+                    USER_DETAILS_CITY     => $row['city']
+                );
+        }
+        return false;
+    }
+    
+    /**
+     * Replaces a user's detailed data in the database for new info.
+     * @param string $bio A valid string for the user's biography.
+     * @param string(date) $birthday A string representing a valid user's date of birth.
+     * @param string $country A string representing the user's country.
+     * @param string $city A string representing the user's city.
+     * @return boolean Returns true on success, or false in case of failure.
+     */
+    public function SetDetailedUserData($bio, $birthday, $country, $city)
+    {
+        global $DATABASES, $SERVER_INFO;
+        if (!isset($bio) || !isset($birthday) || !isset($country) || !isset($city))
+            return false;
+        $bio = strip_tags($bio);
+        $DB = new Database($DATABASES['USERS']);
+        if ($DB->ExecuteStmt(Statements::REPLACE_USER_DETAILED_DATA, $DB->BuildStmtArray("issss", $this->GetId(), $bio, $birthday, $country, $city)))
+            return true;
+        return false;
+    }
+    
     /***********************************************************\
     *  	                    FRIENDS SYSTEM                      *
     \***********************************************************/

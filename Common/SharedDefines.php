@@ -12,7 +12,13 @@ define("USER_HAS_NO_FRIEND_REQUESTS", -3);
 define("USERS_ARENT_FRIENDS", -4);
 define("USERS_ARE_FRIENDS", -5);
 define("FRIEND_REQUEST_ALREADY_SENT", -6);
-
+/**
+ * Profile system
+ */
+define("USER_DETAILS_BIO", 0);
+define("USER_DETAILS_BIRTHDAY", 1);
+define("USER_DETAILS_COUNTRY", 2);
+define("USER_DETAILS_CITY", 3);
 /**
  * Database defines
  */

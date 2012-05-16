@@ -86,7 +86,7 @@
 .profileInfo {
 	text-align:center;
     width:96%;
-    min-height:300px;
+    min-height:250px;
     margin-left:2%;
     margin-right:2%;
     margin-top:5px;
@@ -121,6 +121,22 @@
 .editAvatar:hover {
     cursor:pointer;
     opacity:1;
+}
+
+.editProfileButton {
+    width:150px;
+    min-height:25px;
+    background-color:#333333;
+    margin:0 auto;
+    margin-top:10px;
+    margin-bottom:10px;
+    border:2px #FFFFFF solid;
+    border-radius:0.5em;
+}
+
+.editProfileButton:hover {
+    cursor:pointer;
+    background-color:#454545;
 }
 
 .latestNews {
