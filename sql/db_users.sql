@@ -35,16 +35,16 @@ INSERT INTO `user_avatars` (`user_id`, `avatar_path`) VALUES
 -- Dumping structure for table users.user_data
 DROP TABLE IF EXISTS `user_data`;
 CREATE TABLE IF NOT EXISTS `user_data` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'User unique ID',
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'User''s unique ID',
   `username` varchar(25) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Username (not real name)',
-  `password_sha1` text COLLATE utf8_unicode_ci NOT NULL COMMENT 'User password in SHA1',
-  `email` varchar(60) COLLATE utf8_unicode_ci NOT NULL COMMENT 'User e-mail',
+  `password_sha1` text COLLATE utf8_unicode_ci NOT NULL COMMENT 'User''s password encrypted in SHA1 (username:password)',
+  `email` varchar(60) COLLATE utf8_unicode_ci NOT NULL COMMENT 'User''s e-mail',
   `ip_v4` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Last used IPv4',
   `ip_v6` varchar(39) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Last used IPv6',
   `is_online` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '1 if the user is online, else 0',
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='General data about the users (name, mail, date of birth, etc...)';
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Basic data about the users';
 
 -- Dumping data for table users.user_data: ~8 rows (approximately)
 DELETE FROM `user_data`;
