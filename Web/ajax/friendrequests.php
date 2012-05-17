@@ -3,7 +3,7 @@ require_once($_SERVER['DOCUMENT_ROOT'] . "/../classes/User.Class.php");
 require_once($_SERVER['DOCUMENT_ROOT'] . "/../common/SharedDefines.php");
 
 session_start();
-if (!isset($_SESSION['user']))
+if (!isset($_SESSION['userId']))
     header("location:login.php");
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -67,7 +67,8 @@ function ProcessFriendRequest(event, friendName, action)
 <body>
 <div class="mainFriendRequests">
 <?php
-    $friendRequests = $_SESSION['user']->GetFriendRequests();
+    $user = new User($_SESSION['userId']);
+    $friendRequests = $user->GetFriendRequests();
     if ($friendRequests === false)
         echo "<br/>There was a problem loading the friend requests sended to you.<br/>";
     elseif ($friendRequests === USER_HAS_NO_FRIEND_REQUESTS)

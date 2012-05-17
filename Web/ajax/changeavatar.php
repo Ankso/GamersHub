@@ -2,11 +2,13 @@
 require_once($_SERVER['DOCUMENT_ROOT'] . "/../classes/User.Class.php");
 
 session_start();
-if (!isset($_SESSION['user']))
+if (!isset($_SESSION['userId']))
 {
     header("http://localhost/login.php");
     die();
 }
+// Create the user object
+$user = new User($_SESSION['userId']);
 
 if (isset($_FILES['avatar']))
 {
@@ -17,16 +19,17 @@ if (isset($_FILES['avatar']))
             $message = "Error when uploading the image. Please try again.";
         else
         {
-            $relativePath = "/images/users/". $_SESSION['user']->GetUsername() ."/avatar/". $_SESSION['user']->GetUsername() ."s_avatar.". substr($_FILES['avatar']['name'], strrpos($_FILES['avatar']['name'], ".") + 1);
-            if (!is_dir($_SERVER['DOCUMENT_ROOT'] . "/images/users/". $_SESSION['user']->GetUsername() ."/avatar"))
-                if (!mkdir($_SERVER['DOCUMENT_ROOT'] . "/images/users/". $_SESSION['user']->GetUsername() ."/avatar", 0777, true))
+            $relativePath = "/images/users/". $user->GetUsername() ."/avatar/". $user->GetUsername() ."s_avatar.". substr($_FILES['avatar']['name'], strrpos($_FILES['avatar']['name'], ".") + 1);
+            if (!is_dir($_SERVER['DOCUMENT_ROOT'] . "/images/users/". $user->GetUsername() ."/avatar"))
+                if (!mkdir($_SERVER['DOCUMENT_ROOT'] . "/images/users/". $user->GetUsername() ."/avatar", 0777, true))
                     die("A fatal error occurred while uploading the avatar. Please try again soon.");
+
             if (move_uploaded_file($_FILES['avatar']['tmp_name'], $_SERVER['DOCUMENT_ROOT'] . $relativePath))
             {
-                if (!$_SESSION['user']->SetAvatarPath($relativePath))
+                if (!$user->SetAvatarPath($relativePath))
                     die("A fatal error occurred while connecting to the database server. Please try again soon.");
                 else
-                    header("location:../". $_SESSION['user']->GetUsername());
+                    header("location:../". $user->GetUsername());
             }
             else
                 $message = "An error occurred while uploading your avatar. Please try again.";

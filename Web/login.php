@@ -4,8 +4,11 @@ require_once("../common/Common.php");
 
 session_start();
 // If user is already loged in, redirect to his or her main page
-if (isset($_SESSION['user']))
-    header("location:". $_SESSION['user']->GetUsername());
+if (isset($_SESSION['userId']))
+{
+    $user = new User($_SESSION['userId']);
+    header("location:". $user->GetUsername());
+}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>

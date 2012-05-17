@@ -6,8 +6,11 @@ require_once("../classes/Database.Class.php");
 
 session_start();
 // If the user is logged in, redirect to his or her folder
-if (isset($_SESSION['user']))
-    header("location:". $_SESSION['user']->GetUsername());
+if (isset($_SESSION['userId']))
+{
+    header("location:". GetUsernameFromId($_SESSION['userId']));
+    exit();
+}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>

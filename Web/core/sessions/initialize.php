@@ -8,8 +8,8 @@ require_once($_SERVER['DOCUMENT_ROOT'] . "/../common/PreparedStatements.php");
 session_start();
 
 // If user is already loged in and tries access this page, redirect him to his or her main page
-if (isset($_SESSION['user']))
-    header("location:../../". $_SESSION['user']->GetUsername());
+if (isset($_SESSION['userId']))
+    header("location:../../". GetUsernameFromId($_SESSION['userId']));
 else
 {
     // If the user access directly to this page, we can redirect him to the login page
@@ -30,7 +30,7 @@ else
     	            // Create the user object
     	            $user = new User($username);
     	            $user->SetOnline(true);
-    	            $_SESSION['user'] = $user;
+    	            $_SESSION['userId'] = $user->GetId();
     	            echo "SUCCESS";
     	        }
     	        else

@@ -6,11 +6,13 @@ require_once("../classes/User.Class.php");
 
 session_start();
 // Check if the user is logged in
-if (!isset($_SESSION['user']))
+if (!isset($_SESSION['userId']))
 {
     header("location:login.php");
     exit();
 }
+// Build the user object
+$user = new User($_SESSION['userId']);
 // Check if the user is accessing a specified profile
 if (!isset($_GET['username']))
 {
@@ -20,26 +22,33 @@ if (!isset($_GET['username']))
 // Check if the username is a valid one
 if (GetIdFromUsername($_GET['username']) === false)
 {
+    // here we must redirect the user to a page of type "The user that you are looking for doesn't exists!"
     header("location:index.php");
     exit();
 }
 // Determine if the user is the owner of the space
-if ($_SESSION['user']->GetUsername() === $_GET['username'])
+if ($user->GetUsername() === $_GET['username'])
 {
-    $spaceOwner = $_SESSION['user'];
+    $spaceOwner = $user;
     $isOwner = true;
 }
-else
+// We must check if the users are friends, if they aren't, we should show a special space, just saying that the user isn't allowed to see the specified profile
+elseif ($user->IsFriendOf($_GET['username']))
 {
     $spaceOwner = new User($_GET['username']);
     $isOwner = false;
+}
+else
+{
+    header("location:index.php");
+    exit();
 }
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title><?php echo $_GET['username'] ?>'s profile - GamersNet</title>
+<title><?php echo $spaceOwner->GetUsername(); ?>'s profile - GamersNet</title>
 <link href="css/mbExtruder.css" media="all" rel="stylesheet" type="text/css">
 <link href="css/userspace.css" media="all" rel="stylesheet" type="text/css">
 <link href="css/main.css" media="all" rel="stylesheet" type="text/css">
@@ -136,7 +145,7 @@ function HideProfileDetails()
 {
     $('div.editProfileButton').remove();
     $('#profileDetails').remove();
-    $('div.profileInfo').append('<div class="editProfileButton" onclick="ShowProfileDetails(\'<?php echo $spaceOwner->GetUsername(); ?>\');">Edit profile</div>');
+    $('div.profileInfo').append('<div class="editProfileButton" onclick="ShowProfileDetails(\'<?php echo $spaceOwner->GetUsername(); ?>\');"><?php echo ($isOwner ? 'Edit profile' : 'View profile'); ?></div>');
 }
 
 $(document).ready(function() {
@@ -148,7 +157,7 @@ $(document).ready(function() {
 </script>
 </head>
 <body>
-<?php PrintTopBar($_SESSION['user']); ?>
+<?php PrintTopBar($user); ?>
 <div class="mainContent">
 	<div class="mainBoard">
 		<div class="mainLivestream">
@@ -186,7 +195,7 @@ $(document).ready(function() {
 <div id="friendsTab" class="a {title:'My friends'}">
 <div id="newFriend" class="voice {panel: 'ajax/friendsfinder.html'}"><span class="label">Add New Friend +</span></div>
 <?php
-$friendsList = $_SESSION['user']->GetAllFriendsByUsername();
+$friendsList = $user->GetAllFriendsByUsername();
 if ($friendsList === USER_HAS_NO_FRIENDS)
     echo '    <div id="noFriends" class="voice {}"><span class="label"><a class="label">You have no friends</a></span></div>', "\n";
 elseif ($friendsList === false)
@@ -199,7 +208,8 @@ else
 ?>
 </div>
 <div id="clansTab" class="a {title:'My Clans'}">
-<?php 
+<?php
+// Clans system is not yet implemented
 for ($i = 1; $i < 5; ++$i)
     echo '    <div id="clan" class="voice {panel: \'core/clans/clansmenutab.php\'}"><span class="label"><a class="label">Clan', $i, '</a></span></div>', "\n";
 ?>
