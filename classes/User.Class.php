@@ -11,6 +11,7 @@ Class User
      */
     function __construct($source)
     {
+        global $DATABASES, $SERVER_INFO;
         if (is_int($source))
             $this->_id = $source;
         elseif (is_string($source))
@@ -18,6 +19,7 @@ Class User
         else
             die("Error initializing User Class: invalid source.");
             
+        $this->_db = new Database($DATABASES['USERS']);
         if (!$this->LoadFromDB())
             die("Error initializing User Class");
     }
@@ -36,12 +38,10 @@ Class User
      */
     private function LoadFromDB()
     {
-        global $DATABASES, $SERVER_INFO;
-        $DB = new Database($DATABASES['USERS']);
         if (!isset($this->_id))
-            $result = $DB->ExecuteStmt(Statements::SELECT_USER_DATA_BY_USERNAME, $DB->BuildStmtArray("s", $this->_username));
+            $result = $this->_db->ExecuteStmt(Statements::SELECT_USER_DATA_BY_USERNAME, $this->_db->BuildStmtArray("s", $this->_username));
         else
-            $result = $DB->ExecuteStmt(Statements::SELECT_USER_DATA_BY_ID, $DB->BuildStmtArray("i", $this->_id));
+            $result = $this->_db->ExecuteStmt(Statements::SELECT_USER_DATA_BY_ID, $this->_db->BuildStmtArray("i", $this->_id));
         if ($result && ($userData = $result->fetch_assoc()))
         {
             $this->_id = $userData['id'];
@@ -63,14 +63,12 @@ Class User
      */
     private function SaveToDB()
     {
-        global $DATABASES, $SERVER_INFO;
-        $DB = new Database($DATABASES['USERS']);
         $data;
         if (filter_var($this->GetLastIp(), FILTER_VALIDATE_IP, FILTER_FLAG_IPV4))
-            $data = $DB->BuildStmtArray("isssss", $this->GetId(), $this->GetUsername(), $this->GetPasswordSha1(), $this->GetEmail(), $this->GetLastIp(), NULL);
+            $data = $this->_db->BuildStmtArray("isssss", $this->GetId(), $this->GetUsername(), $this->GetPasswordSha1(), $this->GetEmail(), $this->GetLastIp(), NULL);
         else
-            $data = $DB->BuildStmtArray("isssss", $this->GetId(), $this->GetUsername(), $this->GetPasswordSha1(), $this->GetEmail(), NULL, $this->GetLastIp());
-        if ($DB->ExecuteStmt(Statements::REPLACE_USER_DATA, $data))
+            $data = $this->_db->BuildStmtArray("isssss", $this->GetId(), $this->GetUsername(), $this->GetPasswordSha1(), $this->GetEmail(), NULL, $this->GetLastIp());
+        if ($this->_db->ExecuteStmt(Statements::REPLACE_USER_DATA, $data))
             return true;
         return false;
     }
@@ -95,9 +93,7 @@ Class User
      */
     private function SetId($newId)
     {
-        global $DATABASES, $SERVER_INFO;
-        $DB = new Database($DATABASES['USERS']);
-        if ($DB->ExecuteStmt(Statements::UPDATE_USER_DATA_ID, $DB->BuildStmtArray("ii", $newId, $this_>GetId())))
+        if ($this->_db->ExecuteStmt(Statements::UPDATE_USER_DATA_ID, $this->_db->BuildStmtArray("ii", $newId, $this_>GetId())))
         {
             $this->_id = $newId;
             return true;
@@ -121,9 +117,7 @@ Class User
      */
     public function SetUsername($newUsername)
     {
-        global $DATABASES, $SERVER_INFO;
-        $DB = new Database($DATABASES['USERS']);
-        if ($DB->ExecuteStmt(Statements::UPDATE_USER_DATA_USERNAME, $DB->BuildStmtArray("ss", $newUsername, $this->GetId())))
+        if ($this->_db->ExecuteStmt(Statements::UPDATE_USER_DATA_USERNAME, $this->_db->BuildStmtArray("ss", $newUsername, $this->GetId())))
         {
             $this->_username = $newName;
             return true;
@@ -146,9 +140,7 @@ Class User
      */
     public function SetPasswordSha1($newPasswordSha1)
     {
-        global $DATABASES, $SERVER_INFO;
-        $DB = new Database($DATABASES['USERS']);
-        if ($DB->ExecuteStmt(Statements::UPDATE_USER_DATA_PASSWORD, $DB->BuildStmtArray("ss", $newPasswordSha1, $this->GetId())))
+        if ($this->_db->ExecuteStmt(Statements::UPDATE_USER_DATA_PASSWORD, $this->_db->BuildStmtArray("ss", $newPasswordSha1, $this->GetId())))
         {
             $this->_passwordSha1 = $newPasswordSha1;
             return true;
@@ -172,9 +164,7 @@ Class User
      */
     public function SetEmail($newEmail)
     {
-        global $DATABASES, $SERVER_INFO;
-        $DB = new Database($DATABASES['USERS']);
-        if ($DB->ExecuteStmt(Statements::UPDATE_USER_DATA_EMAIL, $DB->BuildStmtArray("ss", $newEmail, $this->GetId())))
+        if ($this->_db->ExecuteStmt(Statements::UPDATE_USER_DATA_EMAIL, $this->_db->BuildStmtArray("ss", $newEmail, $this->GetId())))
         {
             $this->_email = $newEmail;
             return true;
@@ -197,10 +187,8 @@ Class User
      */
     public function SetLastIp($newIp)
     {
-        global $DATABASES, $SERVER_INFO;
-        $DB = new Database($DATABASES['USERS']);
-        if ($DB->ExecuteStmt((filter_var($newIp, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) ? Statements::UPDATE_USER_DATA_IPV4 : Statements::UPDATE_USER_DATA_IP_V6),
-        	$DB->BuildStmtArray("si", $newIp, $this->GetId())))
+        if ($this->_db->ExecuteStmt((filter_var($newIp, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) ? Statements::UPDATE_USER_DATA_IPV4 : Statements::UPDATE_USER_DATA_IP_V6),
+        	$this->_db->BuildStmtArray("si", $newIp, $this->GetId())))
         {
             $this->_ip = $newIp;
             return true;
@@ -224,9 +212,7 @@ Class User
      */
     public function SetOnline($isOnline)
     {
-        global $DATABASES, $SERVER_INFO;
-        $DB = new Database($DATABASES['USERS']);
-        if ($DB->ExecuteStmt(Statements::UPDATE_USER_DATA_ONLINE, $DB->BuildStmtArray("ii", ($isOnline ? "1" : "0"), $this->GetId())))
+        if ($this->_db->ExecuteStmt(Statements::UPDATE_USER_DATA_ONLINE, $this->_db->BuildStmtArray("ii", ($isOnline ? "1" : "0"), $this->GetId())))
         {
             $this->_isOnline = $isOnline;
             return true;
@@ -241,19 +227,18 @@ Class User
      */
     public function SetAvatarPath($avatarPath)
     {
-        global $DATABASES, $SERVER_INFO;
         $avatarPath = "http://". $_SERVER['HTTP_HOST'] ."/". $avatarPath;
-        $DB = new Database($DATABASES['USERS']);
-        if (($result = $DB->ExecuteStmt(Statements::SELECT_USER_AVATARS_PATH, $DB->BuildStmtArray("i", $this->GetId()))))
+        
+        if (($result = $this->_db->ExecuteStmt(Statements::SELECT_USER_AVATARS_PATH, $this->_db->BuildStmtArray("i", $this->GetId()))))
         {
             if ($result->num_rows === 0)
             {
-                if (($result = $DB->ExecuteStmt(Statements::INSERT_USER_AVATARS_PATH, $DB->BuildStmtArray("is", $this->GetId(), $avatarPath))))
+                if (($result = $this->_db->ExecuteStmt(Statements::INSERT_USER_AVATARS_PATH, $this->_db->BuildStmtArray("is", $this->GetId(), $avatarPath))))
                     return true;
             }
             else
             {
-                if ($DB->ExecuteStmt(Statements::UPDATE_USER_AVATARS_PATH, $DB->BuildStmtArray("si", $avatarPath, $this->GetId())))
+                if ($this->_db->ExecuteStmt(Statements::UPDATE_USER_AVATARS_PATH, $this->_db->BuildStmtArray("si", $avatarPath, $this->GetId())))
                     return true;
             }
         }
@@ -266,9 +251,7 @@ Class User
      */
     public function GetAvatarHostPath()
     {
-        global $DATABASES, $SERVER_INFO;
-        $DB = new Database($DATABASES['USERS']);
-        if (($result = $DB->ExecuteStmt(Statements::SELECT_USER_AVATARS_PATH, $DB->BuildStmtArray("i", $this->GetId()))))
+        if (($result = $this->_db->ExecuteStmt(Statements::SELECT_USER_AVATARS_PATH, $this->_db->BuildStmtArray("i", $this->GetId()))))
         {
             if ($result->num_rows > 0)
             {
@@ -287,9 +270,7 @@ Class User
      */
     public function GetDetailedUserData()
     {
-        global $DATABASES, $SERVER_INFO;
-        $DB = new Database($DATABASES['USERS']);
-        if (($result = $DB->ExecuteStmt(Statements::SELECT_USER_DETAILED_DATA, $DB->BuildStmtArray("i", $this->GetId()))))
+        if (($result = $this->_db->ExecuteStmt(Statements::SELECT_USER_DETAILED_DATA, $this->_db->BuildStmtArray("i", $this->GetId()))))
         {
             if (($row = $result->fetch_assoc()))
                 return array(
@@ -312,12 +293,11 @@ Class User
      */
     public function SetDetailedUserData($bio, $birthday, $country, $city)
     {
-        global $DATABASES, $SERVER_INFO;
         if (!isset($bio) || !isset($birthday) || !isset($country) || !isset($city))
             return false;
         $bio = strip_tags($bio);
-        $DB = new Database($DATABASES['USERS']);
-        if ($DB->ExecuteStmt(Statements::REPLACE_USER_DETAILED_DATA, $DB->BuildStmtArray("issss", $this->GetId(), $bio, $birthday, $country, $city)))
+        
+        if ($this->_db->ExecuteStmt(Statements::REPLACE_USER_DETAILED_DATA, $this->_db->BuildStmtArray("issss", $this->GetId(), $bio, $birthday, $country, $city)))
             return true;
         return false;
     }
@@ -333,12 +313,10 @@ Class User
      */
     public function AcceptFriend($friendId)
     {
-        global $DATABASES, $SERVER_INFO;
-        $DB = new Database($DATABASES['USERS']);
         // Insert the new friends in the DB (both are friends now, we must insert 2 records, at least for now)
-        if ($DB->ExecuteStmt(Statements::INSERT_USER_FRIEND, $DB->BuildStmtPackage(2, "ii", $this->GetId(), $friendId, $friendId, $this->GetId())))
+        if ($this->_db->ExecuteStmt(Statements::INSERT_USER_FRIEND, $this->_db->BuildStmtPackage(2, "ii", $this->GetId(), $friendId, $friendId, $this->GetId())))
             // Remove the friend request
-            if ($DB->ExecuteStmt(Statements::DELETE_USER_FRIEND_REQUEST, $DB->BuildStmtArray("ii", $this->GetId(), $friendId)))
+            if ($this->_db->ExecuteStmt(Statements::DELETE_USER_FRIEND_REQUEST, $this->_db->BuildStmtArray("ii", $this->GetId(), $friendId)))
                 return true;
         return false;
     }
@@ -350,10 +328,8 @@ Class User
      */
     public function DeclineFriendRequest($friendId)
     {
-        global $DATABASES, $SERVER_INFO;
-        $DB = new Database($DATABASES['USERS']);
         // Remove the friend request
-        if ($DB->ExecuteStmt(Statements::DELETE_USER_FRIEND_REQUEST, $DB->BuildStmtArray("ii", $this->GetId(), $friendId)))
+        if ($this->_db->ExecuteStmt(Statements::DELETE_USER_FRIEND_REQUEST, $this->_db->BuildStmtArray("ii", $this->GetId(), $friendId)))
             return true;
         return false;
     }
@@ -365,10 +341,8 @@ Class User
      */
     public function RemoveFriend($friendId)
     {
-        global $DATABASES, $SERVER_INFO;
-        $DB = new Database($DATABASES['USERS']);
         // We must "set as removed" - beacuse we aren't going to remove anything at all - all the private messages and other kind of archives that the users may have
-        if ($DB->ExecuteStmt(Statements::DELETE_USER_FRIEND, $DB->BuildStmtPackage(2, "ii", $this->GetId(), $friendId, $friendId, $this->GetId())))
+        if ($this->_db->ExecuteStmt(Statements::DELETE_USER_FRIEND, $this->_db->BuildStmtPackage(2, "ii", $this->GetId(), $friendId, $friendId, $this->GetId())))
             return true;
         return false;
     }
@@ -379,9 +353,7 @@ Class User
      */
     public function GetAllFriendsById()
     {
-        global $DATABASES, $SERVER_INFO;
-        $DB = new Database($DATABASES['USERS']);
-        $result = $DB->ExecuteStmt(Statements::SELECT_USER_FRIENDS_BY_ID, $DB->BuildStmtArray("i", $this->GetId()));
+        $result = $this->_db->ExecuteStmt(Statements::SELECT_USER_FRIENDS_BY_ID, $this->_db->BuildStmtArray("i", $this->GetId()));
         if ($result === false)
             return false;
         if ($result->num_rows === 0)
@@ -398,9 +370,7 @@ Class User
      */
     public function GetAllFriendsByUsername()
     {
-        global $DATABASES, $SERVER_INFO;
-        $DB = new Database($DATABASES['USERS']);
-        $result = $DB->ExecuteStmt(Statements::SELECT_USER_FRIENDS_BY_USERNAME, $DB->BuildStmtArray("s", $this->GetId()));
+        $result = $this->_db->ExecuteStmt(Statements::SELECT_USER_FRIENDS_BY_USERNAME, $this->_db->BuildStmtArray("s", $this->GetId()));
         if ($result === false)
             return false;
         if ($result->num_rows === 0)
@@ -423,9 +393,7 @@ Class User
      */
     public function IsFriendOf($id)
     {
-        global $DATABASES, $SERVER_INFO;
-        $DB = new Database($DATABASES['USERS']);
-        $result = $DB->ExecuteStmt(Statements::SELECT_USER_FRIENDS_IS_FRIEND, $DB->BuildStmtArray("ii", $this->GetId(), $id));
+        $result = $this->_db->ExecuteStmt(Statements::SELECT_USER_FRIENDS_IS_FRIEND, $this->_db->BuildStmtArray("ii", $this->GetId(), $id));
         if ($result === false)
             return false;    // An error must be triggered here, or logged at least
         if ($result->num_rows > 0)
@@ -441,17 +409,16 @@ Class User
      */
     public function SendFriendRequest($friendId, $message)
     {
-        global $DATABASES, $SERVER_INFO;
         if ($this->IsFriendOf($friendId))
             return USERS_ARE_FRIENDS;
-        $DB = new Database($DATABASES['USERS']);
-        $result = $DB->ExecuteStmt(Statements::SELECT_USER_FRIEND_REQUEST_ID, $DB->BuildStmtArray("ii", $friendId, $this->GetId()));
+        
+        $result = $this->_db->ExecuteStmt(Statements::SELECT_USER_FRIEND_REQUEST_ID, $this->_db->BuildStmtArray("ii", $friendId, $this->GetId()));
         if ($result === false)
             return false;
         if ($result->num_rows > 0)
             return FRIEND_REQUEST_ALREADY_SENT;
-        $result = $DB->ExecuteStmt(Statements::INSERT_USER_FRIEND_REQUEST,
-            $DB->BuildStmtArray("iis", $friendId, $this->Getid(), (is_null($message) ? ($this->Getusername() . " wants to be your friend!") : $message)));
+        $result = $this->_db->ExecuteStmt(Statements::INSERT_USER_FRIEND_REQUEST,
+            $this->_db->BuildStmtArray("iis", $friendId, $this->Getid(), (is_null($message) ? ($this->Getusername() . " wants to be your friend!") : $message)));
         if ($result)
             return true;
         return false;
@@ -463,9 +430,7 @@ Class User
      */
     public function GetFriendRequests()
     {
-        global $DATABASES, $SERVER_INFO;
-        $DB = new Database($DATABASES['USERS']);
-        $result = $DB->ExecuteStmt(Statements::SELECT_USER_FRIEND_REQUEST, $DB->BuildStmtArray("i", $this->GetId()));
+        $result = $this->_db->ExecuteStmt(Statements::SELECT_USER_FRIEND_REQUEST, $this->_db->BuildStmtArray("i", $this->GetId()));
         if ($result === false)
             return false;
         if ($result->num_rows === 0)
@@ -487,9 +452,7 @@ Class User
      */
     public function GetFriendRequestsCount()
     {
-        global $DATABASES, $SERVER_INFO;
-        $DB = new Database($DATABASES['USERS']);
-        $result = $DB->ExecuteStmt(Statements::SELECT_USER_FRIEND_REQUESTS_COUNT, $DB->BuildStmtArray("i", $this->GetId()));
+        $result = $this->_db->ExecuteStmt(Statements::SELECT_USER_FRIEND_REQUESTS_COUNT, $this->_db->BuildStmtArray("i", $this->GetId()));
         if ($result === false)
             return false;
         $row = $result->fetch_assoc();
@@ -502,6 +465,7 @@ Class User
     private $_email;             // The user's e-mail
     private $_ip;                // The user's last used IP address
     private $_isOnline;          // True if the user is online, else false
+    private $_db;                // The database object
 }
 
 ?>
