@@ -50,6 +50,10 @@ function GetIdFromUsername($username)
     return false;
 }
 
+/**
+ * Prints the topbar for a specified user, or the default topbar if the user is not logged in
+ * @param User $user The user class initilized, or NULL if the user is not logged in.
+ */
 function PrintTopBar($user)
 {
     $isLoggedIn = (!is_null($user) && isset($user));
