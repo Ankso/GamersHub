@@ -32,14 +32,16 @@ if ($user->GetUsername() === $_GET['username'])
     $spaceOwner = $user;
     $isOwner = true;
 }
-// We must check if the users are friends, if they aren't, we should show a special space, just saying that the user isn't allowed to see the specified profile
+// We must check if the users are friends...
 elseif ($user->IsFriendOf($_GET['username']))
 {
     $spaceOwner = new User($_GET['username']);
     $isOwner = false;
 }
+// ...if they aren't, we should show a special space here, just saying that the user isn't allowed to see the specified profile
 else
 {
+    // TODO: show a special space here.
     header("location:index.php");
     exit();
 }
@@ -127,25 +129,18 @@ function FadeIn()
     $("body").fadeIn(2000);
 }
 
-function ShowProfileDetails(userName)
+function SwitchProfileDetails()
 {
-    $('div.editProfileButton').remove();
-    $.post("ajax/profiledetails.php", {username: userName}, function(data) {
-		if (data.length > 0)
-		{
-			$('div.profileInfo').append(data);
-			$('div.profileInfo').append('<div class="editProfileButton" onclick="HideProfileDetails();">Hide</div>');
-		}
-		else
-			$('div.profileInfo').append('<div style="text-align:center; color:#FF0000;">Error while connecting to the server</div>');
-	});
-}
-
-function HideProfileDetails()
-{
-    $('div.editProfileButton').remove();
-    $('#profileDetails').remove();
-    $('div.profileInfo').append('<div class="editProfileButton" onclick="ShowProfileDetails(\'<?php echo $spaceOwner->GetUsername(); ?>\');"><?php echo ($isOwner ? 'Edit profile' : 'View profile'); ?></div>');
+    if ($('#profileDetails').is(":hidden"))
+    {
+		$('#profileDetails').slideDown("fast");
+		$('div.editProfileButton').text("Hide");
+    }
+    else
+    {
+        $('#profileDetails').slideUp("fast");
+        $('div.editProfileButton').text("View profile");
+    }
 }
 
 $(document).ready(function() {
@@ -153,6 +148,7 @@ $(document).ready(function() {
 	$("a#friendRequests").fancybox();
 	$("a.removeFriend").fancybox();
 	<?php if ($isOwner) echo '$("a#changeAvatar").fancybox();'; ?>
+	$('#profileDetails').hide();
 });
 </script>
 </head>
@@ -182,7 +178,16 @@ $(document).ready(function() {
 					<?php if ($isOwner) echo '<div class="editAvatar"><a id="changeAvatar" href="ajax/changeavatar.php"><img src="images/edit.png" alt="Edit" style="height:22px;width:22px;margin-top:3px;"/></a></div>'; ?>
 				</div>
 			</div>
-			<div class="editProfileButton" onclick="ShowProfileDetails('<?php echo $spaceOwner->GetUsername(); ?>');"><?php echo ($isOwner ? 'Edit profile' : 'View profile'); ?></div>
+			<div id="profileDetails" style="width:90%; height:250px; min-width:200px; margin:0 auto; margin-top:10px; text-align:left;">
+				<?php
+				    $details = $spaceOwner->GetDetailedUserData();
+				?>
+            	<div>Bio: <?php echo $details[USER_DETAILS_BIO]; ?></div><br />
+            	<div>Birthday: <?php echo $details[USER_DETAILS_BIRTHDAY]; ?></div><br />
+            	<div>Country: <?php echo $details[USER_DETAILS_COUNTRY]; ?></div><br />
+            	<div>City: <?php echo $details[USER_DETAILS_CITY]; ?></div>
+			</div>
+			<div class="editProfileButton" onclick="SwitchProfileDetails();">View profile</div>
 		</div>
 		<div class="latestNews">
 			<br/><br/><br/><br/><br/><br/><br/>-- The latest news in real-time about your friends, clans, games... --
