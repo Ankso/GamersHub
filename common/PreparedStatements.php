@@ -27,7 +27,8 @@ class Statements
     const DELETE_USER_FRIEND                = "DELETE FROM user_friends WHERE user_id = ? AND friend_id = ?";
     const SELECT_USER_FRIENDS_BY_ID         = "SELECT friend_id FROM user_friends WHERE user_id = ?";
     const SELECT_USER_FRIENDS_BY_USERNAME   = "SELECT a.username, a.is_online FROM user_data AS a, user_friends AS b WHERE b.friend_id = a.id AND b.user_id = ? ORDER BY a.username";
-    const SELECT_USER_FRIENDS_IS_FRIEND     = "SELECT user_id FROM user_friends WHERE user_id = ? AND friend_id = ?";
+    const SELECT_USER_FRIENDS_IS_FRIEND     = "SELECT user_id FROM user_friends AS a, user_data AS b WHERE b.username = ? AND a.user_id = ? AND b.id = a.friend_id";
+    const SELECT_USER_FRIENDS_IS_FRIEND_ID  = "SELECT user_id FROM user_friends WHERE user_id = ? AND friend_id = ?";
     const SELECT_USER_FRIEND_REQUEST_ID     = "SELECT user_id FROM user_friend_requests WHERE user_id = ? AND requester_id = ?";
     const SELECT_USER_FRIEND_REQUESTS_COUNT = "SELECT count(*) AS total FROM user_friend_requests WHERE user_id = ?";
     const INSERT_USER_FRIEND_REQUEST        = "INSERT INTO user_friend_requests (user_id, requester_id, message) VALUES (?, ?, ?)";

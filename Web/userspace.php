@@ -63,6 +63,11 @@ else
 <script type="text/javascript" src="js/inc/jquery.fancybox-1.3.4.js"></script>
 <script type="text/javascript" src="js/inc/jquery.mousewheel-3.0.4.pack.js"></script>
 <script type="text/javascript">
+var previousBio;
+var previousBirthday;
+var previousCountry;
+var previousCity;
+
 	// Tabs scripts \\
 	$(function(){
 		$("#friendsTab").buildMbExtruder({
@@ -143,6 +148,62 @@ function SwitchProfileDetails()
     }
 }
 
+function EditProfileDetails()
+{
+    previousBio = $('#bioSpan').text();
+    $('#bioDiv').html('Bio: <textarea id="bioInput" style="min-height:100px; width:95%;">' + previousBio + '</textarea>');
+    previousBirthday = $('#birthdaySpan').text();
+    $('#birthdayDiv').html('Birthday: <input type="text" id="birthdayInput"  value="' + previousBirthday + '" />');
+    previousCountry = $('#countrySpan').text();
+    $('#countryDiv').html('Country: <input type="text" id="countryInput"  value="' + previousCountry + '" />');
+    previousCity = $('#citySpan').text();
+    $('#cityDiv').html('City: <input type="text" id="cityInput"  value="' + previousCity + '" />');
+    $('div.editProfileText').hide();
+    $('#profileDetails').append('<div id="submitCancelEdit" style="height:20px; margin-top:7px;"><span style="float:left; color:#00FF00; cursor:pointer;" onclick="SubmitEditedProfileDetails();">Submit</span><span style="float:right; color:#FF0000; cursor:pointer;" onclick="CancelEditProfileDetails();">Cancel</span></div>');
+}
+
+function CancelEditProfileDetails()
+{
+    $('#bioDiv').html('Bio: <span id="bioSpan">' + previousBio + '</span>');
+    $('#birthdayDiv').html('Birthday: <span id="birthdaySpan">' + previousBirthday + '</span>');
+    $('#countryDiv').html('Country: <span id="countrySpan">' + previousCountry + '</span>');
+    $('#cityDiv').html('City: <span id="citySpan">' + previousCity + '</span>');
+    $('#submitCancelEdit').remove();
+    $('#submitProfileError').remove();
+    $('div.editProfileText').show();
+}
+
+function SubmitEditedProfileDetails()
+{
+    var bio = $('#bioInput').val();
+    var birthday = $('#birthdayInput').val();
+    var country = $('#countryInput').val();
+    var city = $('#cityInput').val();
+    $.post("ajax/editdetailedprofile.php", {bio : bio, birthday : birthday, country : country, city : city}, function(data) {
+		if (data.length > 0)
+		{
+			if (data == "SUCCESS")
+			{
+				previousBio = bio;
+				previousBirthday = birthday;
+				previousCountry = country;
+				previousCity = city;
+				CancelEditProfileDetails();
+			}
+			else
+			{
+				$('#submitProfileError').remove();
+				$('#profileDetails').append('<div id="submitProfileError" style="text-align:center; color:#FF0000;">An error has occurred. Please try again.</div>');
+			}
+		}
+		else
+		{
+		    $('#submitProfileError').remove();
+			$('#profileDetails').append('<div id="submitProfileError" style="text-align:center; color:#FF0000;">Unable to connect to the server. Please make sure that you are connected to the internet and try again.</div>');
+		}
+    });
+}
+
 $(document).ready(function() {
 	FadeIn();
 	$("a#friendRequests").fancybox();
@@ -175,17 +236,24 @@ $(document).ready(function() {
 		<div class="profileInfo">
 			<div class="imgAvatar">
 				<div style="background:transparent url('<?php echo $spaceOwner->GetAvatarHostPath(); ?>') no-repeat center center; background-size:100%; height:200px; width:200px; border-radius:0.5em;">
-					<?php if ($isOwner) echo '<div class="editAvatar"><a id="changeAvatar" href="ajax/changeavatar.php"><img src="images/edit.png" alt="Edit" style="height:22px;width:22px;margin-top:3px;"/></a></div>'; ?>
+					<?php if ($isOwner) { ?>
+					<div class="editAvatar"><a id="changeAvatar" href="ajax/changeavatar.php"><img src="images/edit.png" alt="Edit" style="height:22px;width:22px;margin-top:3px;"/></a></div>
+					<?php } ?>
 				</div>
 			</div>
-			<div id="profileDetails" style="width:90%; height:250px; min-width:200px; margin:0 auto; margin-top:10px; text-align:left;">
+			<div id="profileDetails">
 				<?php
 				    $details = $spaceOwner->GetDetailedUserData();
 				?>
-            	<div>Bio: <?php echo $details[USER_DETAILS_BIO]; ?></div><br />
-            	<div>Birthday: <?php echo $details[USER_DETAILS_BIRTHDAY]; ?></div><br />
-            	<div>Country: <?php echo $details[USER_DETAILS_COUNTRY]; ?></div><br />
-            	<div>City: <?php echo $details[USER_DETAILS_CITY]; ?></div>
+            	<div id="bioDiv" class="profileText"><b>Bio: </b><span id="bioSpan"><?php echo $details[USER_DETAILS_BIO]; ?></span></div><br />
+            	<div id="birthdayDiv" class="profileText"><b>Birthday: </b><span id="birthdaySpan"><?php echo $details[USER_DETAILS_BIRTHDAY]; ?></span></div><br />
+            	<div id="countryDiv" class="profileText"><b>Country: </b><span id="countrySpan"><?php echo $details[USER_DETAILS_COUNTRY]; ?></span></div><br />
+            	<div id="cityDiv" class="profileText"><b>City: </b><span id="citySpan"><?php echo $details[USER_DETAILS_CITY]; ?></span></div>
+            	<?php if ($isOwner) { ?>
+            	<div class="editProfileText" onclick="EditProfileDetails();"><img src="images/edit.png" style="height:25px; width:25px; float:right;" /><br /></div>
+            	<?php } else { ?>
+            	<br />
+            	<?php } ?>
 			</div>
 			<div class="editProfileButton" onclick="SwitchProfileDetails();">View profile</div>
 		</div>

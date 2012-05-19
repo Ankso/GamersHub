@@ -391,9 +391,14 @@ Class User
      * @param long $id The other user's unique ID
      * @return bool Returns true if users are friends, else false.
      */
-    public function IsFriendOf($id)
+    public function IsFriendOf($identifier)
     {
-        $result = $this->_db->ExecuteStmt(Statements::SELECT_USER_FRIENDS_IS_FRIEND, $this->_db->BuildStmtArray("ii", $this->GetId(), $id));
+        if (is_int($identifier))
+            $result = $this->_db->ExecuteStmt(Statements::SELECT_USER_FRIENDS_IS_FRIEND_ID, $this->_db->BuildStmtArray("ii", $this->GetId(), $identifier));
+        elseif (is_string($identifier))
+            $result = $this->_db->ExecuteStmt(Statements::SELECT_USER_FRIENDS_IS_FRIEND, $this->_db->BuildStmtArray("si", $identifier, $this->GetId()));
+        else
+            return false;
         if ($result === false)
             return false;    // An error must be triggered here, or logged at least
         if ($result->num_rows > 0)

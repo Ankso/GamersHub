@@ -123,6 +123,17 @@
     opacity:1;
 }
 
+#profileDetails {
+    width:90%;
+    min-width:200px;
+    margin:0 auto;
+    margin-top:10px;
+    text-align:left;
+    background-color:rgba(55, 55, 55, 0.4);
+    border-radius:0.5em;
+    padding:7px 7px 7px 7px;
+}
+
 .editProfileButton {
     width:150px;
     min-height:25px;
@@ -137,6 +148,20 @@
 .editProfileButton:hover {
     cursor:pointer;
     background-color:#454545;
+}
+/*
+.profileText {
+    float:left;
+}
+*/
+.editProfileText {
+	position:relative;
+    opacity:0.5;
+}
+
+.editProfileText:hover {
+    cursor:pointer;
+    opacity:1;
 }
 
 .latestNews {
