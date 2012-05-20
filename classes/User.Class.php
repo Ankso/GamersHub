@@ -52,6 +52,7 @@ Class User
                 $this->_ip = $userData['ip_v4'];
             else
                 $this->_ip = $userData['ip_v6'];
+            $this->_lastLogin = $userData['last_login'];
             return true;
         }
         return false;
@@ -65,11 +66,15 @@ Class User
     {
         $data;
         if (filter_var($this->GetLastIp(), FILTER_VALIDATE_IP, FILTER_FLAG_IPV4))
-            $data = $this->_db->BuildStmtArray("isssss", $this->GetId(), $this->GetUsername(), $this->GetPasswordSha1(), $this->GetEmail(), $this->GetLastIp(), NULL);
+            $data = $this->_db->BuildStmtArray("issssss", $this->GetId(), $this->GetUsername(), $this->GetPasswordSha1(), $this->GetEmail(), $this->GetLastIp(), NULL, $this->_lastLogin);
         else
-            $data = $this->_db->BuildStmtArray("isssss", $this->GetId(), $this->GetUsername(), $this->GetPasswordSha1(), $this->GetEmail(), NULL, $this->GetLastIp());
+            $data = $this->_db->BuildStmtArray("issssss", $this->GetId(), $this->GetUsername(), $this->GetPasswordSha1(), $this->GetEmail(), NULL, $this->GetLastIp(), $this->_lastLogin);
+        $this->_db->BeginTransaction();
         if ($this->_db->ExecuteStmt(Statements::REPLACE_USER_DATA, $data))
+        {
+            $this->_db->CommitTransaction();
             return true;
+        }
         return false;
     }
     
@@ -215,6 +220,30 @@ Class User
         if ($this->_db->ExecuteStmt(Statements::UPDATE_USER_DATA_ONLINE, $this->_db->BuildStmtArray("ii", ($isOnline ? "1" : "0"), $this->GetId())))
         {
             $this->_isOnline = $isOnline;
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Gets the date and time of the last user's login, in direct MySQL format (YYYY-MM-DD HH:MM:SS)
+     * @return string Returns a string as a direct DATETIME MySQL format.
+     */
+    public function GetLastLogin()
+    {
+        return $this->_lastLogin;
+    }
+    
+    /**
+     * Sets the last login of this user.
+     * @param string $lastLogin A string representing a MySQL DATETIME (YYYY-MM-DD HH:MM:SS)
+     * @return boolean Returns true on success or false if failure.
+     */
+    public function SetLastLogin($lastLogin)
+    {
+        if ($this->_db->ExecuteStmt(Statements::UPDATE_USER_DATA_LAST_LOGIN, $this->_db->BuildStmtArray("si", $lastLogin, $this->GetId())))
+        {
+            $this->_lastLogin = $lastLogin;
             return true;
         }
         return false;
@@ -388,7 +417,7 @@ Class User
     
     /**
      * Determines if a user is friend of another user
-     * @param long $id The other user's unique ID
+     * @param long/string $identifier The other user's unique ID or username
      * @return bool Returns true if users are friends, else false.
      */
     public function IsFriendOf($identifier)
@@ -470,6 +499,7 @@ Class User
     private $_email;             // The user's e-mail
     private $_ip;                // The user's last used IP address
     private $_isOnline;          // True if the user is online, else false
+    private $_lastLogin;         // Date and time of the last user's login.
     private $_db;                // The database object
 }
 

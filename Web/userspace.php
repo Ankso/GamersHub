@@ -51,17 +51,19 @@ else
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title><?php echo $spaceOwner->GetUsername(); ?>'s profile - GamersNet</title>
-<link href="css/mbExtruder.css" media="all" rel="stylesheet" type="text/css">
-<link href="css/userspace.css" media="all" rel="stylesheet" type="text/css">
-<link href="css/main.css" media="all" rel="stylesheet" type="text/css">
+<link href="css/mbExtruder.css" media="all" rel="stylesheet" type="text/css" />
+<link href="css/userspace.css" media="all" rel="stylesheet" type="text/css" />
+<link href="css/main.css" media="all" rel="stylesheet" type="text/css" />
+<link href="css/myaccount.css" media="all" rel="stylesheet" type="text/css" />
 <link href="css/fancyboxjQuery.css" rel="stylesheet" type="text/css" media="screen" />
 <script type="text/javascript" src="js/inc/jquery.latest.js"></script>
 <script type="text/javascript" src="js/inc/jquery.hoverIntent.min.js"></script>
 <script type="text/javascript" src="js/inc/jquery.metadata.js"></script>
 <script type="text/javascript" src="js/inc/jquery.mb.flipText.js"></script>
-<script type="text/javascript" src="js/inc/mbExtruder.js"></script>
 <script type="text/javascript" src="js/inc/jquery.fancybox-1.3.4.js"></script>
 <script type="text/javascript" src="js/inc/jquery.mousewheel-3.0.4.pack.js"></script>
+<script type="text/javascript" src="js/inc/mbExtruder.js"></script>
+<script type="text/javascript" src="js/inc/myAccount.js"></script>
 <script type="text/javascript">
 var previousBio;
 var previousBirthday;
@@ -76,7 +78,7 @@ var previousCity;
     		autoOpenTime: 10,
           	position:"right",
             width:230,
-            flapDim:"200",
+            flapDim:"400",
             extruderOpacity:1,
             autoCloseTime:500,
             slideTimer:200,
@@ -92,7 +94,7 @@ var previousCity;
     		sensibility:700,
           	position:"right",
             width:230,
-            flapDim:"200",
+            flapDim:"400",
             extruderOpacity:1,
             autoOpenTime:10,
             autoCloseTime:500,
@@ -103,6 +105,7 @@ var previousCity;
             onExtContentLoad: function(){}
     	});
 	});
+/*
 	$(function(){
 		$("#myGamesTab").buildMbExtruder({
     		positionFixed: true,
@@ -110,7 +113,7 @@ var previousCity;
     		autoOpenTime: 10,
           	position:"left",
             width:230,
-            flapDim:"200",
+            flapDim:"400",
             extruderOpacity:1,
             autoCloseTime:500,
             slideTimer:200,
@@ -121,7 +124,7 @@ var previousCity;
             onExtContentLoad: function(){}
     	});
 	});
-
+*/
 function FadeOut(event, redirectUrl)
 {
 	event.preventDefault();
@@ -138,12 +141,12 @@ function SwitchProfileDetails()
 {
     if ($('#profileDetails').is(":hidden"))
     {
-		$('#profileDetails').slideDown("fast");
+		$('#profileDetails').slideDown(400);
 		$('div.editProfileButton').text("Hide");
     }
     else
     {
-        $('#profileDetails').slideUp("fast");
+        $('#profileDetails').slideUp(400);
         $('div.editProfileButton').text("View profile");
     }
 }
@@ -204,12 +207,31 @@ function SubmitEditedProfileDetails()
     });
 }
 
+function OpenAccountSettings()
+{
+    $('#myAccount').slideDown(400);
+    $('#myAccountButton').css("background-color", "#333333");
+    $('#myAccountButton').attr("onclick", "CloseAccountSettings();");
+    $('#myAccount').text("Loading...");
+    $('#myAccount').load("ajax/accountsettings.php");
+}
+
+function CloseAccountSettings()
+{
+    $('#myAccount').slideUp(400, function() {
+		$('#myAccount').html("");
+    });
+    $('#myAccountButton').css("background-color", "transparent");
+    $('#myAccountButton').attr("onclick", "OpenAccountSettings();");
+}
+
 $(document).ready(function() {
-	FadeIn();
 	$("a#friendRequests").fancybox();
 	$("a.removeFriend").fancybox();
 	<?php if ($isOwner) echo '$("a#changeAvatar").fancybox();'; ?>
 	$('#profileDetails').hide();
+	$('#myAccount').hide();
+	FadeIn();
 });
 </script>
 </head>
@@ -287,7 +309,10 @@ for ($i = 1; $i < 5; ++$i)
     echo '    <div id="clan" class="voice {panel: \'core/clans/clansmenutab.php\'}"><span class="label"><a class="label">Clan', $i, '</a></span></div>', "\n";
 ?>
 </div>
+<!--
 <div id="myGamesTab" class="a {title: 'My games'}"></div>
+-->
+<div id="myAccount" class="myAccount"></div>
 <!--
 <div id="chatWindows" class="chatWindows">
 	<div style="float:right; height:40px;">

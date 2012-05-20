@@ -3,9 +3,9 @@
 class Statements
 {
     // Basic load/save user data queries
-    const SELECT_USER_DATA_BY_ID            = "SELECT id, username, password_sha1, email, ip_v4, ip_v6 FROM user_data WHERE id = ?";
-    const SELECT_USER_DATA_BY_USERNAME      = "SELECT id, username, password_sha1, email, ip_v4, ip_v6 FROM user_data WHERE username = ?";
-    const REPLACE_USER_DATA                 = "REPLACE INTO user_data VALUES (?, ?, ?, ?, ?, ?, ?)";
+    const SELECT_USER_DATA_BY_ID            = "SELECT id, username, password_sha1, email, ip_v4, ip_v6, last_login FROM user_data WHERE id = ?";
+    const SELECT_USER_DATA_BY_USERNAME      = "SELECT id, username, password_sha1, email, ip_v4, ip_v6, last_login FROM user_data WHERE username = ?";
+    const REPLACE_USER_DATA                 = "REPLACE INTO user_data VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     const SELECT_USER_DATA_ID               = "SELECT id FROM user_data WHERE username = ?";
     const SELECT_USER_DATA_USERNAME         = "SELECT username FROM user_data WHERE id = ?";
     // For user's data updates and profile changers functions
@@ -16,6 +16,7 @@ class Statements
     const UPDATE_USER_DATA_IPV4             = "UPDATE user_data SET ip_v4 = ? WHERE id = ?";
     const UPDATE_USER_DATA_IPV6             = "UPDATE user_data SET ip_v6 = ? WHERE id = ?";
     const UPDATE_USER_DATA_ONLINE           = "UPDATE user_data SET is_online = ? WHERE id = ?";
+    const UPDATE_USER_DATA_LAST_LOGIN       = "UPDATE user_data SET last_login = ? WHERE id = ?";
     const INSERT_USER_AVATARS_PATH          = "INSERT INTO user_avatars VALUES (?, ?)";
     const UPDATE_USER_AVATARS_PATH          = "UPDATE user_avatars SET avatar_path = ? WHERE user_id = ?";
     const SELECT_USER_AVATARS_PATH          = "SELECT avatar_path FROM user_avatars WHERE user_id = ?";
@@ -38,6 +39,11 @@ class Statements
     const SELECT_USER_DATA_LOGIN            = "SELECT username, password_sha1 FROM user_data WHERE username = ?";
     // Registration management
     const SELECT_USER_DATA_REGISTER         = "SELECT username, email FROM user_data WHERE username = ? OR email = ?";
-    const INSERT_USER_DATA                  = "INSERT INTO user_data (username, password_sha1, email, ip_v4, ip_v6, is_online) VALUES (?, ?, ?, ?, ?, ?)";
+    const INSERT_USER_DATA                  = "INSERT INTO user_data (username, password_sha1, email, ip_v4, ip_v6, is_online, last_login) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    const DELETE_USER_DATA                  = "DELETE FROM user_data WHERE user_id = ?";
+    const INSERT_USER_DETAILED_DATA         = "INSERT INTO user_detailed_data (user_id, bio, birthday, country, city) VALUES (?, ?, ?, ?, ?)";
+    //const DELETE_USER_DETAILED_DATA         = "DELETE FROM user_detailed_data WHERE user_id = ?";
+    const INSERT_USER_PRIVACY               = "INSERT INTO user_privacy (user_id, view_email, view_profile, view_livestream) VALUES (?, ?, ?, ?)";
+    //const DELETE_USER_PRIVACY               = "DELETE FROM user_privacy WHERE user_id = ?";
 }
 ?>

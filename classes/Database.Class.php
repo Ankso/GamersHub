@@ -29,6 +29,33 @@ class Database
     }
     
     /**
+     * Begins a MySQL transaction.
+     * @return Returns true on success, or false on failure.
+     */
+    function BeginTransaction()
+    {
+        return $this->_mysqli->autocommit(false);
+    }
+    
+    /**
+     * Commits a MySQL transaction.
+     * @return Returns true on success, or false on failure.
+     */
+    function CommitTransaction()
+    {
+        return ($this->_mysqli->commit() && $this->_mysqli->autocommit(true));
+    }
+    
+    /**
+     * Rollbacks a MySQL transaction.
+     * @return Returns true on success, or false on failure.
+     */
+    function RollbackTransaction()
+    {
+        return ($this->_mysqli->rollback() && $this->_mysqli->autocommit(true));
+    }
+
+    /**
      * Executes a query on the database.
      * @param string $query The query to be executed.
      * @return $resource Returns mysqli_result on success for SELECT or other operations that return a result value, or true for INSERT type operation.<p>Returns false on failure.</p>
