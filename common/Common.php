@@ -6,6 +6,7 @@ require_once($_SERVER['DOCUMENT_ROOT'] . "/../classes/Database.Class.php");
  * Encripts the password using the username as modifier.
  * @param string $username The user's username
  * @param string $password The user's password decripted
+ * @return string Returns a user's password encripted using the username as modifier with the format username:password
  */
 function CreateSha1Pass ($username, $password)
 {
@@ -52,7 +53,7 @@ function GetIdFromUsername($username)
 
 /**
  * Prints the topbar for a specified user, or the default topbar if the user is not logged in
- * @param User $user The user class initilized, or NULL if the user is not logged in.
+ * @param User $user The User class initilized, or NULL if the user is not logged in.
  */
 function PrintTopBar($user)
 {
@@ -66,28 +67,28 @@ function PrintTopBar($user)
             $friendRequestsCount = "Unknown";
     }
     echo '<div id="topbar">', "\n";
-	echo '    <div style="margin-right:20%; margin-left:20%; width:60%; height:51px; position:absolute;">', "\n";
-	echo '        <div class="topbarLeft">', "\n";
-	echo '            <div style="float:left; border-right:2px #333333 solid;"><a href="login.php"><img style="margin-right:10px;" src="images/blog_button.png" alt="Blog"/></a></div>', "\n";
-	if ($isLoggedIn)
-	{
-	    // Note that the order of the buttons is inverted
-    	echo '            <div id="myGamesButton" class="topbarButton" style="float:right;">My games</div>', "\n";
-    	echo '            <div id="socialButton" class="topbarButton" style="float:right;">Social</div>', "\n";
-    	echo '            <div id="myAccountButton" class="topbarButton" style="float:right;" onclick="OpenAccountSettings();">My account</div>', "\n";
-	}
-	echo '        </div>', "\n";
-	echo '        <div class="topbarRight">', "\n";
-	if ($isLoggedIn)
-	{
-	    if ($friendRequestsCount === 0)
-	        echo '            <div class="newFriendRequests">&nbsp;No friend requests&nbsp;</div>', "\n";
-	    elseif (is_integer($friendRequestsCount) && $friendRequestsCount > 0)
-	        echo '            <div class="newFriendRequests">&nbsp;<a id="friendRequests" href="ajax/friendrequests.php">New friend requests!</a>&nbsp;</div>', "\n";
-	    echo '            <div style="float:right; border-left:2px #333333 solid;height:51px; width:40px;"><a href="logout.php" onclick="FadeOut(event, \'logout.php\');"><img src="images/logout.png" height="30px" width="30px" alt="Logout" style="margin-top:10px; float:right;"/></a></div>', "\n";
-	}
-	echo '        </div>', "\n";
-	echo '    </div>', "\n";
-	echo '</div>', "\n";
+    echo '    <div style="margin-right:20%; margin-left:20%; width:60%; height:51px; position:absolute;">', "\n";
+    echo '        <div class="topbarLeft">', "\n";
+    echo '            <div style="float:left; border-right:2px #333333 solid;"><a href="login.php"><img style="margin-right:10px;" src="images/blog_button.png" alt="Blog"/></a></div>', "\n";
+    if ($isLoggedIn)
+    {
+        // Note that the order of the buttons is inverted
+        echo '            <div id="myGamesButton" class="topbarButton" style="float:right;">My games</div>', "\n";
+        echo '            <div id="socialButton" class="topbarButton" style="float:right;">Social</div>', "\n";
+        echo '            <div id="myAccountButton" class="topbarButton" style="float:right;" onclick="OpenAccountSettings();">My account</div>', "\n";
+    }
+    echo '        </div>', "\n";
+    echo '        <div class="topbarRight">', "\n";
+    if ($isLoggedIn)
+    {
+        if ($friendRequestsCount === 0)
+            echo '            <div class="newFriendRequests">&nbsp;No friend requests&nbsp;</div>', "\n";
+        elseif (is_integer($friendRequestsCount) && $friendRequestsCount > 0)
+            echo '            <div class="newFriendRequests">&nbsp;<a id="friendRequests" href="ajax/friendrequests.php">New friend requests!</a>&nbsp;</div>', "\n";
+        echo '            <div style="float:right; border-left:2px #333333 solid;height:51px; width:40px;"><a href="logout.php" onclick="FadeOut(event, \'logout.php\');"><img src="images/logout.png" height="30px" width="30px" alt="Logout" style="margin-top:10px; float:right;"/></a></div>', "\n";
+    }
+    echo '        </div>', "\n";
+    echo '    </div>', "\n";
+    echo '</div>', "\n";
 }
 ?>
