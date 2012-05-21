@@ -6,7 +6,11 @@ So, is better call it just "The Project"
 */
 
 Documentation:
-    - PHP: http://www.php.net/manual/es/
+    - Git tutorial: http://www.vogella.com/articles/Git/article.html
+
+    - PHP:
+        - Manual and tutorials (english & spanish): http://www.php.net/manual/es/
+        - Performance tips: http://phplens.com/lens/php-book/optimizing-debugging-php.php
 
     - Ajax:
         - Definition: http://es.wikipedia.org/wiki/AJAX
