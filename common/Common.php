@@ -72,10 +72,10 @@ function PrintTopBar($user)
     echo '            <div style="float:left; border-right:2px #333333 solid;"><a href="login.php"><img style="margin-right:10px;" src="images/blog_button.png" alt="Blog"/></a></div>', "\n";
     if ($isLoggedIn)
     {
-	    // Note that the order of the buttons is inverted
-            echo '            <div id="myGamesButton" class="topbarButton" style="float:right;">My games</div>', "\n";
-            echo '            <div id="socialButton" class="topbarButton" style="float:right;">Social</div>', "\n";
-            echo '            <div id="myAccountButton" class="topbarButton" style="float:right;" onclick="OpenAccountSettings();">My account</div>', "\n";
+        // Note that the order of the buttons is inverted
+        echo '            <div id="myGamesButton" class="topbarButton" style="float:right;">My games</div>', "\n";
+        echo '            <div id="socialButton" class="topbarButton" style="float:right;">Social</div>', "\n";
+        echo '            <div id="myAccountButton" class="topbarButton" style="float:right;" onclick="OpenAccountSettings();">My account</div>', "\n";
     }
     echo '        </div>', "\n";
     echo '        <div class="topbarRight">', "\n";
