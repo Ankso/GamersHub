@@ -11,7 +11,7 @@ $user = new User($_SESSION['userId']);
 if ($_POST['bio'] === "")
     $_POST['bio'] = NULL;
 else
-    $_POST['bio'] = strip_tags($_POST['bio'], "<b><font>");
+    $_POST['bio'] = strip_tags($_POST['bio'], "<font><br>");
 if ($_POST['birthday'] === "")
     $_POST['birthday'] = NULL;
 else

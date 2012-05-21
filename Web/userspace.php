@@ -153,7 +153,7 @@ function SwitchProfileDetails()
 
 function EditProfileDetails()
 {
-    previousBio = $('#bioSpan').text();
+    previousBio = $('#bioSpan').html();
     $('#bioDiv').html('Bio: <textarea id="bioInput" style="min-height:100px; width:95%;">' + previousBio + '</textarea>');
     previousBirthday = $('#birthdaySpan').text();
     $('#birthdayDiv').html('Birthday: <input type="text" id="birthdayInput"  value="' + previousBirthday + '" />');
@@ -288,19 +288,19 @@ $(document).ready(function() {
 	</div>
 </div>
 <div id="friendsTab" class="a {title:'My friends'}">
-<div id="newFriend" class="voice {panel: 'ajax/friendsfinder.html'}"><span class="label">Add New Friend +</span></div>
-<?php
-$friendsList = $user->GetAllFriendsByUsername();
-if ($friendsList === USER_HAS_NO_FRIENDS)
-    echo '    <div id="noFriends" class="voice {}"><span class="label"><a class="label">You have no friends</a></span></div>', "\n";
-elseif ($friendsList === false)
-    echo '    <div id="noFriends" class="voice {}"><span class="label"><a class="label">Error retrieving your friends.</a></span></div>', "\n";
-else
-{
-    foreach ($friendsList as $i => $value)
-        echo '    <div id="friend" class="voice {panel: \'core/friends/friendmenutab.php?friendName='. $friendsList[$i][0] .'\'}"><span class="label"><img src="images/'. ($friendsList[$i][1] ? "friend_online" : "friend_offline") .'.png" style="margin-top:3px;"/><a class="label" href="../', $friendsList[$i][0], '">', $friendsList[$i][0], '</a></span></div>', "\n";
-}
-?>
+    <div id="newFriend" class="voice {panel: 'ajax/friendsfinder.html'}"><span class="label">Add New Friend +</span></div>
+    <?php 
+    $friendsList = $user->GetAllFriendsByUsername();
+    if ($friendsList === USER_HAS_NO_FRIENDS)
+        echo '    <div id="noFriends" class="voice {}"><span class="label"><a class="label">You have no friends</a></span></div>', "\n";
+    elseif ($friendsList === false)
+        echo '    <div id="noFriends" class="voice {}"><span class="label"><a class="label">Error retrieving your friends.</a></span></div>', "\n";
+    else
+    {
+        foreach ($friendsList as $i => $value)
+            echo '    <div id="friend" class="voice {panel: \'core/friends/friendmenutab.php?friendName='. $friendsList[$i][0] .'\'}"><span class="label"><img src="images/'. ($friendsList[$i][1] ? "friend_online" : "friend_offline") .'.png" style="margin-top:3px;"/><a class="label" href="../', $friendsList[$i][0], '">', $friendsList[$i][0], '</a></span></div>', "\n";
+    }
+    ?>
 </div>
 <div id="clansTab" class="a {title:'My Clans'}">
 <?php
@@ -309,6 +309,7 @@ for ($i = 1; $i < 5; ++$i)
     echo '    <div id="clan" class="voice {panel: \'core/clans/clansmenutab.php\'}"><span class="label"><a class="label">Clan', $i, '</a></span></div>', "\n";
 ?>
 </div>
+
 <!--
 <div id="myGamesTab" class="a {title: 'My games'}"></div>
 -->

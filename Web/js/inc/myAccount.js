@@ -69,3 +69,32 @@ function SubmitBasicChanges()
         }
     });
 }
+
+function SubmitPrivacyChanges()
+{
+    var email = $('input:radio[name=email]:checked').val();
+    var profileDetails = $('input:radio[name=profileDetails]:checked').val();
+    var liveStream = $('input:radio[name=liveStream]:checked').val();
+    $('span.myAccountSubmitResult').css("color", "#FFFFFF");
+    $('span.myAccountSubmitResult').text("Sending...");
+    $.post("core/sessions/privacy.php", {email : email, profileDetails : profileDetails, liveStream : liveStream}, function(data) {
+        if (data.length > 0)
+        {
+            if (data == "SUCCESS")
+            {
+                $('span.myAccountSubmitResult').css("color", "#00FF00");
+                $('span.myAccountSubmitResult').text("Privacy settings updated successfully!");
+            }
+            else
+            {
+                $('span.myAccountSubmitResult').css("color", "#FF0000");
+                $('span.myAccountSubmitResult').text("An error occurred. Please try again in a few moments.");
+            }
+        }
+        else
+        {
+            $('span.myAccountSubmitResult').css("color", "#FF0000");
+            $('span.myAccountSubmitResult').text("An error occurred. Please make sure that you are connected to the internet.");
+        }
+    });
+}

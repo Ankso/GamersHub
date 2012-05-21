@@ -99,7 +99,6 @@
     margin-right:80%;
     margin-top:65px;
     background:url("../js/elements/extruder_blank.png");
-    z-index:90 !important;
 }
 
 .extruder.right .content{

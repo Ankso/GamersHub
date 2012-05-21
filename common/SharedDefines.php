@@ -20,6 +20,18 @@ define("USER_DETAILS_BIRTHDAY", 1);
 define("USER_DETAILS_COUNTRY", 2);
 define("USER_DETAILS_CITY", 3);
 /**
+ * Privacy system
+ */
+// Privacy options
+define("USER_PRIVACY_EMAIL", 0);
+define("USER_PRIVACY_PROFILE", 1);
+define("USER_PRIVACY_LIVESTREAM", 2);
+// Privacy levels
+define("PRIVACY_LEVEL_NOBODY", 0);
+define("PRIVACY_LEVEL_FRIENDS", 1);
+define("PRIVACY_LEVEL_CLAN_MEMBERS", 2);
+define("PRIVACY_LEVEL_EVERYONE", 3);
+/**
  * Database defines
  */
 // DB server connection info

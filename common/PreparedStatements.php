@@ -22,6 +22,9 @@ class Statements
     const SELECT_USER_AVATARS_PATH          = "SELECT avatar_path FROM user_avatars WHERE user_id = ?";
     const REPLACE_USER_DETAILED_DATA        = "REPLACE INTO user_detailed_data VALUES (?, ?, ?, ?, ?)";
     const SELECT_USER_DETAILED_DATA         = "SELECT bio, birthday, country, city FROM user_detailed_data WHERE user_id = ?";
+    // Privacy System
+    const SELECT_USER_PRIVACY               = "SELECT view_email, view_profile, view_livestream FROM user_privacy WHERE user_id = ?";
+    const REPLACE_USER_PRIVACY              = "REPLACE INTO user_privacy (user_id, view_email, view_profile, view_livestream) VALUES (?, ?, ?, ?)";
     // Friends system
     const DELETE_USER_FRIEND_REQUEST        = "DELETE FROM user_friend_requests WHERE user_id = ? AND requester_id = ?";
     const INSERT_USER_FRIEND                = "INSERT INTO user_friends VALUES (?, ?)";

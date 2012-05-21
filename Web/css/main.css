@@ -1,10 +1,13 @@
 @CHARSET "ISO-8859-1";
 
+html {
+    background:#000000 url("../images/bg.png") no-repeat center center fixed;
+}
+
 body {
 	font:17px Calibri;
 	color:#FFFFFF;
     margin:0px 0px 0px 0px;
-    background:#000000 url("../images/bg.png") no-repeat center center fixed;
     /*overflow-x:hidden;*/
 }
 
@@ -15,7 +18,7 @@ body {
     width:100%;
     min-width:950px;
     background:#000000 url("../images/topbar.png") repeat-x center;
-    z-index:100;
+    z-index:110;
 }
 
 .topbarLeft {

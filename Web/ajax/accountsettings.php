@@ -8,6 +8,7 @@ if(!isset($_SESSION['userId']))
     die("Error: you must be logged in!");
 
 $user = new User($_SESSION['userId']);
+$privacySettings = $user->GetPrivacySettings();
 ?>
 <div class="myAccountMenu">
 	<div class="myAccountMenuTop"><strong>Account configuration</strong></div>
@@ -28,26 +29,26 @@ $user = new User($_SESSION['userId']);
 	<div class="myAccountTabItem">
 		People who can view my email:
 		<div class="myAccountSubTabItem">
-			<input type="radio" name="email" value="noBody" />Nobody<br />
-    		<input type="radio" name="email" value="friends" checked="checked" />Only my friends<br />
-    		<input type="radio" name="email" value="clanMembers" />Only my friends and the members of my clan(s)<br />
-    		<input type="radio" name="email" value="everyone" />Everyone (not recommended)
+			<input type="radio" name="email" value="0" <?php if ($privacySettings[USER_PRIVACY_EMAIL] == PRIVACY_LEVEL_NOBODY) echo 'checked="checked"'; ?> />Nobody<br />
+    		<input type="radio" name="email" value="1" <?php if ($privacySettings[USER_PRIVACY_EMAIL] == PRIVACY_LEVEL_FRIENDS) echo 'checked="checked"'; ?> />Only my friends<br />
+    		<input type="radio" name="email" value="2" <?php if ($privacySettings[USER_PRIVACY_EMAIL] == PRIVACY_LEVEL_CLAN_MEMBERS) echo 'checked="checked"'; ?> />Only my friends and the members of my clan(s)<br />
+    		<input type="radio" name="email" value="3" <?php if ($privacySettings[USER_PRIVACY_EMAIL] == PRIVACY_LEVEL_EVERYONE) echo 'checked="checked"'; ?> />Everyone (not recommended)
 		</div>
 	</div>
 	<div class="myAccountTabItem">
 		People who can view my profile details:
 		<div class="myAccountSubTabItem">
-    		<input type="radio" name="profileDetails" value="friends" checked="checked" />Only my friends<br />
-    		<input type="radio" name="profileDetails" value="clanMembers" />Only my friends and the members of my clan(s)<br />
-    		<input type="radio" name="profileDetails" value="everyone" />Everyone (not recommended)
+    		<input type="radio" name="profileDetails" value="1" <?php if ($privacySettings[USER_PRIVACY_PROFILE] == PRIVACY_LEVEL_FRIENDS) echo 'checked="checked"'; ?> />Only my friends<br />
+    		<input type="radio" name="profileDetails" value="2" <?php if ($privacySettings[USER_PRIVACY_PROFILE] == PRIVACY_LEVEL_CLAN_MEMBERS) echo 'checked="checked"'; ?> />Only my friends and the members of my clan(s)<br />
+    		<input type="radio" name="profileDetails" value="3" <?php if ($privacySettings[USER_PRIVACY_PROFILE] == PRIVACY_LEVEL_EVERYONE) echo 'checked="checked"'; ?> />Everyone (not recommended)
 		</div>
 	</div>
 	<div class="myAccountTabItem">
 		People who can view my LiveStream:
 		<div class="myAccountSubTabItem">
-    		<input type="radio" name="liveStream" value="friends" checked="checked" />Only my friends<br />
-    		<input type="radio" name="liveStream" value="clanMembers" />Only my friends and the members of my clan(s)<br />
-    		<input type="radio" name="liveStream" value="everyone" />Everyone (not recommended)
+    		<input type="radio" name="liveStream" value="1" <?php if ($privacySettings[USER_PRIVACY_LIVESTREAM] == PRIVACY_LEVEL_FRIENDS) echo 'checked="checked"'; ?> />Only my friends<br />
+    		<input type="radio" name="liveStream" value="2" <?php if ($privacySettings[USER_PRIVACY_LIVESTREAM] == PRIVACY_LEVEL_CLAN_MEMBERS) echo 'checked="checked"'; ?> />Only my friends and the members of my clan(s)<br />
+    		<input type="radio" name="liveStream" value="3" <?php if ($privacySettings[USER_PRIVACY_LIVESTREAM] == PRIVACY_LEVEL_EVERYONE) echo 'checked="checked"'; ?> />Everyone (not recommended)
 		</div>
 	</div>
 	<div class="myAccountSubmit" onclick="SubmitPrivacyChanges();">Save</div><span id="myAccountSubmitResult" class="myAccountSubmitResult"></span>

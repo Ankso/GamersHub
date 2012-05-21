@@ -302,18 +302,20 @@ Class User
         if (($result = $this->_db->ExecuteStmt(Statements::SELECT_USER_DETAILED_DATA, $this->_db->BuildStmtArray("i", $this->GetId()))))
         {
             if (($row = $result->fetch_assoc()))
+            {
                 return array(
                     USER_DETAILS_BIO      => $row['bio'],
                     USER_DETAILS_BIRTHDAY => $row['birthday'],
                     USER_DETAILS_COUNTRY  => $row['country'],
                     USER_DETAILS_CITY     => $row['city']
                 );
+            }
         }
         return false;
     }
     
     /**
-     * Replaces a user's detailed data in the database for new info.
+     * Replaces a user's detailed data in the database for new info. The function strips tags of the bio to fight against potential XSS.
      * @param string $bio A valid string for the user's biography.
      * @param string(date) $birthday A string representing a valid user's date of birth.
      * @param string $country A string representing the user's country.
@@ -324,11 +326,60 @@ Class User
     {
         if (!isset($bio) || !isset($birthday) || !isset($country) || !isset($city))
             return false;
-        $bio = strip_tags($bio);
+        $bio = strip_tags($bio, "<font><br>");
         
         if ($this->_db->ExecuteStmt(Statements::REPLACE_USER_DETAILED_DATA, $this->_db->BuildStmtArray("issss", $this->GetId(), $bio, $birthday, $country, $city)))
             return true;
         return false;
+    }
+    
+    /***********************************************************\
+    *  	                    PRIVACY SYSTEM                      *
+    \***********************************************************/
+    
+    /**
+     * Gets the user privacy settings
+     * @return mixed Returns an array with the different security levels for each of the security options, or false if something fails.
+     */
+    function GetPrivacySettings()
+    {
+        if (($result = $this->_db->ExecuteStmt(Statements::SELECT_USER_PRIVACY, $this->_db->BuildStmtArray("i", $this->GetId()))))
+        {
+            if(($row = $result->fetch_assoc()))
+            {
+                return array(
+                    USER_PRIVACY_EMAIL      => $row['view_email'],
+                    USER_PRIVACY_PROFILE    => $row['view_profile'],
+                    USER_PRIVACY_LIVESTREAM => $row['view_livestream'],
+                );
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Sets the different privacy options to new values
+     * @param mixed $email The security level for the user's email visualization, from 0 to 3. Can be in form of string or integer.
+     * @param mixed $profile The security level for the user's detailed profile visualization, from 1 to 3. Can be in form of string or integer.
+     * @param mixed $liveStream The security level for the user's livestream availability, from 1 to 3. Can be in form of string or integer.
+     * @return boolean Returns true on success or false if something goes wrong.
+     */
+    function SetPrivacySettings($email, $profile, $liveStream)
+    {
+        if (!isset($email) || !isset($profile) || !isset($liveStream))
+            return false;
+        // Cast the params to integer to make sure that they have allowed values (between 0-3)
+        $email = (int)$email;
+        $profile = (int)$profile;
+        $liveStream = (int)$liveStream;
+        if ($email > PRIVACY_LEVEL_EVERYONE || $email < PRIVACY_LEVEL_NOBODY
+            || $profile > PRIVACY_LEVEL_EVERYONE || $profile < PRIVACY_LEVEL_FRIENDS
+            || $liveStream > PRIVACY_LEVEL_EVERYONE || $liveStream < PRIVACY_LEVEL_FRIENDS)
+            return false;
+        if (($result = $this->_db->ExecuteStmt(Statements::REPLACE_USER_PRIVACY, $this->_db->BuildStmtArray("iiii", $this->GetId(), $email, $profile, $liveStream))))
+            return true;
+        return false;
+        
     }
     
     /***********************************************************\
