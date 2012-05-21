@@ -6,6 +6,7 @@ require_once($_SERVER['DOCUMENT_ROOT'] . "/../classes/Database.Class.php");
  * Encripts the password using the username as modifier.
  * @param string $username The user's username
  * @param string $password The user's password decripted
+ * @return string Returns a user's password encripted using the username as modifier with the format username:password
  */
 function CreateSha1Pass ($username, $password)
 {
