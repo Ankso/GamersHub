@@ -59,7 +59,7 @@
 				extruder= $(this);
 				extruderContent=extruder.html();
 
-				extruder.css("zIndex",10);
+				//extruder.css("zIndex",10);
 
 				var isVertical = this.options.position=="left" || this.options.position=="right";
 
@@ -236,7 +236,7 @@
 			extruder.addClass("isOpened");
 			if(!isIE) extruder.css("opacity",1);
 			var position= opt.position;
-			extruder.mb_bringToFront();
+			//extruder.mb_bringToFront();
 			if (position=="top" || position=="bottom"){
 				extruder.find('.content').slideDown( opt.slideTimer);
 				if(opt.onExtOpen) opt.onExtOpen();

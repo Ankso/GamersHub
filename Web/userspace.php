@@ -73,10 +73,10 @@ var previousCity;
 	// Tabs scripts \\
 	$(function(){
 		$("#friendsTab").buildMbExtruder({
-    		positionFixed: true,
-    		sensibility:700,
-    		autoOpenTime: 10,
-          	position:"right",
+            positionFixed: true,
+            sensibility:700,
+            autoOpenTime: 10,
+            position:"right",
             width:230,
             flapDim:"400",
             extruderOpacity:1,
@@ -84,15 +84,18 @@ var previousCity;
             slideTimer:200,
             closeOnExternalClick:false,
             onExtClose:function(){},
-            onExtOpen:function(){},
+            onExtOpen:function(){
+                $("#friendsTab").css("zIndex", 10);
+                $("#clansTab").css("zIndex", 9);
+            },
             onExtContentLoad: function(){}
     	});
 	});
 	$(function(){
 		$("#clansTab").buildMbExtruder({
-    		positionFixed:true,
-    		sensibility:700,
-          	position:"right",
+            positionFixed:true,
+            sensibility:700,
+            position:"right",
             width:230,
             flapDim:"400",
             extruderOpacity:1,
@@ -101,17 +104,20 @@ var previousCity;
             slideTimer:200,
             closeOnExternalClick:false,
             onExtClose:function(){},
-            onExtOpen:function(){},
+            onExtOpen:function(){
+                $("#friendsTab").css("zIndex", 9);
+                $("#clansTab").css("zIndex", 10);
+            },
             onExtContentLoad: function(){}
     	});
 	});
 /*
 	$(function(){
 		$("#myGamesTab").buildMbExtruder({
-    		positionFixed: true,
-    		sensibility:700,
-    		autoOpenTime: 10,
-          	position:"left",
+            positionFixed: true,
+            sensibility:700,
+            autoOpenTime: 10,
+            position:"left",
             width:230,
             flapDim:"400",
             extruderOpacity:1,
