@@ -256,7 +256,7 @@ Class User
      */
     public function SetAvatarPath($avatarPath)
     {
-        $avatarPath = "http://". $_SERVER['HTTP_HOST'] . $avatarPath;
+        $avatarPath = "http://". /*$_SERVER['SERVER_ADDR']*/ "gamersnet.no-ip.org" . $avatarPath;
         
         if (($result = $this->_db->ExecuteStmt(Statements::SELECT_USER_AVATARS_PATH, $this->_db->BuildStmtArray("i", $this->GetId()))))
         {

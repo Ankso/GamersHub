@@ -8,7 +8,7 @@ function MenuOptionClick(tabId)
     var i = 0;
     $('div.myAccountTab').hide();
     $('div.myAccountMenuOption').attr("style", "");
-    $('#myAccountSubmitResult').text("");
+    $('span.myAccountSubmitResult').text("");
     switch (tabId)
     {
         case 0:

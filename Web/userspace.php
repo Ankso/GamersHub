@@ -56,7 +56,9 @@ else
 <link href="css/main.css" media="all" rel="stylesheet" type="text/css" />
 <link href="css/myaccount.css" media="all" rel="stylesheet" type="text/css" />
 <link href="css/fancyboxjQuery.css" rel="stylesheet" type="text/css" media="screen" />
-<script type="text/javascript" src="js/inc/jquery.latest.js"></script>
+<link href="css/dark-hive/jquery-ui-1.8.20.custom.css" rel="stylesheet" type="text/css" media="screen" />
+<script type="text/javascript" src="js/inc/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="js/inc/jquery-ui-1.8.20.custom.min.js"></script>
 <script type="text/javascript" src="js/inc/jquery.hoverIntent.min.js"></script>
 <script type="text/javascript" src="js/inc/jquery.metadata.js"></script>
 <script type="text/javascript" src="js/inc/jquery.mb.flipText.js"></script>
@@ -69,68 +71,8 @@ var previousBio;
 var previousBirthday;
 var previousCountry;
 var previousCity;
+var openedControlPanel;
 
-	// Tabs scripts \\
-	$(function(){
-		$("#friendsTab").buildMbExtruder({
-            positionFixed: true,
-            sensibility:700,
-            autoOpenTime: 10,
-            position:"right",
-            width:230,
-            flapDim:"400",
-            extruderOpacity:1,
-            autoCloseTime:500,
-            slideTimer:200,
-            closeOnExternalClick:false,
-            onExtClose:function(){},
-            onExtOpen:function(){
-                $("#friendsTab").css("zIndex", 10);
-                $("#clansTab").css("zIndex", 9);
-            },
-            onExtContentLoad: function(){}
-    	});
-	});
-	$(function(){
-		$("#clansTab").buildMbExtruder({
-            positionFixed:true,
-            sensibility:700,
-            position:"right",
-            width:230,
-            flapDim:"400",
-            extruderOpacity:1,
-            autoOpenTime:10,
-            autoCloseTime:500,
-            slideTimer:200,
-            closeOnExternalClick:false,
-            onExtClose:function(){},
-            onExtOpen:function(){
-                $("#friendsTab").css("zIndex", 9);
-                $("#clansTab").css("zIndex", 10);
-            },
-            onExtContentLoad: function(){}
-    	});
-	});
-/*
-	$(function(){
-		$("#myGamesTab").buildMbExtruder({
-            positionFixed: true,
-            sensibility:700,
-            autoOpenTime: 10,
-            position:"left",
-            width:230,
-            flapDim:"400",
-            extruderOpacity:1,
-            autoCloseTime:500,
-            slideTimer:200,
-            textOrientation:"tb",
-            closeOnExternalClick:false,
-            onExtClose:function(){},
-            onExtOpen:function(){},
-            onExtContentLoad: function(){}
-    	});
-	});
-*/
 function FadeOut(event, redirectUrl)
 {
 	event.preventDefault();
@@ -213,22 +155,42 @@ function SubmitEditedProfileDetails()
     });
 }
 
-function OpenAccountSettings()
+function OpenControlPanel(panelName)
 {
-    $('#myAccount').slideDown(400);
-    $('#myAccountButton').css("background-color", "#333333");
-    $('#myAccountButton').attr("onclick", "CloseAccountSettings();");
-    $('#myAccount').text("Loading...");
-    $('#myAccount').load("ajax/accountsettings.php");
+    var direction = "right";
+    if (openedControlPanel != "#none")
+    {
+        if (panelName == "#myAccount")
+            direction = "left";
+        else if (panelName == "#mySocial" && openedControlPanel == "#myGames")
+            direction = "left";
+        $(openedControlPanel).hide("drop", { direction: (direction == "right" ? "left" : "right") }, 500);
+        if (openedControlPanel == panelName)
+            $(panelName).slideUp(500);
+        else
+        	$(panelName).show("drop", { direction: direction }, 500);
+        $(openedControlPanel + 'Button').css("background-color", "transparent");
+        $(openedControlPanel + 'Button').attr("onclick", "OpenControlPanel('" + openedControlPanel + "');");
+    }
+    else
+    	$(panelName).slideDown(500);
+    $(panelName + 'Button').css("background-color", "#333333");
+    $(panelName + 'Button').attr("onclick", "CloseControlPanel();");
+    $(panelName).text("Loading...");
+    if (panelName == "#myAccount")
+    	$(panelName).load("ajax/accountsettings.php");
+    openedControlPanel = panelName;
 }
 
-function CloseAccountSettings()
+function CloseControlPanel()
 {
-    $('#myAccount').slideUp(400, function() {
-		$('#myAccount').html("");
+    $(openedControlPanel).slideUp(400, function() {
+        // Here we must implement a cache system or something...
+		$(openedControlPanel).html("");
     });
-    $('#myAccountButton').css("background-color", "transparent");
-    $('#myAccountButton').attr("onclick", "OpenAccountSettings();");
+    $(openedControlPanel + 'Button').css("background-color", "transparent");
+    $(openedControlPanel + 'Button').attr("onclick", "OpenControlPanel('" + openedControlPanel + "');");
+    openedControlPanel = "#none";
 }
 
 $(document).ready(function() {
@@ -236,7 +198,49 @@ $(document).ready(function() {
 	$("a.removeFriend").fancybox();
 	<?php if ($isOwner) echo '$("a#changeAvatar").fancybox();'; ?>
 	$('#profileDetails').hide();
-	$('#myAccount').hide();
+	$('div.controlPanel').hide();
+	openedControlPanel = "#none";
+	// Tabs scripts \\
+	$(function(){
+		$("#friendsTab").buildMbExtruder({
+            positionFixed: true,
+            sensibility:700,
+            autoOpenTime: 10,
+            position:"right",
+            width:230,
+            flapDim:"400",
+            extruderOpacity:1,
+            autoCloseTime:500,
+            slideTimer:200,
+            closeOnExternalClick:false,
+            onExtClose:function(){},
+            onExtOpen:function(){
+                $("#friendsTab").css("zIndex", 10);
+                $("#clansTab").css("zIndex", 9);
+            },
+            onExtContentLoad: function(){}
+    	});
+	});
+	$(function(){
+		$("#clansTab").buildMbExtruder({
+            positionFixed:true,
+            sensibility:700,
+            position:"right",
+            width:230,
+            flapDim:"400",
+            extruderOpacity:1,
+            autoOpenTime:10,
+            autoCloseTime:500,
+            slideTimer:200,
+            closeOnExternalClick:false,
+            onExtClose:function(){},
+            onExtOpen:function(){
+                $("#friendsTab").css("zIndex", 9);
+                $("#clansTab").css("zIndex", 10);
+            },
+            onExtContentLoad: function(){}
+    	});
+	});
 	FadeIn();
 });
 </script>
@@ -319,7 +323,9 @@ for ($i = 1; $i < 5; ++$i)
 <!--
 <div id="myGamesTab" class="a {title: 'My games'}"></div>
 -->
-<div id="myAccount" class="myAccount"></div>
+<div id="myAccount" class="controlPanel"></div>
+<div id="mySocial" class="controlPanel"></div>
+<div id="myGames" class="controlPanel"></div>
 <!--
 <div id="chatWindows" class="chatWindows">
 	<div style="float:right; height:40px;">

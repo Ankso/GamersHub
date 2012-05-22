@@ -55,12 +55,19 @@ body {
     box-shadow:2px 0 4px #111111;
 }
 
+.newFriendRequests:hover {
+    cursor:pointer;
+    background-color:#333333;
+}
+
 #friendRequests:link {
 	color:#FFFFFF;
+    text-decoration:none;
 }
 
 #friendRequests:visited {
 	color:#FFFFFF;
+    text-decoration:none;
 }
 
 .topbarButton:hover {

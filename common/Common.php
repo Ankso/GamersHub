@@ -73,16 +73,16 @@ function PrintTopBar($user)
     if ($isLoggedIn)
     {
         // Note that the order of the buttons is inverted
-        echo '            <div id="myGamesButton" class="topbarButton" style="float:right;">My games</div>', "\n";
-        echo '            <div id="socialButton" class="topbarButton" style="float:right;">Social</div>', "\n";
-        echo '            <div id="myAccountButton" class="topbarButton" style="float:right;" onclick="OpenAccountSettings();">My account</div>', "\n";
+        echo '            <div id="myGamesButton" class="topbarButton" style="float:right;" onclick="OpenControlPanel(\'#myGames\');">My games</div>', "\n";
+        echo '            <div id="mySocialButton" class="topbarButton" style="float:right;" onclick="OpenControlPanel(\'#mySocial\');">Social</div>', "\n";
+        echo '            <div id="myAccountButton" class="topbarButton" style="float:right;" onclick="OpenControlPanel(\'#myAccount\');">My account</div>', "\n";
     }
     echo '        </div>', "\n";
     echo '        <div class="topbarRight">', "\n";
     if ($isLoggedIn)
     {
         if ($friendRequestsCount === 0)
-            echo '            <div class="newFriendRequests">&nbsp;No friend requests&nbsp;</div>', "\n";
+            echo '            <div class="newFriendRequests">&nbsp;<a id="friendRequests" href="ajax/friendrequests.php">No friend requests</a>&nbsp;</div>', "\n";
         elseif (is_integer($friendRequestsCount) && $friendRequestsCount > 0)
             echo '            <div class="newFriendRequests">&nbsp;<a id="friendRequests" href="ajax/friendrequests.php">New friend requests!</a>&nbsp;</div>', "\n";
         echo '            <div style="float:right; border-left:2px #333333 solid;height:51px; width:40px;"><a href="logout.php" onclick="FadeOut(event, \'logout.php\');"><img src="images/logout.png" height="30px" width="30px" alt="Logout" style="margin-top:10px; float:right;"/></a></div>', "\n";
