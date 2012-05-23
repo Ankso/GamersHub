@@ -86,8 +86,7 @@ PHP coding standards:
              */
         - Function names should follow the next scheme: no "_", each word starts with capital letter. For example:
             MyFunction(), MyOtherFunction() (not myFunction() or myotherfunction() or my_function())
-        - Function declarations should follow the next scheme: no space between the function name and the params section, the
-        opening bracket "{" must be in the next line. For example:
+        - Function declarations should follow the next scheme: no space between the function name and the params section, the opening bracket "{" must be in the next line. For example:
             function MyFunction($myParam, $myOtherParam)
             {
                 return ($myParam + $myOtherParam);
