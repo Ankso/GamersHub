@@ -177,8 +177,15 @@ function OpenControlPanel(panelName)
     $(panelName + 'Button').css("background-color", "#333333");
     $(panelName + 'Button').attr("onclick", "CloseControlPanel();");
     $(panelName).text("Loading...");
-    if (panelName == "#myAccount")
-    	$(panelName).load("ajax/accountsettings.php");
+    switch (panelName)
+    {
+        case "#myAccount":
+            $(panelName).load("ajax/accountsettings.php");
+        case "#mySocial":
+            $(panelName).load("ajax/socialsettings.php");
+        case "#myGames":
+            $(panelName).load("ajax/gamessettings.php");
+    }
     openedControlPanel = panelName;
 }
 

@@ -254,20 +254,18 @@ Class User
      * @param string $avatarPath The avatar's relative path from the root server directory.
      * @return bool Returns true on success or false if failure.
      */
-    public function SetAvatarPath($avatarPath)
+    public function SetAvatarHost($avatarHost)
     {
-        $avatarPath = "http://". /*$_SERVER['SERVER_ADDR']*/ "gamersnet.no-ip.org" . $avatarPath;
-        
         if (($result = $this->_db->ExecuteStmt(Statements::SELECT_USER_AVATARS_PATH, $this->_db->BuildStmtArray("i", $this->GetId()))))
         {
             if ($result->num_rows === 0)
             {
-                if (($result = $this->_db->ExecuteStmt(Statements::INSERT_USER_AVATARS_PATH, $this->_db->BuildStmtArray("is", $this->GetId(), $avatarPath))))
+                if (($result = $this->_db->ExecuteStmt(Statements::INSERT_USER_AVATARS_PATH, $this->_db->BuildStmtArray("is", $this->GetId(), $avatarHost))))
                     return true;
             }
             else
             {
-                if ($this->_db->ExecuteStmt(Statements::UPDATE_USER_AVATARS_PATH, $this->_db->BuildStmtArray("si", $avatarPath, $this->GetId())))
+                if ($this->_db->ExecuteStmt(Statements::UPDATE_USER_AVATARS_PATH, $this->_db->BuildStmtArray("si", $avatarHost, $this->GetId())))
                     return true;
             }
         }
@@ -289,6 +287,20 @@ Class User
             }
             else
                 return "/images/default_avatar.png";
+        }
+        return false;
+    }
+    
+    /**
+     * Determines if the user is using gravatar to get his or her avatar
+     * @return boolean Returns true if the user is using gravatar, else it returns false
+     */
+    public function IsUsingGravatar()
+    {
+        if (($avatarLink = $this->GetAvatarHostPath()))
+        {
+            if (strpos($avatarLink, "http://www.gravatar.com/") !== false)
+                return true;
         }
         return false;
     }

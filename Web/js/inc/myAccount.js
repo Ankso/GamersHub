@@ -17,6 +17,9 @@ function MenuOptionClick(tabId)
             break;
         case 1:
             tabName = "#myAccountOptionPrivacy";
+            $("#radioEmail").buttonset();
+            $("#radioProfile").buttonset();
+            $("#radioLiveStream").buttonset();
             $('#myAccountPrivacy').show();
             break;
         case 2:

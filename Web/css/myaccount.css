@@ -72,5 +72,10 @@
 
 .myAccountSubTabItem {
     margin-left:30px;
+    margin-bottom:5px;
     font:18px Calibri;
+}
+
+.myAccountRadio {
+    font: 12px Calibri;
 }
