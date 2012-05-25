@@ -65,12 +65,12 @@ class Database
         return $this->_mysqli->query($query);
     }
     
-	/**
-	 * Prepares and executes a prepared statement. It can execute the stmt once or multiple times.
-	 * @param string $query The prepared statement to be executed.
-	 * @param array $params The params that are going to be inserted in the prepared statement. $params is a bidimensional array with the following structure:<br/>$params = array(<br/>0 => array(<br/>0 => 'i',<br/>1 => $myInt,<br/>)<br/>);</p>
-	 * @return mixed Returns a mysqli_result on success for SELECT or other operations that return a result value, or true for INSERT type operation.<p>Returns an array of mysqli_results if multiple sentences return a result</p><p>Returns false on failure.</p>
-	 */
+    /**
+     * Prepares and executes a prepared statement. It can execute the stmt once or multiple times.
+     * @param string $query The prepared statement to be executed.
+     * @param array $params The params that are going to be inserted in the prepared statement. $params is a bidimensional array with the following structure:<br/>$params = array(<br/>0 => array(<br/>0 => 'i',<br/>1 => $myInt,<br/>)<br/>);</p>
+     * @return mixed Returns a mysqli_result on success for SELECT or other operations that return a result value, or true for INSERT type operation.<p>Returns an array of mysqli_results if multiple sentences return a result</p><p>Returns false on failure.</p>
+     */
     public function ExecuteStmt($query, $params)
     {
         // We'll need both parameters. To execute a query without variables, use Database::query() instead.
