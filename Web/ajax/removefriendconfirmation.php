@@ -17,10 +17,6 @@ if (!isset($_GET['friendName']))
 .btnyes:hover {
 	cursor:pointer;
 }
-
-.button {
-	margin-top:15px;
-}
 </style>
 <script type="text/javascript">
 function SendRemoveFriend()
@@ -46,7 +42,7 @@ function SendRemoveFriend()
 <body>
 <div style="background-color:#000000; text-align:center;padding:20px 20px 20px 20px;">
 	<span>Are you <b>really</b> sure that you want to remove <?php echo $_GET['friendName']; ?> from your friends?</span><br/>
-	<div class="button"><span class="btnyes" onclick="SendRemoveFriend();">&nbsp;Yes, I'm sure&nbsp;</span></div>
+	<div style="margin-top:15px;"><span class="btnyes" onclick="SendRemoveFriend();">&nbsp;Yes, I'm sure&nbsp;</span></div>
 </div>
 </body>
 </html>

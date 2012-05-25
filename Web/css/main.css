@@ -75,6 +75,84 @@ body {
     background-color:#333333;
 }
 
+/* My friends expandable */
+
+.myFriendsPanel {
+    position:fixed;
+    margin-top:100px;
+    width:18%;
+    margin-left:1%;
+    height:80%;
+    border:2px #FFFFFF solid;
+    border-radius:0.5em;
+    background-color:rgba(0, 0, 0, 0.4)
+}
+
+.friendHeader {
+	height:35px;
+    width:100%;
+    background-color:#434343;
+    padding-top:3px;
+}
+
+.friendName {
+	float:left;
+    text-decoration:none;
+    color:#FFFFFF;
+    margin-left:10px;
+}
+
+.friendSpaceLink {
+    text-decoration:none;
+    color:#FFFFFF;
+    font:24px Calibri;
+    margin-left:5px;
+}
+
+.plusImg {
+	float:right;
+	margin-top:1px;
+	margin-right:10px;
+    opacity:0.5;
+}
+
+.plusImg:hover {
+	cursor:pointer;
+    opacity:1;
+}
+
+.friendPanelOptions {
+    height:140px;
+    width:100%;
+    margin-bottom:37px;
+}
+
+.friendOption {
+	font:18px Calibri;
+    height:35px;
+    padding-left:10px;
+    padding-top:10px;
+    background-color:#000000;
+}
+
+.friendOption:hover {
+	cursor:pointer;
+    background-color:#A80000
+}
+
+.friendOptionRemove {
+    font:18px Calibri;
+    height:35px;
+    padding-left:10px;
+    padding-top:10px;
+    background-color:#800000;
+}
+
+.friendOptionRemove:hover {
+    cursor:pointer;
+    background-color:#A80000;
+}
+
 /* Chat windows related */
 
 .chatWindows {

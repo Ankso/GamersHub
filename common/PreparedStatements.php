@@ -38,6 +38,11 @@ class Statements
     const INSERT_USER_FRIEND_REQUEST        = "INSERT INTO user_friend_requests (user_id, requester_id, message) VALUES (?, ?, ?)";
     const SELECT_USER_FRIEND_REQUEST        = "SELECT b.user_id, a.username, b.message FROM user_data AS a, user_friend_requests AS b WHERE b.user_id = ? AND a.id = b.requester_id";
     const SELECT_USER_DATA_SEARCH           = "SELECT username FROM user_data WHERE username LIKE ? ORDER BY username LIMIT 10";
+    const INSERT_USER_PRIVATE_MESSAGE       = "INSERT INTO user_private_messages (sender_id, receiver_id, message, date, readed) VALUES (?, ?, ?, ?, ?)";
+    const SELECT_USER_PRIVATE_MESSAGE       = "SELECT message, date, readed FROM user_private_messages WHERE sender_id = ? AND receiver_id = ? ORDER BY date DESC";
+    const SELECT_USER_PRIVATE_MESSAGES      = "SELECT sender, message, date, readed FROM user_private_messages WHERE receiver_id = ?";
+    const SELECT_USER_PRIVATE_MESSAGES_COUNT= "SELECT count(*) FROM user_private_messages WHERE receiver_id = ? AND readed = 0";
+    const SELECT_USER_PRIVATE_CONVERSATION  = "SELECT sender_id, message, date, readed FROM user_private_messages WHERE sender_id IN (?, ?) AND receiver_id IN (?, ?) ORDER BY date DESC";
     // Login system
     const SELECT_USER_DATA_LOGIN            = "SELECT username, password_sha1 FROM user_data WHERE username = ?";
     // Registration management

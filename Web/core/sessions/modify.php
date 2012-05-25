@@ -3,10 +3,13 @@ require_once($_SERVER['DOCUMENT_ROOT'] . "/../classes/User.Class.php");
 require_once($_SERVER['DOCUMENT_ROOT'] . "/../common/Common.php");
 
 session_start();
+
 if (!isset($_SESSION['userId']))
     die("FAILED");
+
 if (!isset($_POST['email']) || !isset($_POST['newPassword']) || !isset($_POST['newPasswordCheck']))
     die("FAILED");
+
 // Create the User object
 $user = new User($_SESSION['userId']);
 if ($_POST['email'] != $user->GetEmail())

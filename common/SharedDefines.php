@@ -12,6 +12,7 @@ define("USER_HAS_NO_FRIEND_REQUESTS", -3);
 define("USERS_ARENT_FRIENDS", -4);
 define("USERS_ARE_FRIENDS", -5);
 define("FRIEND_REQUEST_ALREADY_SENT", -6);
+define("USER_HAS_NO_MESSAGES", -7);
 /**
  * Profile system
  */

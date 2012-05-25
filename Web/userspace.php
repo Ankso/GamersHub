@@ -66,6 +66,7 @@ else
 <script type="text/javascript" src="js/inc/jquery.mousewheel-3.0.4.pack.js"></script>
 <script type="text/javascript" src="js/inc/mbExtruder.js"></script>
 <script type="text/javascript" src="js/inc/myAccount.js"></script>
+<script type="text/javascript" src="js/inc/privateMessages.js"></script>
 <script type="text/javascript">
 var previousBio;
 var previousBirthday;
@@ -200,60 +201,112 @@ function CloseControlPanel()
     openedControlPanel = "#none";
 }
 
+function SwitchFriendOptionsMenu(event)
+{
+    var node = event.srcElement.parentElement.parentElement.parentElement.children[1];
+    if ($(node).is(':hidden'))
+    {
+        $('.friendPanelOptions').slideUp();
+        $('.friendHeader').mouseleave(function(event) {
+    		$(event.srcElement.children[1].children[0]).hide();
+    	});
+    	$('img#moreOptionsImg').hide();
+    	$(event.srcElement).show();
+        $(node).slideDown();
+        $(event.srcElement.parentElement.parentElement).off('mouseleave');
+    }
+    else
+    {
+        try
+        {
+            $('.friendHeader').mouseleave(function(event) {
+                try {
+        			$(event.srcElement.children[1].children[0]).hide();
+                }
+                catch(e) {
+                    $('img#moreOptionsImg').hide();
+                }
+        	});
+        }
+        catch(e)
+        {
+            alert("Error");
+        }
+    	$(node).slideUp();
+    }
+}
+
 $(document).ready(function() {
 	$("a#friendRequests").fancybox();
-	$("a.removeFriend").fancybox();
+	$("a#removeFriend").fancybox();
+	$("a#sendPrivateMessage").fancybox();
 	<?php if ($isOwner) echo '$("a#changeAvatar").fancybox();'; ?>
 	$('#profileDetails').hide();
 	$('div.controlPanel').hide();
+	$('.friendPanelOptions').hide();
+	$('img#moreOptionsImg').click(SwitchFriendOptionsMenu);
+	$('img#moreOptionsImg').hide();
+	$('.friendHeader').mouseenter(function(event) {
+		try {
+			$(event.srcElement.children[1].children[0]).show();
+		}
+		catch(e) {
+		    $('img#moreOptionsImg').hide();
+		}
+	});
+	$('.friendHeader').mouseleave(function(event) {
+		try {
+			$(event.srcElement.children[1].children[0]).hide();
+		}
+		catch(e) {
+			$('img#moreOptionsImg').hide();
+		}
+	});
+	$('#addNewFriend').load('ajax/friendsfinder.html');
 	openedControlPanel = "#none";
-	// Tabs scripts \\
-	$(function(){
-		$("#friendsTab").buildMbExtruder({
-            positionFixed: true,
-            sensibility:700,
-            autoOpenTime: 10,
-            position:"right",
-            width:230,
-            flapDim:"400",
-            extruderOpacity:1,
-            autoCloseTime:500,
-            slideTimer:200,
-            closeOnExternalClick:false,
-            onExtClose:function(){},
-            onExtOpen:function(){
-                $("#friendsTab").css("zIndex", 10);
-                $("#clansTab").css("zIndex", 9);
-            },
-            onExtContentLoad: function(){}
-    	});
-	});
-	$(function(){
-		$("#clansTab").buildMbExtruder({
-            positionFixed:true,
-            sensibility:700,
-            position:"right",
-            width:230,
-            flapDim:"400",
-            extruderOpacity:1,
-            autoOpenTime:10,
-            autoCloseTime:500,
-            slideTimer:200,
-            closeOnExternalClick:false,
-            onExtClose:function(){},
-            onExtOpen:function(){
-                $("#friendsTab").css("zIndex", 9);
-                $("#clansTab").css("zIndex", 10);
-            },
-            onExtContentLoad: function(){}
-    	});
-	});
 	FadeIn();
 });
 </script>
 </head>
 <body>
 <?php PrintTopBar($user); ?>
+<div id ="myFriendsPanel" class="myFriendsPanel">
+	<div id="friendWrapper" class="friendWrapper">
+		<div id="friendHeader" class="friendHeader" style="border-top-right-radius:0.5em; border-top-left-radius:0.5em; background-color:#333333; border-bottom:1px #FFFFFF solid;">
+    		<div class="friendName"><a class="friendSpaceLink">Add New Friend</a></div>
+    		<div class="plusImg"><img id="moreOptionsImg" src="images/more_info_large.png" style="height:30px; width:30px;" /></div>
+		</div>
+		<div id="addNewFriend" class="friendPanelOptions" style="margin-bottom:5px;">
+		</div>
+	</div>
+	<?php
+	$friendsList = $user->GetAllFriendsByUsername();
+    if ($friendsList === USER_HAS_NO_FRIENDS)
+        echo '    <div id="friendWrapper" class="friendWrapper" style="text-align:center;">You have no friends</div>', "\n";
+    elseif ($friendsList === false)
+        echo '    <div id="friendWrapper" class="friendWrapper" style="text-align:center;">An error occurred. Please try again in a few moments.</div>', "\n";
+    else
+    {
+        foreach ($friendsList as $i => $value)
+        {
+    ?>
+    <div id="friendWrapper" class="friendWrapper">
+		<div id="friendHeader" class="friendHeader">
+    		<div class="friendName"><img src="images/<?php echo ($friendsList[$i][1] ? "friend_online" : "friend_offline"); ?>.png" /><a class="friendSpaceLink" href="/<?php echo $friendsList[$i][0]; ?>"><?php echo $friendsList[$i][0]; ?></a></div>
+    		<div class="plusImg"><img id="moreOptionsImg" src="images/more_info_large.png" style="height:30px; width:30px;" /></div>
+		</div>
+		<div class="friendPanelOptions">
+			<div class="friendOption">Invite to chat</div>
+			<div class="friendOption">Invite to LiveStream</div>
+			<div class="friendOption"><a id="sendPrivateMessage" href="ajax/privatemessage.php?friendName=<?php echo $friendsList[$i][0]; ?>" style="text-decoration:none; color:#FFFFFF;">Send private message</a></div>
+			<div class="friendOptionRemove"><a id="removeFriend" href="ajax/removefriendconfirmation.php?friendName=<?php echo $friendsList[$i][0]; ?>" style="text-decoration:none; color:#FFFFFF;">Remove friend</a></div>
+		</div>
+	</div>
+	<?php
+        }
+    } 
+    ?>
+</div>
 <div class="mainContent">
 	<div class="mainBoard">
 		<div class="mainLivestream">
@@ -304,10 +357,11 @@ $(document).ready(function() {
 		</div>
 	</div>
 </div>
+<!--
 <div id="friendsTab" class="a {title:'My friends'}">
     <div id="newFriend" class="voice {panel: 'ajax/friendsfinder.html'}"><span class="label">Add New Friend +</span></div>
     <?php 
-    $friendsList = $user->GetAllFriendsByUsername();
+    /*$friendsList = $user->GetAllFriendsByUsername();
     if ($friendsList === USER_HAS_NO_FRIENDS)
         echo '    <div id="noFriends" class="voice {}"><span class="label"><a class="label">You have no friends</a></span></div>', "\n";
     elseif ($friendsList === false)
@@ -316,17 +370,17 @@ $(document).ready(function() {
     {
         foreach ($friendsList as $i => $value)
             echo '    <div id="friend" class="voice {panel: \'core/friends/friendmenutab.php?friendName='. $friendsList[$i][0] .'\'}"><span class="label"><img src="images/'. ($friendsList[$i][1] ? "friend_online" : "friend_offline") .'.png" style="margin-top:3px;"/><a class="label" href="../', $friendsList[$i][0], '">', $friendsList[$i][0], '</a></span></div>', "\n";
-    }
+    }*/
     ?>
 </div>
 <div id="clansTab" class="a {title:'My Clans'}">
 <?php
 // Clans system is not yet implemented
-for ($i = 1; $i < 5; ++$i)
-    echo '    <div id="clan" class="voice {panel: \'core/clans/clansmenutab.php\'}"><span class="label"><a class="label">Clan', $i, '</a></span></div>', "\n";
+//for ($i = 1; $i < 5; ++$i)
+//    echo '    <div id="clan" class="voice {panel: \'core/clans/clansmenutab.php\'}"><span class="label"><a class="label">Clan', $i, '</a></span></div>', "\n";
 ?>
 </div>
-
+-->
 <!--
 <div id="myGamesTab" class="a {title: 'My games'}"></div>
 -->

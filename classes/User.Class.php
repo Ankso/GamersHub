@@ -556,6 +556,128 @@ Class User
         return $row['total'];
     }
     
+    /**
+     * Inserts a private message, sended by this user, in the database. Note that the function doesn't check if the users are friends, nor if the $receiver is valid (if it is an ID)
+     * @param long/string $receiver A long integer representing a valid user ID or a string representing a valid username.
+     * @param string $message The message that must be sent.
+     * @return boolean Returns true on success, oo false if failure.
+     */
+    public function SendPrivateMessage($receiver, $message)
+    {
+        $date = date("Y-m-d H:i:s", time());
+        // If the parameter $receiver is a string, it must be a username, so, pass it to a valid user ID
+        if (is_string($receiver))
+        {
+            $receiver = GetIdFromUsername($receiver);
+            if ($receiver === USER_DOESNT_EXISTS || $receiver === false)
+                return false;
+        }
+        if ($this->_db->ExecuteStmt(Statements::INSERT_USER_PRIVATE_MESSAGE, $this->_db->BuildStmtArray("iissi", $this->GetId(), $receiver, $message, $date, 0)))
+            return true;
+        return false;
+    }
+    
+    /**
+     * Gets the unreaded private messages count for this user.
+     * @return mixed Returns the number of unreaded messages, or false if something goes wrong.
+     */
+    public function GetUnreadPrivateMessagesCount()
+    {
+        if (($result = $this->_db->ExecuteStmt(Statements::SELECT_USER_PRIVATE_MESSAGES_COUNT, $this->_db->BuildStmtArray("i", $this->GetId()))))
+        {
+            $row = $result->fetch_array();
+            return $row[0];
+        }
+        return false;
+    }
+    
+    /**
+     * Gets all the messages sended by the specified friend to this user. Note that the function doesn't check if the users are friends, nor if the $receiver is valid (if it is an ID)
+     * @param long/string $sender [Optional] A long integer representing a valid user ID or a string representing a valid username.<br />If this param is not provided, the function returns all the unreaded private messages for this user.
+     * @return mixed Returns a bidimensional array with each message, the date it was sended, and the sernder ID or false if something fails.
+     */
+    public function GetPrivateMessage($sender)
+    {
+        if (isset($sender) && !is_null($sender))
+        {
+            // If the parameter $sender is a string, it must be a username, so, cast it to a valid user ID
+            if (is_string($sender))
+            {
+                $sender = GetIdFromUsername($sender);
+                if ($sender === USER_DOESNT_EXISTS || $sender === false)
+                    return false;
+            }
+            if (($result = $this->_db->ExecuteStmt(Statements::SELECT_USER_PRIVATE_MESSAGE, $this->_db->BuildStmtArray("ii", $sender, $this->GetId()))))
+            {
+                if ($result->num_rows === 0)
+                    return USER_HAS_NO_MESSAGES;
+                $messages = array();
+                while (($row = $result->fetch_assoc()))
+                {
+                    $messages[] = array(
+                        'message' => $row['message'],
+                        'date'    => $row['date'],
+                        'readed'  => $row['readed'],
+                    );
+                }
+                return $messages;
+            }
+        }
+        else
+        {
+            if (($result = $this->_db->ExecuteStmt(Statements::SELECT_USER_PRIVATE_MESSAGES, $this->_db->BuildStmtArray("i", $this->GetId()))))
+            {
+                if ($result->num_rows === 0)
+                    return USER_HAS_NO_MESSAGES;
+                $messages = array();
+                while (($row = $result->fetch_assoc()))
+                {
+                    $messages[] = array(
+                        'sender'  => $row['sender_id'],
+                        'message' => $row['message'],
+                        'date'    => $row['date'],
+                        'readed'  => $row['readed'],
+                    );
+                }
+                return $messages;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Gets all the messages sended by the specified friend to this user and vice versa (a "private conversation"). Note that the function doesn't check if the users are friends, nor if the $receiver is valid (if it is an ID)
+     * @param long/string $sender A long integer representing a valid user ID or a string representing a valid username.
+     * @return mixed Returns a bidimensional array with each message of the conversation, the date it was sended, and the sender or false if something fails.
+     */
+    public function GetPrivateConversation($friend)
+    {
+        // If the parameter $sender is a string, it must be a username, so, cast it to a valid user ID
+        if (is_string($friend))
+        {
+            $friend = GetIdFromUsername($friend);
+            if ($friend === USER_DOESNT_EXISTS || $friend === false)
+                return false;
+        }
+        if (($result = $this->_db->ExecuteStmt(Statements::SELECT_USER_PRIVATE_CONVERSATION, $this->_db->BuildStmtArray("iiii", $friend, $this->GetId(), $this->GetId(), $friend))))
+        {
+            if ($result->num_rows === 0)
+                return USER_HAS_NO_MESSAGES;
+            $messages = array();
+            while (($row = $result->fetch_assoc()))
+            {
+                $messages[] = array(
+                    'sender'  => $row['sender_id'],
+                    'message' => $row['message'],
+                    'date'    => $row['date'],
+                    'readed'  => $row['readed'],
+                );
+            }
+            return $messages;
+        }
+        return false;
+    }
+    
     private $_id;                // The user's unique ID
     private $_username;          // The user's username (nickname)
     private $_passwordSha1;      // The encripted user's password

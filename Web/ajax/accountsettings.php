@@ -46,7 +46,7 @@ MenuOptionClick(0);
 			<div id="radioProfile" class="myAccountRadio"><br />
         		<input type="radio" id="radio5" name="profileDetails" value="1" <?php if ($privacySettings[USER_PRIVACY_PROFILE] == PRIVACY_LEVEL_FRIENDS) echo 'checked="checked"'; ?> /><label for="radio5">Only my friends</label>
         		<input type="radio" id="radio6" name="profileDetails" value="2" <?php if ($privacySettings[USER_PRIVACY_PROFILE] == PRIVACY_LEVEL_CLAN_MEMBERS) echo 'checked="checked"'; ?> /><label for="radio6">Only friends and clan members</label>
-        		<input type="radio" id="radio7" name="profileDetails" value="3" <?php if ($privacySettings[USER_PRIVACY_PROFILE] == PRIVACY_LEVEL_EVERYONE) echo 'checked="checked"'; ?> /><label for="radio7">Everyone (not recommended)</label>
+        		<input type="radio" id="radio7" name="profileDetails" value="3" <?php if ($privacySettings[USER_PRIVACY_PROFILE] == PRIVACY_LEVEL_EVERYONE) echo 'checked="checked"'; ?> /><label for="radio7">Everyone</label>
 			</div>
 		</div>
 	</div>
@@ -56,7 +56,7 @@ MenuOptionClick(0);
 			<div id="radioLiveStream" class="myAccountRadio"><br />
         		<input type="radio" id="radio8" name="liveStream" value="1" <?php if ($privacySettings[USER_PRIVACY_LIVESTREAM] == PRIVACY_LEVEL_FRIENDS) echo 'checked="checked"'; ?> /><label for="radio8">Only my friends</label>
         		<input type="radio" id="radio9" name="liveStream" value="2" <?php if ($privacySettings[USER_PRIVACY_LIVESTREAM] == PRIVACY_LEVEL_CLAN_MEMBERS) echo 'checked="checked"'; ?> /><label for="radio9">Only friends and clan members</label>
-        		<input type="radio" id="radio10" name="liveStream" value="3" <?php if ($privacySettings[USER_PRIVACY_LIVESTREAM] == PRIVACY_LEVEL_EVERYONE) echo 'checked="checked"'; ?> /><label for="radio10">Everyone (not recommended)</label>
+        		<input type="radio" id="radio10" name="liveStream" value="3" <?php if ($privacySettings[USER_PRIVACY_LIVESTREAM] == PRIVACY_LEVEL_EVERYONE) echo 'checked="checked"'; ?> /><label for="radio10">Everyone</label>
 			</div>
 		</div>
 	</div>
