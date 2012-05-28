@@ -77,19 +77,56 @@ body {
 
 /* My friends expandable */
 
+/* Flap */
+.myFriendsPanelFlapClosed {
+    position:fixed;
+    width:100px;
+    height:40px;
+    left:0px;
+    margin-top:100px;
+    background-color:#000000;
+    border-top:2px #333333 solid;
+    border-bottom:2px #333333 solid;
+    border-right:2px #333333 solid;
+    border-top-right-radius:0.6em;
+    border-bottom-right-radius:0.6em;
+    text-align:center;
+    padding-top:13px;
+    font:19px Calibri;
+    opacity:0.5;
+}
+
+.myFriendsPanelFlapClosed:hover {
+    cursor:pointer;
+    opacity:1;
+}
+
+.imgMyFriendsPanelFlap {
+    float:right;
+    margin-right:5px;
+}
+
+.myFriendsPanelFlapOpened {
+	position:fixed;
+    height:33px;
+    background-color:#333333;
+    width:1%;
+    margin-top:100px;
+    border-bottom:1px #FFFFFF solid;
+}
+
+/* Main Panel */
 .myFriendsPanel {
     position:fixed;
     margin-top:100px;
     width:18%;
+    min-width:250px;
     margin-left:1%;
-    height:80%;
-    border:2px #FFFFFF solid;
     border-radius:0.5em;
-    background-color:rgba(0, 0, 0, 0.4)
 }
 
 .friendHeader {
-	height:35px;
+	height:30px;
     width:100%;
     background-color:#434343;
     padding-top:3px;
@@ -105,7 +142,7 @@ body {
 .friendSpaceLink {
     text-decoration:none;
     color:#FFFFFF;
-    font:24px Calibri;
+    font:20px Calibri;
     margin-left:5px;
 }
 
@@ -122,17 +159,17 @@ body {
 }
 
 .friendPanelOptions {
-    height:140px;
     width:100%;
-    margin-bottom:37px;
 }
 
 .friendOption {
-	font:18px Calibri;
+	font:16px Calibri;
     height:35px;
     padding-left:10px;
     padding-top:10px;
     background-color:#000000;
+    border-left:2px #434343 solid;
+    border-right:2px #434343 solid;
 }
 
 .friendOption:hover {
@@ -141,16 +178,40 @@ body {
 }
 
 .friendOptionRemove {
-    font:18px Calibri;
+    font:16px Calibri;
     height:35px;
     padding-left:10px;
     padding-top:10px;
     background-color:#800000;
+    border-bottom:2px #434343 solid;
+    border-left:2px #434343 solid;
+    border-right:2px #434343 solid;
 }
 
 .friendOptionRemove:hover {
     cursor:pointer;
     background-color:#A80000;
+}
+
+.closeMyFriendsPanel {
+    height:20px;
+    width:40px;
+    float:right;
+    bottom:0;
+    padding:3px;
+    background:#333333;
+    border-left:3px #434343 solid;
+    border-bottom:3px #434343 solid;
+    border-right:3px #434343 solid;
+    border-bottom-right-radius:0.6em;
+    border-bottom-left-radius:0.6em;
+    text-align:center;
+    opacity:0.8;
+}
+
+.closeMyFriendsPanel:hover {
+    cursor:pointer;
+    opacity:1;
 }
 
 /* Chat windows related */

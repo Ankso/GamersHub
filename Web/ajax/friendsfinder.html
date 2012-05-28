@@ -81,17 +81,15 @@ function SendFriendRequest()
 }
 </script>
 <style type="text/css">
-    h3 {
-        margin: 0px;
-        padding: 0px;   
-    }
-    
     .main {
-        margin-top: 13px;
         font-family: Calibri;
         font-size: 11px;
         color: #FFFFFF;
         background-color:#000000;
+        text-align:center;
+        border-right:2px #434343 solid;
+        border-left:2px #434343 solid;
+        padding:10px;
     }
     
     .suggestionsBox {
@@ -100,7 +98,7 @@ function SendFriendRequest()
         position: relative;
         margin-left:20%;
         margin-right:20%;
-        align:center;
+        text-align:center;
         background-color:transparent;
         border-radius:0.4em;
         border:2px solid #FFFFFF;
@@ -153,16 +151,16 @@ function SendFriendRequest()
 </style>
 </head>
 <body>
-<div class="main" align="center">
-	<form>
-		<input class="input" type="text" value="" id="friendname" onkeyup="Lookup(this.value);" onblur="Fill();"/>
-		<div class="suggestionsBox" id="suggestionsBox" style="display:none;">
-		  <div class="suggestionsList" id="suggestionsList"></div>
-		</div>
-		<br/>
-		<div><p><span id="button" class="button" onclick="SendFriendRequest();">Send friend request</span><p></div>
-		<div id="sent" class="sent" style="background-color:#00CC00; display:none"></div>
-	</form>
+<div class="main">
+    <form>
+        <input class="input" type="text" value="" id="friendname" onkeyup="Lookup(this.value);" onblur="Fill();"/>
+        <div class="suggestionsBox" id="suggestionsBox" style="display:none;">
+            <div class="suggestionsList" id="suggestionsList"></div>
+        </div>
+        <br/>
+        <div><p><span id="button" class="button" onclick="SendFriendRequest();">Send friend request</span><p></div>
+        <div id="sent" class="sent" style="background-color:#00CC00; display:none"></div>
+    </form>
 </div>
 </body>
 </html>

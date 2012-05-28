@@ -51,7 +51,6 @@ else
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title><?php echo $spaceOwner->GetUsername(); ?>'s profile - GamersNet</title>
-<link href="css/mbExtruder.css" media="all" rel="stylesheet" type="text/css" />
 <link href="css/userspace.css" media="all" rel="stylesheet" type="text/css" />
 <link href="css/main.css" media="all" rel="stylesheet" type="text/css" />
 <link href="css/myaccount.css" media="all" rel="stylesheet" type="text/css" />
@@ -64,220 +63,73 @@ else
 <script type="text/javascript" src="js/inc/jquery.mb.flipText.js"></script>
 <script type="text/javascript" src="js/inc/jquery.fancybox-1.3.4.js"></script>
 <script type="text/javascript" src="js/inc/jquery.mousewheel-3.0.4.pack.js"></script>
-<script type="text/javascript" src="js/inc/mbExtruder.js"></script>
 <script type="text/javascript" src="js/inc/myAccount.js"></script>
 <script type="text/javascript" src="js/inc/privateMessages.js"></script>
+<script type="text/javascript" src="js/inc/userspace.js"></script>
 <script type="text/javascript">
-var previousBio;
-var previousBirthday;
-var previousCountry;
-var previousCity;
-var openedControlPanel;
-
-function FadeOut(event, redirectUrl)
-{
-	event.preventDefault();
-	$('body').fadeOut(1000, function() { window.location = redirectUrl; });
-}
-
-function FadeIn()
-{
-    $("body").css("display", "none");
-    $("body").fadeIn(2000);
-}
-
-function SwitchProfileDetails()
-{
-    if ($('#profileDetails').is(":hidden"))
-    {
-		$('#profileDetails').slideDown(400);
-		$('div.editProfileButton').text("Hide");
-    }
-    else
-    {
-        $('#profileDetails').slideUp(400);
-        $('div.editProfileButton').text("View profile");
-    }
-}
-
-function EditProfileDetails()
-{
-    previousBio = $('#bioSpan').html();
-    $('#bioDiv').html('Bio: <textarea id="bioInput" style="min-height:100px; width:95%;">' + previousBio + '</textarea>');
-    previousBirthday = $('#birthdaySpan').text();
-    $('#birthdayDiv').html('Birthday: <input type="text" id="birthdayInput"  value="' + previousBirthday + '" />');
-    previousCountry = $('#countrySpan').text();
-    $('#countryDiv').html('Country: <input type="text" id="countryInput"  value="' + previousCountry + '" />');
-    previousCity = $('#citySpan').text();
-    $('#cityDiv').html('City: <input type="text" id="cityInput"  value="' + previousCity + '" />');
-    $('div.editProfileText').hide();
-    $('#profileDetails').append('<div id="submitCancelEdit" style="height:20px; margin-top:7px;"><span style="float:left; color:#00FF00; cursor:pointer;" onclick="SubmitEditedProfileDetails();">Submit</span><span style="float:right; color:#FF0000; cursor:pointer;" onclick="CancelEditProfileDetails();">Cancel</span></div>');
-}
-
-function CancelEditProfileDetails()
-{
-    $('#bioDiv').html('Bio: <span id="bioSpan">' + previousBio + '</span>');
-    $('#birthdayDiv').html('Birthday: <span id="birthdaySpan">' + previousBirthday + '</span>');
-    $('#countryDiv').html('Country: <span id="countrySpan">' + previousCountry + '</span>');
-    $('#cityDiv').html('City: <span id="citySpan">' + previousCity + '</span>');
-    $('#submitCancelEdit').remove();
-    $('#submitProfileError').remove();
-    $('div.editProfileText').show();
-}
-
-function SubmitEditedProfileDetails()
-{
-    var bio = $('#bioInput').val();
-    var birthday = $('#birthdayInput').val();
-    var country = $('#countryInput').val();
-    var city = $('#cityInput').val();
-    $.post("ajax/editdetailedprofile.php", {bio : bio, birthday : birthday, country : country, city : city}, function(data) {
-		if (data.length > 0)
-		{
-			if (data == "SUCCESS")
-			{
-				previousBio = bio;
-				previousBirthday = birthday;
-				previousCountry = country;
-				previousCity = city;
-				CancelEditProfileDetails();
-			}
-			else
-			{
-				$('#submitProfileError').remove();
-				$('#profileDetails').append('<div id="submitProfileError" style="text-align:center; color:#FF0000;">An error has occurred. Please try again.</div>');
-			}
-		}
-		else
-		{
-		    $('#submitProfileError').remove();
-			$('#profileDetails').append('<div id="submitProfileError" style="text-align:center; color:#FF0000;">Unable to connect to the server. Please make sure that you are connected to the internet and try again.</div>');
-		}
-    });
-}
-
-function OpenControlPanel(panelName)
-{
-    var direction = "right";
-    if (openedControlPanel != "#none")
-    {
-        if (panelName == "#myAccount")
-            direction = "left";
-        else if (panelName == "#mySocial" && openedControlPanel == "#myGames")
-            direction = "left";
-        $(openedControlPanel).hide("drop", { direction: (direction == "right" ? "left" : "right") }, 500);
-        if (openedControlPanel == panelName)
-            $(panelName).slideUp(500);
-        else
-        	$(panelName).show("drop", { direction: direction }, 500);
-        $(openedControlPanel + 'Button').css("background-color", "transparent");
-        $(openedControlPanel + 'Button').attr("onclick", "OpenControlPanel('" + openedControlPanel + "');");
-    }
-    else
-    	$(panelName).slideDown(500);
-    $(panelName + 'Button').css("background-color", "#333333");
-    $(panelName + 'Button').attr("onclick", "CloseControlPanel();");
-    $(panelName).text("Loading...");
-    switch (panelName)
-    {
-        case "#myAccount":
-            $(panelName).load("ajax/accountsettings.php");
-        case "#mySocial":
-            $(panelName).load("ajax/socialsettings.php");
-        case "#myGames":
-            $(panelName).load("ajax/gamessettings.php");
-    }
-    openedControlPanel = panelName;
-}
-
-function CloseControlPanel()
-{
-    $(openedControlPanel).slideUp(400, function() {
-        // Here we must implement a cache system or something...
-		$(openedControlPanel).html("");
-    });
-    $(openedControlPanel + 'Button').css("background-color", "transparent");
-    $(openedControlPanel + 'Button').attr("onclick", "OpenControlPanel('" + openedControlPanel + "');");
-    openedControlPanel = "#none";
-}
-
-function SwitchFriendOptionsMenu(event)
-{
-    var node = event.srcElement.parentElement.parentElement.parentElement.children[1];
-    if ($(node).is(':hidden'))
-    {
-        $('.friendPanelOptions').slideUp();
-        $('.friendHeader').mouseleave(function(event) {
-    		$(event.srcElement.children[1].children[0]).hide();
-    	});
-    	$('img#moreOptionsImg').hide();
-    	$(event.srcElement).show();
-        $(node).slideDown();
-        $(event.srcElement.parentElement.parentElement).off('mouseleave');
-    }
-    else
-    {
-        try
-        {
-            $('.friendHeader').mouseleave(function(event) {
-                try {
-        			$(event.srcElement.children[1].children[0]).hide();
-                }
-                catch(e) {
-                    $('img#moreOptionsImg').hide();
-                }
-        	});
-        }
-        catch(e)
-        {
-            alert("Error");
-        }
-    	$(node).slideUp();
-    }
-}
-
+// TODO: Move all the inline function calls from the HTML to here
 $(document).ready(function() {
-	$("a#friendRequests").fancybox();
-	$("a#removeFriend").fancybox();
-	$("a#sendPrivateMessage").fancybox();
-	<?php if ($isOwner) echo '$("a#changeAvatar").fancybox();'; ?>
-	$('#profileDetails').hide();
-	$('div.controlPanel').hide();
-	$('.friendPanelOptions').hide();
-	$('img#moreOptionsImg').click(SwitchFriendOptionsMenu);
-	$('img#moreOptionsImg').hide();
-	$('.friendHeader').mouseenter(function(event) {
-		try {
-			$(event.srcElement.children[1].children[0]).show();
-		}
-		catch(e) {
-		    $('img#moreOptionsImg').hide();
-		}
-	});
-	$('.friendHeader').mouseleave(function(event) {
-		try {
-			$(event.srcElement.children[1].children[0]).hide();
-		}
-		catch(e) {
-			$('img#moreOptionsImg').hide();
-		}
-	});
-	$('#addNewFriend').load('ajax/friendsfinder.html');
-	openedControlPanel = "#none";
-	FadeIn();
+    $("a#friendRequests").fancybox();
+    $("a#removeFriend").fancybox();
+    $("a#sendPrivateMessage").fancybox();
+    <?php
+    if ($isOwner)
+    {
+    ?>
+    $("a#changeAvatar").fancybox();
+    $(".editAvatar").hide();
+    $(".imgAvatar").mouseenter(function(event) {
+        $(".editAvatar").stop(true, true).fadeIn("fast");
+    });
+    $(".imgAvatar").mouseleave(function(event) {
+        $(".editAvatar").stop(true, true).fadeOut("fast");
+    });
+    <?php
+    }
+    ?>
+    $('#myFriendsPanel').hide();
+    $('#myFriendsPanelFlapOpened').hide();
+    $('#profileDetails').hide();
+    $('.controlPanel').hide();
+    $('.friendPanelOptions').hide();
+    $('img#moreOptionsImg').click(SwitchFriendOptionsMenu);
+    $('img#moreOptionsImg').hide();
+    $('.friendHeader').mouseenter(function(event) {
+        try {
+            $(event.srcElement.children[1].children[0]).show();
+        }
+        catch(e) {
+            $('img#moreOptionsImg').hide();
+        }
+    });
+    $('.friendHeader').mouseleave(function(event) {
+        try {
+            $(event.srcElement.children[1].children[0]).hide();
+        }
+        catch(e) {
+            $('img#moreOptionsImg').hide();
+        }
+    });
+    $('#addNewFriend').load('ajax/friendsfinder.html');
+    openedControlPanel = "#none";
+    FadeIn();
 });
 </script>
 </head>
 <body>
 <?php PrintTopBar($user); ?>
+<div id="myFriendsPanelFlapClosed" class="myFriendsPanelFlapClosed" onclick="ShowMyFriendsPanel();">
+	<b>Friends</b><div class="imgMyFriendsPanelFlap"><img src="images/more_info_large.png" style="height:25px; width:25px;" /></div>
+</div>
+<div id="myFriendsPanelFlapOpened" class="myFriendsPanelFlapOpened">
+</div>
 <div id ="myFriendsPanel" class="myFriendsPanel">
 	<div id="friendWrapper" class="friendWrapper">
-		<div id="friendHeader" class="friendHeader" style="border-top-right-radius:0.5em; border-top-left-radius:0.5em; background-color:#333333; border-bottom:1px #FFFFFF solid;">
-    		<div class="friendName"><a class="friendSpaceLink">Add New Friend</a></div>
-    		<div class="plusImg"><img id="moreOptionsImg" src="images/more_info_large.png" style="height:30px; width:30px;" /></div>
+		<div id="friendHeader" class="friendHeader" style="border-top-right-radius:0.5em; background-color:#333333; border-bottom:1px #FFFFFF solid;">
+    		<div class="friendName"><span style="font:20px Calibri; margin-left:5px;"><b>Add New Friend</b></span></div>
+    		<div class="plusImg"><img id="moreOptionsImg" src="images/more_info_large.png" style="height:25px; width:25px;" /></div>
 		</div>
-		<div id="addNewFriend" class="friendPanelOptions" style="margin-bottom:5px;">
-		</div>
+		<div id="addNewFriend" class="friendPanelOptions" style="margin-bottom:5px;"></div>
 	</div>
 	<?php
 	$friendsList = $user->GetAllFriendsByUsername();
@@ -287,13 +139,14 @@ $(document).ready(function() {
         echo '    <div id="friendWrapper" class="friendWrapper" style="text-align:center;">An error occurred. Please try again in a few moments.</div>', "\n";
     else
     {
+        $totalFriends = count($friendsList);
         foreach ($friendsList as $i => $value)
         {
     ?>
     <div id="friendWrapper" class="friendWrapper">
-		<div id="friendHeader" class="friendHeader">
+		<div id="friendHeader" class="friendHeader" <?php if ($i === $totalFriends - 1) echo 'style="border-bottom-left-radius:0.5em;"';?>>
     		<div class="friendName"><img src="images/<?php echo ($friendsList[$i][1] ? "friend_online" : "friend_offline"); ?>.png" /><a class="friendSpaceLink" href="/<?php echo $friendsList[$i][0]; ?>"><?php echo $friendsList[$i][0]; ?></a></div>
-    		<div class="plusImg"><img id="moreOptionsImg" src="images/more_info_large.png" style="height:30px; width:30px;" /></div>
+    		<div class="plusImg"><img id="moreOptionsImg" src="images/more_info_large.png" style="height:25px; width:25px;" /></div>
 		</div>
 		<div class="friendPanelOptions">
 			<div class="friendOption">Invite to chat</div>
@@ -306,6 +159,9 @@ $(document).ready(function() {
         }
     } 
     ?>
+    <div id="closeMyFriendsPanel" class="closeMyFriendsPanel" onclick="CloseMyFriendsPanel();">
+    	<b>Hide</b> <!-- We must put an image here, like a minus sign or a minimize icon, may be a left arrow, something like that -->
+    </div>
 </div>
 <div class="mainContent">
 	<div class="mainBoard">
@@ -357,30 +213,6 @@ $(document).ready(function() {
 		</div>
 	</div>
 </div>
-<!--
-<div id="friendsTab" class="a {title:'My friends'}">
-    <div id="newFriend" class="voice {panel: 'ajax/friendsfinder.html'}"><span class="label">Add New Friend +</span></div>
-    <?php 
-    /*$friendsList = $user->GetAllFriendsByUsername();
-    if ($friendsList === USER_HAS_NO_FRIENDS)
-        echo '    <div id="noFriends" class="voice {}"><span class="label"><a class="label">You have no friends</a></span></div>', "\n";
-    elseif ($friendsList === false)
-        echo '    <div id="noFriends" class="voice {}"><span class="label"><a class="label">Error retrieving your friends.</a></span></div>', "\n";
-    else
-    {
-        foreach ($friendsList as $i => $value)
-            echo '    <div id="friend" class="voice {panel: \'core/friends/friendmenutab.php?friendName='. $friendsList[$i][0] .'\'}"><span class="label"><img src="images/'. ($friendsList[$i][1] ? "friend_online" : "friend_offline") .'.png" style="margin-top:3px;"/><a class="label" href="../', $friendsList[$i][0], '">', $friendsList[$i][0], '</a></span></div>', "\n";
-    }*/
-    ?>
-</div>
-<div id="clansTab" class="a {title:'My Clans'}">
-<?php
-// Clans system is not yet implemented
-//for ($i = 1; $i < 5; ++$i)
-//    echo '    <div id="clan" class="voice {panel: \'core/clans/clansmenutab.php\'}"><span class="label"><a class="label">Clan', $i, '</a></span></div>', "\n";
-?>
-</div>
--->
 <!--
 <div id="myGamesTab" class="a {title: 'My games'}"></div>
 -->
