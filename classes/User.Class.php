@@ -219,7 +219,7 @@ Class User
     {
         if ($this->_db->ExecuteStmt(Statements::UPDATE_USER_DATA_ONLINE, $this->_db->BuildStmtArray("ii", ($isOnline ? "1" : "0"), $this->GetId())))
         {
-            $this->_isOnline = $isOnline;
+            $this->_isOnline = (bool)$isOnline;
             return true;
         }
         return false;
@@ -440,29 +440,12 @@ Class User
     }
     
     /**
-     * Returns a numeric array containing all the IDs of the user's friends.
-     * @return array Returns an array with the user's friends ID, the constant USER_HAS_NO_FRIENDS if the user has no friends or false if something fails.
+     * Returns a bidimensional array containing all the IDs, usernames of the user's friends and they status (online, offline, and soon AFK)
+     * @return array Returns a bidimensional array with each friend's ID, username and status, the constant USER_HAS_NO_FRIENDS if the user has no friends or false if something fails.
      */
-    public function GetAllFriendsById()
+    public function GetAllFriends()
     {
-        $result = $this->_db->ExecuteStmt(Statements::SELECT_USER_FRIENDS_BY_ID, $this->_db->BuildStmtArray("i", $this->GetId()));
-        if ($result === false)
-            return false;
-        if ($result->num_rows === 0)
-            return USER_HAS_NO_FRIENDS;
-        $friends = array();
-        while ($row = $result->fetch_assoc())
-            $friends[] = $row['friend_id'];
-        return $friends;
-    }
-    
-    /**
-     * Returns a numeric array containing all the usernames of the user's friends and they status (online, offline, and soon AFK)
-     * @return array Returns a bidimensional array with the each friend's username and status, the constant USER_HAS_NO_FRIENDS if the user has no friends or false if something fails.
-     */
-    public function GetAllFriendsByUsername()
-    {
-        $result = $this->_db->ExecuteStmt(Statements::SELECT_USER_FRIENDS_BY_USERNAME, $this->_db->BuildStmtArray("s", $this->GetId()));
+        $result = $this->_db->ExecuteStmt(Statements::SELECT_USER_FRIENDS, $this->_db->BuildStmtArray("i", $this->GetId()));
         if ($result === false)
             return false;
         if ($result->num_rows === 0)
@@ -471,8 +454,9 @@ Class User
         while ($row = $result->fetch_assoc())
         {
             $friends[] = array(
-                0 => $row['username'],
-                1 => $row['is_online']
+                0 => $row['id'],
+                1 => $row['username'],
+                2 => $row['is_online']
             );
         }
         return $friends;
@@ -596,9 +580,9 @@ Class User
      * @param long/string $sender [Optional] A long integer representing a valid user ID or a string representing a valid username.<br />If this param is not provided, the function returns all the unreaded private messages for this user.
      * @return mixed Returns a bidimensional array with each message, the date it was sended, and the sernder ID or false if something fails.
      */
-    public function GetPrivateMessage($sender)
+    public function GetPrivateMessages($sender = NULL)
     {
-        if (isset($sender) && !is_null($sender))
+        if (!is_null($sender))
         {
             // If the parameter $sender is a string, it must be a username, so, cast it to a valid user ID
             if (is_string($sender))
@@ -678,6 +662,115 @@ Class User
         return false;
     }
     
+    /**
+     * Sets _all_ messages from a specific user as readed for this user.
+     * @param long/string $friend A long integer representing a unique user ID, or a string representing a username.
+     * @return boolean Returns true on success, or false in case of failure.
+     */
+    public function SetMessagesAsReaded($friend)
+    {
+        // If the parameter $sender is a string, it must be a username, so, cast it to a valid user ID
+        if (is_string($friend))
+        {
+            $friend = GetIdFromUsername($friend);
+            if ($friend === USER_DOESNT_EXISTS || $friend === false)
+                return false;
+        }
+        if ($this->_db->ExecuteStmt(Statements::UPDATE_USER_PRIVATE_MESSAGES_READED, $this->_db->BuildStmtArray("iii", 1, $this->GetId(), $friend)))
+            return true;
+        return false;
+    }
+    
+    /***********************************************************\
+    *  	                 USER BOARD FUNCTIONS                   *
+    \***********************************************************/
+    
+    /**
+     * Gets the total board messages sended by this user based in the message_number field in the database (not in the COUNT(*) statement)
+     * @return mixed Returns the number of messages for a specific user, USER_HAS_NO_BOARD_MESSAGES (0) if the user hasn't written any comment in his board yet, or false if something fails.
+     */
+    public function GetBoardMessagesCount()
+    {
+        if (($result = $this->_db->ExecuteStmt(Statements::SELECT_USER_BOARD_COUNT, $this->_db->BuildStmtArray("i", $this->GetId()))))
+        {
+            if ($result->num_rows === 0)
+                return USER_HAS_NO_BOARD_MESSAGES;
+            
+            $row = $result->fetch_array();
+            return $row[0];
+        }
+        return false;
+    }
+    
+    /**
+     * Inserts a new comment/message in the database. Note that the message must be proccessed/stripped/etc _before_ be sended here. The message is inserted in the DB as is.
+     * @param string $message The message itself.
+     * @return boolean Returns true on success, or false in case of failure.
+     */
+    public function SendBoardMessage($message)
+    {
+        if ($this->_db->ExecuteStmt(Statements::INSERT_USER_BOARD, $this->_db->BuildStmtArray("iiss", $this->GetId(), $this->GetBoardMessagesCount() + 1, $message, date("Y-m-d H:i:s", time()))))
+            return true;
+        return false;
+    }
+    
+    /**
+     * Gets all the messages between the specific interval for this user.
+     * @param integer $from One of the limits.
+     * @param integer $to The other limit.
+     * @return mixed Returns a bidimensional array containing all the messages related data (except the user's id, that is implicit), USER_HAS_NO_BOARD_MESSAGES if the user hasn't sent any messages yet, or false if something fails.
+     */
+    public function GetBoardMessages($from, $to)
+    {
+        if (($result = $this->_db->ExecuteStmt(Statements::SELECT_USER_BOARD, $this->_db->BuildStmtArray("iii", $this->GetId(), $from, $to))))
+        {
+            if ($result->num_rows === 0)
+                return USER_HAS_NO_BOARD_MESSAGES;
+            
+            $messages = array();
+            while (($row = $result->fetch_assoc()))
+            {
+                $messages[] = array(
+                    'messageId'     => $row['message_id'],
+                    'messageNumber' => $row['message_number'],
+                    'message'       => $row['message'],
+                    'date'          => $row['date'],
+                );
+            }
+            return $messages;
+        }
+        return false;
+    }
+    
+    /**
+     * Obtains all the replies for a specific user's message
+     * @param long $messageId An integer representing an unique message ID
+     * @return mixed Returns a bidimensional array with all the replies and more data like the writer username and avatar path for later use, USER_COMMENT_HAS_NO_REPLIES if the comment has not replies, or false if something fails.
+     */
+    public function GetBoardMessageReplies($messageId)
+    {
+        if (($result = $this->_db->ExecuteStmt(Statements::SELECT_USER_BOARD_REPLIES, $this->_db->BuildStmtArray("ii", $this->GetId(), $messageId))))
+        {
+            if ($result->num_rows === 0)
+                return USER_COMMENT_HAS_NO_REPLIES;
+            
+            $replies = array();
+            while (($row = $result->fetch_assoc()))
+            {
+                $replies[] = array(
+                    'reply_id'   => $row['reply_id'],
+                    'sender_id'  => $row['sender_id'],
+                    'message'    => $row['message'],
+                    'date'       => $row['date'],
+                    'username'   => $row['username'],
+                    'avatarPath' => $row['avatar_path'],
+                );
+            }
+            return $replies;
+        }
+        return false;
+    }
+
     private $_id;                // The user's unique ID
     private $_username;          // The user's username (nickname)
     private $_passwordSha1;      // The encripted user's password

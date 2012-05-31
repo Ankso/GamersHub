@@ -63,6 +63,7 @@
     border-radius:0.5em;
 }
 
+/* User's board comments */
 .commentsBoard {
     width:98%;
     margin-left:1%;
@@ -70,8 +71,118 @@
     margin-top:5px;
     border:2px #FF0000 solid;
     border-radius:0.5em;
+    min-height:50px;
 }
 
+.commentsBoardInput {
+	margin-top:10px;
+	margin-left:5%;
+    width:90%;
+}
+
+.commentInputTextBox {
+    width:99%;
+    height:20px;
+    float:left;
+    border:2px solid #444444;
+    padding:0px;
+    border-radius:0.5em;
+    font-style:italic;
+    color:#555555;
+    box-shadow:3px 0 5px #000000;
+}
+
+.sendBoardMessage {
+	position:relative;
+	float:left;
+	height:24px;
+	width:30px;
+	margin-left:-30px;
+	text-align:center;
+    index:10;
+    border-top-right-radius:0.3em;
+    border-bottom-right-radius:0.3em;
+    background-color:#333333;
+    opacity:0.7;
+}
+
+.sendBoardMessage:hover {
+    cursor:pointer;
+    opacity:1;
+}
+
+.commentsHistory {
+	width:90%;
+	margin-left:5%;
+    margin-top:47px;
+    margin-bottom:10px;
+    margin-bottom:35px;
+}
+
+.boardComment {
+    padding:5px;
+    padding-left:12px;
+    border:1px #777777 solid;
+    border-radius:0.5em;
+    background:rgba(0, 0, 0, 0.5);
+    margin-top:30px;
+}
+
+.boardCommentBody {
+    text-align:left;
+}
+
+.boardCommentBottom {
+    text-align:right;
+    margin-right:10px;
+    font-style:italic;
+}
+
+.boardCommentReply {
+	font:17px Calibri;
+    margin-left:20px;
+    margin-top:12px;
+    margin-bottom:10px;
+    margin-right:5px;
+}
+
+.boardCommentReplyBody {
+    text-align:left;
+    padding:5px;
+    border-left:1px #777777 solid;
+    border-top:1px #777777 solid;
+    border-top-left-radius:0.5em;
+}
+
+.boardCommentReplyAvatar {
+    float:left;
+    border:1px #00FF00 solid;
+    border-radius:0.5em;
+    padding:2px;
+}
+
+.boardCommentReplyContent {
+    margin-left:45px;
+}
+
+.boardCommentReplyBottom {
+    text-align:right;
+    font-style:italic;
+}
+
+.replyCommentBoard {
+    width:80%;
+    height:27px;
+    margin-top:15px;
+    margin-left:10%;
+    text-align:center;
+    font:17px Calibri;
+    border-top:1px #FFFFFF solid;
+    padding-top:5px;
+    padding-bottom:5px;
+}
+
+/* Clans Board */
 .clansBoard {
     width:98%;
     margin-left:1%;

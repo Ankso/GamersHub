@@ -7,6 +7,13 @@ var previousBirthday;
 var previousCountry;
 var previousCity;
 var openedControlPanel;
+var totalMessages;
+
+function PercentageWidthToPx(percentWidth)
+{
+    var totalWidth = $(window).width();
+    return ($(window).width() / 100) * percentWidth;
+}
 
 function FadeOut(event, redirectUrl)
 {
@@ -99,11 +106,11 @@ function OpenControlPanel(panelName)
             direction = "left";
         else if (panelName == "#mySocial" && openedControlPanel == "#myGames")
             direction = "left";
-        $(openedControlPanel).hide("drop", { direction: (direction == "right" ? "left" : "right") }, 500);
+        $(openedControlPanel).hide("slide", { direction: (direction == "right" ? "left" : "right") }, 500);
         if (openedControlPanel == panelName)
             $(panelName).slideUp(500);
         else
-            $(panelName).show("drop", { direction: direction }, 500);
+            $(panelName).show("slide", { direction: direction }, 500);
         $(openedControlPanel + 'Button').css("background-color", "transparent");
         $(openedControlPanel + 'Button').attr("onclick", "OpenControlPanel('" + openedControlPanel + "');");
     }
@@ -141,6 +148,7 @@ function ShowMyFriendsPanel()
         setTimeout("$('#myFriendsPanelFlapOpened').show();", 150);
         $('#myFriendsPanel').show("slide", 300);
     });
+    $.cookie("FriendsPanel", "opened");
 }
 
 function CloseMyFriendsPanel()
@@ -149,6 +157,7 @@ function CloseMyFriendsPanel()
     $('#myFriendsPanelFlapOpened').hide("slide", 300, function() {
         $('#myFriendsPanelFlapClosed').show("slide", 150);
     })
+    $.cookie("FriendsPanel", "closed");
 }
 
 function SwitchFriendOptionsMenu(event)
@@ -185,3 +194,88 @@ function SwitchFriendOptionsMenu(event)
         $(node).slideUp();
     }
 }
+
+function SendBoardComment(message, spaceOwner)
+{
+    if (message.length == 0 || message.length > 255)
+    {
+        // TODO: Show a popup, message or something here.
+        return;
+    }
+
+    $.post("ajax/boardmessages.php", { message: message }, function(data) {
+        if (data.length > 0)
+        {
+            if (data == "SUCCESS")
+            {
+                if (totalMessages == 0)
+                    $('#commentsHistory').text("");
+                ++totalMessages;
+                LoadBoardComments(1, 1, spaceOwner, true)
+                $('.commentInputTextBox').val("Something interesting to say?");
+            }
+            else
+                $('#commentsHistory').text("An error occurred, please try again in a few moments.");
+        }
+        else
+            $('#commentsHistory').text("An error occurred while connecting to the server, please try again in a few moments.");
+    });
+}
+
+function LoadBoardComments(from, to, owner, prepend)
+{
+    if (prepend === null)
+        prepend = false;
+    from = from - 1;
+    to = to - 1;
+    realFrom = totalMessages - to;
+    realTo = totalMessages - from;
+    $.post("ajax/boardmessages.php", { from: realFrom, to: realTo, spaceOwner: owner }, function(data) {
+        if (data.length > 0)
+        {
+            if (prepend)
+                $("#commentsHistory").prepend(data);
+            else
+                $("#commentsHistory").append(data);
+            /*$('div.replyCommentBoard').hide();
+            $('div.boardComment').mouseenter(function(event) {
+                $(event.srcElement).next().stop(true, true).show();
+            });
+            $('div.boardComment').mouseleave(function(event) {
+                $(event.srcElement).next().stop(true, true).hide();
+            });
+            $('div.replyCommentBoard').mouseenter(function(event) {
+                $(event.srcElement).stop(true, true).show();
+            });
+            $('div.replyCommentBoard').mouseleave(function(event) {
+                $(event.srcElement).stop(true, true).hide();
+            });*/
+        }
+        else
+            $("#commentsHistory").text("An error occurred while connecting to the server. Please try again in a few moments.");
+    });
+}
+
+/*
+function SendCommentReply(messageId)
+{
+    var reply = $(event.srcElement.parentElement.children[1].children[0]).val();
+    if (reply == "")
+        return;
+    
+    $.post("ajax/boardreplies.php", { messageId: messageId }, function(data) {
+        if (data.length > 0)
+        {
+            if (data == "SUCCESS")
+            {
+                
+            }
+        }
+    });
+}
+
+function LoadBoardCommentReplies(messageNumber)
+{
+    
+}
+*/

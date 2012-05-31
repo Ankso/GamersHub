@@ -45,6 +45,9 @@ else
     header("location:index.php");
     exit();
 }
+// Get private messages(if any) for later use.
+$privateMessages = $user->GetPrivateMessages();
+$userAvatarPath = $user->GetAvatarHostPath();
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -58,17 +61,15 @@ else
 <link href="css/dark-hive/jquery-ui-1.8.20.custom.css" rel="stylesheet" type="text/css" media="screen" />
 <script type="text/javascript" src="js/inc/jquery-1.7.2.min.js"></script>
 <script type="text/javascript" src="js/inc/jquery-ui-1.8.20.custom.min.js"></script>
-<script type="text/javascript" src="js/inc/jquery.hoverIntent.min.js"></script>
-<script type="text/javascript" src="js/inc/jquery.metadata.js"></script>
-<script type="text/javascript" src="js/inc/jquery.mb.flipText.js"></script>
+<script type="text/javascript" src="js/inc/jquery.cookie.js"></script>
 <script type="text/javascript" src="js/inc/jquery.fancybox-1.3.4.js"></script>
-<script type="text/javascript" src="js/inc/jquery.mousewheel-3.0.4.pack.js"></script>
 <script type="text/javascript" src="js/inc/myAccount.js"></script>
 <script type="text/javascript" src="js/inc/privateMessages.js"></script>
 <script type="text/javascript" src="js/inc/userspace.js"></script>
 <script type="text/javascript">
 // TODO: Move all the inline function calls from the HTML to here
 $(document).ready(function() {
+    totalMessages = <?php echo $spaceOwner->GetBoardMessagesCount(); ?>;
     $("a#friendRequests").fancybox();
     $("a#removeFriend").fancybox();
     $("a#sendPrivateMessage").fancybox();
@@ -87,8 +88,18 @@ $(document).ready(function() {
     <?php
     }
     ?>
-    $('#myFriendsPanel').hide();
-    $('#myFriendsPanelFlapOpened').hide();
+    var myFriendsPanelWidth = PercentageWidthToPx(18);
+    if (myFriendsPanelWidth >= 250)
+    	$('#myFriendsPanel').css("width", myFriendsPanelWidth.toString() + "px");
+    else
+        $('#myFriendsPanel').css("width", "250px");
+    if ($.cookie("FriendsPanel") == "closed")
+    {
+    	$('#myFriendsPanel').hide();
+    	$('#myFriendsPanelFlapOpened').hide();
+    }
+    else
+        $('#myFriendsPanelFlapClosed').hide();
     $('#profileDetails').hide();
     $('.controlPanel').hide();
     $('.friendPanelOptions').hide();
@@ -96,7 +107,7 @@ $(document).ready(function() {
     $('img#moreOptionsImg').hide();
     $('.friendHeader').mouseenter(function(event) {
         try {
-            $(event.srcElement.children[1].children[0]).show();
+            $(event.srcElement.children[1].children[0]).stop().fadeIn(100);
         }
         catch(e) {
             $('img#moreOptionsImg').hide();
@@ -104,13 +115,24 @@ $(document).ready(function() {
     });
     $('.friendHeader').mouseleave(function(event) {
         try {
-            $(event.srcElement.children[1].children[0]).hide();
+            $(event.srcElement.children[1].children[0]).stop.fadeOut(100);
         }
         catch(e) {
             $('img#moreOptionsImg').hide();
         }
     });
+    $('div#newPrivateMessage').click(function(event) {
+        $(event.srcElement).remove();
+    });
     $('#addNewFriend').load('ajax/friendsfinder.html');
+    LoadBoardComments(1, 5, <?php echo $spaceOwner->GetId(); ?>);
+    $('.commentInputTextBox').focusin(function(event) {
+        $(event.srcElement).val("");
+    });
+    $('.commentInputTextBox').focusout(function(event) {
+        if ($(event.srcElement).val() == "")
+			$(event.srcElement).val("Something interesting to say?");
+    });
     openedControlPanel = "#none";
     FadeIn();
 });
@@ -132,7 +154,7 @@ $(document).ready(function() {
 		<div id="addNewFriend" class="friendPanelOptions" style="margin-bottom:5px;"></div>
 	</div>
 	<?php
-	$friendsList = $user->GetAllFriendsByUsername();
+	$friendsList = $user->GetAllFriends();
     if ($friendsList === USER_HAS_NO_FRIENDS)
         echo '    <div id="friendWrapper" class="friendWrapper" style="text-align:center;">You have no friends</div>', "\n";
     elseif ($friendsList === false)
@@ -140,19 +162,37 @@ $(document).ready(function() {
     else
     {
         $totalFriends = count($friendsList);
+        $privateMessagesSenders = false;
+        if ($privateMessages !== USER_HAS_NO_MESSAGES && $privateMessages !== false)
+        {
+            $privateMessagesSenders = array();
+            foreach ($privateMessages as $i => $value)
+                $privateMessagesSenders[] = $privateMessages[$i]['sender'];
+        }
         foreach ($friendsList as $i => $value)
         {
     ?>
     <div id="friendWrapper" class="friendWrapper">
 		<div id="friendHeader" class="friendHeader" <?php if ($i === $totalFriends - 1) echo 'style="border-bottom-left-radius:0.5em;"';?>>
-    		<div class="friendName"><img src="images/<?php echo ($friendsList[$i][1] ? "friend_online" : "friend_offline"); ?>.png" /><a class="friendSpaceLink" href="/<?php echo $friendsList[$i][0]; ?>"><?php echo $friendsList[$i][0]; ?></a></div>
+    		<div class="friendName"><img src="images/<?php echo ($friendsList[$i][2] ? "friend_online" : "friend_offline"); ?>.png" /><a class="friendSpaceLink" href="/<?php echo $friendsList[$i][1]; ?>"><?php echo $friendsList[$i][1]; ?></a></div>
     		<div class="plusImg"><img id="moreOptionsImg" src="images/more_info_large.png" style="height:25px; width:25px;" /></div>
+    		<?php
+    		if ($privateMessagesSenders !== false)
+    		{
+    		    if (in_array($friendsList[$i][0], $privateMessagesSenders))
+    		    {
+    		?>
+			<div id="newPrivateMessage" class="newPrivateMessage"><a id="sendPrivateMessage" href="ajax/privatemessage.php?friendName=<?php echo $friendsList[$i][1]; ?>"><img src="images/new_message.png" /></a></div>
+    		<?php 
+    		    }
+    		}
+    		?>
 		</div>
 		<div class="friendPanelOptions">
 			<div class="friendOption">Invite to chat</div>
 			<div class="friendOption">Invite to LiveStream</div>
-			<div class="friendOption"><a id="sendPrivateMessage" href="ajax/privatemessage.php?friendName=<?php echo $friendsList[$i][0]; ?>" style="text-decoration:none; color:#FFFFFF;">Send private message</a></div>
-			<div class="friendOptionRemove"><a id="removeFriend" href="ajax/removefriendconfirmation.php?friendName=<?php echo $friendsList[$i][0]; ?>" style="text-decoration:none; color:#FFFFFF;">Remove friend</a></div>
+			<div class="friendOption"><a id="sendPrivateMessage" href="ajax/privatemessage.php?friendName=<?php echo $friendsList[$i][1]; ?>" style="text-decoration:none; color:#FFFFFF;">Send private message</a></div>
+			<div class="friendOptionRemove"><a id="removeFriend" href="ajax/removefriendconfirmation.php?friendName=<?php echo $friendsList[$i][1]; ?>" style="text-decoration:none; color:#FFFFFF;">Remove friend</a></div>
 		</div>
 	</div>
 	<?php
@@ -160,7 +200,7 @@ $(document).ready(function() {
     } 
     ?>
     <div id="closeMyFriendsPanel" class="closeMyFriendsPanel" onclick="CloseMyFriendsPanel();">
-    	<b>Hide</b> <!-- We must put an image here, like a minus sign or a minimize icon, may be a left arrow, something like that -->
+    	<b>Hide</b><!-- We must put an image here, like a minus sign or a minimize icon, may be a left arrow, something like that -->
     </div>
 </div>
 <div class="mainContent">
@@ -173,8 +213,20 @@ $(document).ready(function() {
 				<br/><br/>-- Live comments about the livestream here --<br/><br/><br/>
 			</div>
 		</div>
-		<div class="commentsBoard">
-			<br/></br>-- Live comments written by you here, independent from the streaming --<br/><br/><br/></br><br/></br><br/></br><br/></br><br/>
+		<div id="commentsBoard" class="commentsBoard">
+<?php
+	    if ($isOwner)
+		{
+		?>
+			<div id="commentsBoardInput" class="commentsBoardInput">
+				<input class="commentInputTextBox" type="text" value="Something interesting to tell?" />
+				<div id="sendBoardMessage" class="sendBoardMessage" onclick="SendBoardComment($('.commentInputTextBox').val(), <?php echo $spaceOwner->GetId(); ?>);"><img src="images/send_comment.png" /></div>
+			</div>
+<?php 
+		}
+		?>
+			<div id="commentsHistory" class="commentsHistory">
+			</div>
 		</div>
 		<div class="clansBoard">
 			<br/></br>-- Live comments written by your clan(s) here, independent from your comments --<br/><br/><br/>

@@ -76,11 +76,16 @@ class Database
         // We'll need both parameters. To execute a query without variables, use Database::query() instead.
         if (!isset($query) || !isset($params))
             return false;
+        
         if(!is_array($params))
             return false;
+        
         // Prepare the stmt
         if (!($stmt = $this->_mysqli->prepare($query)))
+        {
+            echo $this->_mysqli->error;
             return false;
+        }
         /**
          * The $params structure is:
          * $params = array(
@@ -105,7 +110,10 @@ class Database
             if (!call_user_func_array(array($stmt, 'bind_param'), $args))
                 return false;
             if (!$stmt->execute())
+            {
+                echo $this->_mysqli->error;
                 return false;
+            }
             // It appears that for INSERT type queries, get_result() returns false. So, if the query has been executed correctly, we can assume that the real result is true
             $res = $stmt->get_result();
             $results[] = ($res === false ? true : $res);
@@ -125,7 +133,7 @@ class Database
     {
         if (func_num_args() < 2)
             return false;
-            
+        
         $args = func_get_args();
         $StmtArray = array(
             0 => array()

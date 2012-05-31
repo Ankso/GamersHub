@@ -19,14 +19,16 @@ if (!$user->IsFriendOf($_GET['friendName']))
     die("The receiver must be in your friends list!");
 else
     $friend = GetIdFromUsername($_GET['friendName']);
-    
+
 // Now we know that the user is logged in and that the friend specified is really a valid username and is really a friend of the user.
 $conversationHistory = $user->GetPrivateConversation($friend);
+// We can now set the messages viwed here as readed
+$user->SetMessagesAsReaded($friend);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<title>Upload new avatar</title>
+<title>Private Messages</title>
 <style type="text/css">
 .sendPrivateMessage {
 	width:50px;
