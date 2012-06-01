@@ -127,7 +127,8 @@ $(document).ready(function() {
     $('#addNewFriend').load('ajax/friendsfinder.html');
     LoadBoardComments(1, 5, <?php echo $spaceOwner->GetId(); ?>);
     $('.commentInputTextBox').focusin(function(event) {
-        $(event.srcElement).val("");
+        if ($(event.srcElement).val() == "Something interesting to say?")
+        	$(event.srcElement).val("");
     });
     $('.commentInputTextBox').focusout(function(event) {
         if ($(event.srcElement).val() == "")
@@ -219,7 +220,7 @@ $(document).ready(function() {
 		{
 		?>
 			<div id="commentsBoardInput" class="commentsBoardInput">
-				<input class="commentInputTextBox" type="text" value="Something interesting to tell?" />
+				<input class="commentInputTextBox" type="text" value="Something interesting to say?" />
 				<div id="sendBoardMessage" class="sendBoardMessage" onclick="SendBoardComment($('.commentInputTextBox').val(), <?php echo $spaceOwner->GetId(); ?>);"><img src="images/send_comment.png" /></div>
 			</div>
 <?php 

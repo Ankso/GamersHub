@@ -13,7 +13,11 @@ $user = new User($_SESSION['userId']);
 if (isset($_POST['message']))
 {
     $message = strip_tags($_POST['message']);
-    // TODO: Here we must proccess things like links to videos or photos, etc.
+    // TODO: Here we must much more things, like photos or links to profiles etc.
+    // Parse all links:
+    $message = preg_replace("#(http://)([a-z0-9_\-\?\/.=&~]*)#i", '<a href="http://$2" target="_blank">http://$2</a>', $message);
+    // Parse youtube links and embed the video instead of the simple link:
+    $message = preg_replace("#(<a href=\"http://(www.)?youtube.com)?/(v/|watch\?v=)([a-z0-9\-_~]+)([^<]+)(</a>)#i", '<br /><iframe width="640" height="480" src="http://www.youtube.com/embed/$4?wmode=transparent" frameborder="0" allowfullscreen></iframe><br />', $message);
     if ($user->SendBoardMessage($message))
         echo "SUCCESS";
     else
