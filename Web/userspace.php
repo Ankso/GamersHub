@@ -70,6 +70,7 @@ $userAvatarPath = $user->GetAvatarHostPath();
 // TODO: Move all the inline function calls from the HTML to here
 $(document).ready(function() {
     totalMessages = <?php echo $spaceOwner->GetBoardMessagesCount(); ?>;
+    ownerId = <?php echo $spaceOwner->GetId(); ?>;
     $("a#friendRequests").fancybox();
     $("a#removeFriend").fancybox();
     $("a#sendPrivateMessage").fancybox();
@@ -125,7 +126,7 @@ $(document).ready(function() {
         $(event.srcElement).remove();
     });
     $('#addNewFriend').load('ajax/friendsfinder.html');
-    LoadBoardComments(1, 5, <?php echo $spaceOwner->GetId(); ?>);
+    LoadBoardComments(1, 5, false);
     $('.commentInputTextBox').focusin(function(event) {
         if ($(event.srcElement).val() == "Something interesting to say?")
         	$(event.srcElement).val("");
@@ -133,6 +134,16 @@ $(document).ready(function() {
     $('.commentInputTextBox').focusout(function(event) {
         if ($(event.srcElement).val() == "")
 			$(event.srcElement).val("Something interesting to say?");
+    });
+    $('.commentInputTextBox').keydown(function(event) {
+        if (event.keyCode == 13)
+            SendBoardComment($('.commentInputTextBox').val());
+    });
+    $('span#moreCommentsHistoryButton').click(function(event) {
+        if (lastLoadedComment < totalMessages)
+        	LoadBoardComments(lastLoadedComment + 1, lastLoadedComment + 6, false)
+        if (lastLoadedComment >= totalMessages)
+            $(event.srcElement).fadeOut(250);
     });
     openedControlPanel = "#none";
     FadeIn();
@@ -228,6 +239,7 @@ $(document).ready(function() {
 		?>
 			<div id="commentsHistory" class="commentsHistory">
 			</div>
+			<div id="moreCommentsHistory"><span id="moreCommentsHistoryButton" class="moreCommentsHistoryButton">More</span></div>
 		</div>
 		<div class="clansBoard">
 			<br/></br>-- Live comments written by your clan(s) here, independent from your comments --<br/><br/><br/>

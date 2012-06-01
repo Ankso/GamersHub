@@ -6,17 +6,19 @@ require_once($_SERVER['DOCUMENT_ROOT'] . "/../classes/User.Class.php");
 session_start();
 
 if (!isset($_SESSION['userId']))
-    die("You must be logged in!");
+    die('<div style="background-color:#000000; padding:10px;">You must be logged in!</div>');
 
 if (!isset($_GET['friendName']))
-    die("A friend must be specified.");
+    die('<div style="background-color:#000000; padding:10px;">A friend must be specified.</div>');
 
 // Create the user object
 $user = new User($_SESSION['userId']);
 
 // Check that the user is friend of the given username
-if (!$user->IsFriendOf($_GET['friendName']))
-    die("The receiver must be in your friends list!");
+if (GetIdFromUsername($_GET['friendName']) === USER_DOESNT_EXISTS)
+    die('<div style="background-color:#000000; padding:10px;">The user <b>'. $_GET['friendName'] . '</b> doesn\'t exitst.<br />Please make sure that the nick you have specified in the command is correct and try again.</div>');
+elseif (!$user->IsFriendOf($_GET['friendName']))
+    die('<div style="background-color:#000000; padding:10px;">The receiver must be in your friends list!</div>');
 else
     $friend = GetIdFromUsername($_GET['friendName']);
 

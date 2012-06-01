@@ -8,6 +8,8 @@ var previousCountry;
 var previousCity;
 var openedControlPanel;
 var totalMessages;
+var lastLoadedComment;
+var ownerId;
 
 function PercentageWidthToPx(percentWidth)
 {
@@ -195,11 +197,18 @@ function SwitchFriendOptionsMenu(event)
     }
 }
 
-function SendBoardComment(message, spaceOwner)
+function SendBoardComment(message)
 {
     if (message.length == 0 || message.length > 255)
     {
-        // TODO: Show a popup, message or something here.
+        // Just do nothing
+        return;
+    }
+    
+    if (message.charAt(0) == "/")
+    {
+        // Board comments starting with "/" are going to be parsed as commands
+        ParseCommand(message);
         return;
     }
 
@@ -211,7 +220,7 @@ function SendBoardComment(message, spaceOwner)
                 if (totalMessages == 0)
                     $('#commentsHistory').text("");
                 ++totalMessages;
-                LoadBoardComments(1, 1, spaceOwner, true)
+                LoadBoardComments(1, 1, true)
                 $('.commentInputTextBox').val("Something interesting to say?");
             }
             else
@@ -222,15 +231,16 @@ function SendBoardComment(message, spaceOwner)
     });
 }
 
-function LoadBoardComments(from, to, owner, prepend)
+function LoadBoardComments(from, to, prepend)
 {
     if (prepend === null)
         prepend = false;
+    lastLoadedComment = to;
     from = from - 1;
     to = to - 1;
     realFrom = totalMessages - to;
     realTo = totalMessages - from;
-    $.post("ajax/boardmessages.php", { from: realFrom, to: realTo, spaceOwner: owner }, function(data) {
+    $.post("ajax/boardmessages.php", { from: realFrom, to: realTo, spaceOwner: ownerId }, function(data) {
         if (data.length > 0)
         {
             if (prepend)
@@ -254,6 +264,34 @@ function LoadBoardComments(from, to, owner, prepend)
         else
             $("#commentsHistory").text("An error occurred while connecting to the server. Please try again in a few moments.");
     });
+}
+
+function ParseCommand(command)
+{
+    if (command.length < 2)
+        return;
+    
+    var cmdParams = new Array();
+    cmdParams = command.substring(1).split(" ");
+    switch (cmdParams[0])
+    {
+        case "message":
+        case "msg":
+        case "m":
+            // Send private message to target user
+            // Check if the user has set the needed params
+            if (!cmdParams[1])
+                return -1;
+
+            // Create temp link to spawn fancybox:
+            $('body').append('<a id="tempFancyboxLink" href="ajax/privatemessage.php?friendName=' + cmdParams[1] + '" style="display:none"></a>');
+            $('a#tempFancyboxLink').fancybox();
+            $('a#tempFancyboxLink').trigger("click");
+            $('.commentInputTextBox').val("Something interesting to say?");
+            return 0;
+       default:
+           return;
+    }
 }
 
 /*

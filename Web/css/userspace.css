@@ -65,17 +65,13 @@
 
 /* User's board comments */
 .commentsBoard {
-    width:98%;
-    margin-left:1%;
-    margin-right:1%;
-    margin-top:5px;
-    border:2px #FF0000 solid;
-    border-radius:0.5em;
-    min-height:50px;
+    width:100%;
+    margin-top:15px;
+    margin-bottom:15px;
 }
 
 .commentsBoardInput {
-	margin-top:10px;
+	height:30px;
 	margin-left:5%;
     width:90%;
 }
@@ -114,7 +110,7 @@
 .commentsHistory {
 	width:90%;
 	margin-left:5%;
-    margin-top:47px;
+    margin-top:15px;
     margin-bottom:10px;
     margin-bottom:35px;
 }
@@ -124,7 +120,7 @@
     padding-left:12px;
     border:1px #777777 solid;
     border-radius:0.5em;
-    background:rgba(0, 0, 0, 0.5);
+    background-color:rgba(0, 0, 0, 0.5);
     margin-top:30px;
 }
 
@@ -180,6 +176,17 @@
     border-top:1px #FFFFFF solid;
     padding-top:5px;
     padding-bottom:5px;
+}
+
+.moreCommentsHistoryButton {
+    border:1px #777777 solid;
+    border-radius:0.5em;
+    padding-left:5px;
+    padding-right:5px;
+    padding-top:2px;
+    padding-bottom:2px;
+    background-color:rgba(0, 0, 0, 0.5);
+    cursor:pointer;
 }
 
 /* Clans Board */
