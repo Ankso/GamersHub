@@ -1,5 +1,8 @@
 <?php
-// This class acts as an enum
+/**
+ * This class acts as an enum with all the prepared statements that the application needs.
+ * @author Ankso
+ */
 class Statements
 {
     // Basic load/save user data queries
@@ -24,11 +27,12 @@ class Statements
     const SELECT_USER_DETAILED_DATA           = "SELECT bio, birthday, country, city FROM user_detailed_data WHERE user_id = ?";
     // Privacy System
     const SELECT_USER_PRIVACY                 = "SELECT view_email, view_profile, view_livestream FROM user_privacy WHERE user_id = ?";
-    const REPLACE_USER_PRIVACY                = "REPLACE INTO user_privacy (user_id, view_email, view_profile, view_livestream) VALUES (?, ?, ?, ?)";
+    const UPDATE_USER_PRIVACY                 = "UPDATE user_privacy SET view_email = ?, view_profile = ?, view_livestream = ? WHERE user_id = ?";
     // User board
     const INSERT_USER_BOARD                   = "INSERT INTO user_board (user_id, message_number, message, date) VALUES (?, ?, ?, ?)";
     const SELECT_USER_BOARD                   = "SELECT message_id, message_number, message, date FROM user_board WHERE user_id = ? AND message_number BETWEEN ? AND ? ORDER BY message_id DESC";
     const SELECT_USER_BOARD_COUNT             = "SELECT message_number FROM user_board WHERE user_id = ? ORDER BY message_number DESC LIMIT 1";
+    const DELETE_USER_BOARD                   = "DELETE FROM user_board WHERE message_id = ? AND user_id = ?";
     const INSERT_USER_BOARD_REPLY             = "INSERT INTO user_board_replies (message_id, sender_id, message, date) VALUES (?, ?, ?, ?)";
     const SELECT_USER_BOARD_REPLIES           = "SELECT a.reply_id, a.sender_id, a.message, a.date, c.username, d.avatar_path FROM user_board_replies AS a, user_board AS b, user_data AS c, user_avatars AS d WHERE b.user_id = ? AND b.message_id = ? AND a.sender_id = c.id AND a.sender_id = d.user_id ORDER BY a.reply_id DESC";
     // Friends system
@@ -61,5 +65,8 @@ class Statements
     //const DELETE_USER_DETAILED_DATA           = "DELETE FROM user_detailed_data WHERE user_id = ?";
     const INSERT_USER_PRIVACY                 = "INSERT INTO user_privacy (user_id, view_email, view_profile, view_livestream) VALUES (?, ?, ?, ?)";
     //const DELETE_USER_PRIVACY                 = "DELETE FROM user_privacy WHERE user_id = ?";
+    // Customization options
+    const UPDATE_USER_CUSTOM_OPTIONS          = "UPDATE user_custom_options SET option_livestream = ?, option_livestream_livecomments = ?, option_latest_news = ? WHERE user_id = ?";
+    const SELECT_USER_CUSTOM_OPTIONS          = "SELECT option_livestream, option_livestream_livecomments, option_latest_news FROM user_custom_options WHERE user_id = ?";
 }
 ?>

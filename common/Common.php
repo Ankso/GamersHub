@@ -15,7 +15,7 @@ function CreateSha1Pass ($username, $password)
 
 /**
  * Gets a username from a user's ID without creating a full user object.
- * @param long $id
+ * @param long $id The user's unique ID.
  * @return string Returns a string with the username, USER_DOESNT_EXISTS if no result or false if something fails.
  */
 function GetUsernameFromId($id)
@@ -34,7 +34,7 @@ function GetUsernameFromId($id)
 
 /**
  * Gets a ID from a user's username without creating a full user object.
- * @param string $username
+ * @param string $username The user's username.
  * @return long Returns a long integer representing the user's ID, USER_DOESNT_EXISTS if no result or false if something fails.
  */
 function GetIdFromUsername($username)
@@ -49,6 +49,16 @@ function GetIdFromUsername($username)
         return USER_DOESNT_EXISTS;
     }
     return false;
+}
+
+/**
+ * Gets the avatar host path of a specific user without creating a full user class
+ * @param long $userId The user's unique ID
+ * @return mixed Returns a string representing the host path of the user's avatar, or false if something fails..
+ */
+function GetAvatarHostPathFromId($userId)
+{
+    
 }
 
 /**

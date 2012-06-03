@@ -2,7 +2,9 @@
 require_once($_SERVER['DOCUMENT_ROOT'] . "/../common/SharedDefines.php");
 
 /**
- * Main Database Class. Handles all Database tasks like conection, query execution, etc, using the mysqli library.
+ * Main Database Class. Initilized by a string representing the name of the database to connect with.<br />
+ * Handles all Database tasks like conection, query execution, etc, using the mysqli library.
+ * @author Ankso
  */
 class Database
 {

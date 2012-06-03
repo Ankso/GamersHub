@@ -9,6 +9,7 @@ if(!isset($_SESSION['userId']))
 
 $user = new User($_SESSION['userId']);
 $privacySettings = $user->GetPrivacySettings();
+$customOptions = $user->GetCustomOptions();
 ?>
 <script type="text/javascript">
 MenuOptionClick(0);
@@ -66,17 +67,18 @@ MenuOptionClick(0);
 	<div class="myAccountTabItem">
 		LiveStream:
 		<div class="myAccountSubTabItem">
-    		<input type="checkbox" name="liveStream" value="liveStream" checked="checked" />Enable LiveStream.<br />
-    		<input type="checkbox" name="liveComments" value="liveComments" checked="checked" />Enable LiveStream's Live Comments section.
+    		<input type="checkbox" name="liveStream" <?php if ($customOptions[CUSTOM_OPTION_LIVESTREAM]) echo 'checked="checked"'; ?> />Enable LiveStream.<br />
+    		<input type="checkbox" name="liveStreamComments" <?php if ($customOptions[CUSTOM_OPTION_LIVESTREAM_COMMENTS]) echo 'checked="checked"' ?> />Enable LiveStream's Live Comments section.
 		</div>
 	</div>
+	<!-- This option, latest news section, has no really sense, it will be enabled yes or yes. It's only here to try different options than LiveStream -->
 	<div class="myAccountTabItem">
 		Latest News:
 		<div class="myAccountSubTabItem">
-			<input type="checkbox" name="latestNews" value="latestNews" checked="checked" />Enable Latest News section.
+			<input type="checkbox" name="latestNews" <?php if ($customOptions[CUSTOM_OPTION_LATEST_NEWS]) echo 'checked="checked"'; ?> />Enable Latest News section.
 		</div>
 	</div>
-	<div class="myAccountSubmit" onclick="SubmitPrivacyChanges();">Save</div><span id="myAccountSubmitResult" class="myAccountSubmitResult"></span>
+	<div class="myAccountSubmit" onclick="SubmitCustomizationChanges();">Save</div><span id="myAccountSubmitResult" class="myAccountSubmitResult"></span>
 </div>
 <div id="myAccountSecurity" class="myAccountTab">
 	<div class="myAccountTabItem">Your last login: <?php echo ($user->GetLastLogin() != "1000-01-01 00:00:00") ? $user->GetLastLogin() : "This is your first login"; ?></div>

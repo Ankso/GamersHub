@@ -224,10 +224,31 @@ function SendBoardComment(message)
                 $('.commentInputTextBox').val("Something interesting to say?");
             }
             else
-                $('#commentsHistory').text("An error occurred, please try again in a few moments.");
+                $('#commentsHistory').prepend("An error occurred, please try again in a few moments.");
         }
         else
-            $('#commentsHistory').text("An error occurred while connecting to the server, please try again in a few moments.");
+            $('#commentsHistory').prepend("An error occurred while connecting to the server, please try again in a few moments.");
+    });
+}
+
+function DeleteBoardComment(event)
+{
+    var messageId = $(event.srcElement.parentElement.parentElement).attr("data-id");
+    if (!messageId)
+        return;
+    $.post("ajax/boardmessages.php", { messageId: messageId, spaceOwner: ownerId}, function(data) {
+        if (data.length > 0)
+        {
+            if (data == "SUCCESS")
+            {
+                --totalMessages;
+                $(event.srcElement.parentElement.parentElement).fadeOut(500);
+            }
+            else
+                $('#commentsHistory').prepend("An error occurred, please try again in a few moments.");
+        }
+        else
+            $('#commentsHistory').prepend("An error occurred while connecting to the server, please try again in a few moments.");
     });
 }
 
@@ -247,6 +268,21 @@ function LoadBoardComments(from, to, prepend)
                 $("#commentsHistory").prepend(data);
             else
                 $("#commentsHistory").append(data);
+            $('div.deleteBoardComment').click(function(event) {
+                DeleteBoardComment(event);
+            });
+            $('div.displayCommentBoardReplies').click(function(event) {
+                if ($(event.srcElement).prev().is(":hidden"))
+                {
+                    $(event.srcElement).prev().slideDown(200);
+                    $(event.srcElement).text("Hide Replies");
+                }
+                else
+                {
+                    $(event.srcElement).prev().slideUp(200);
+                    $(event.srcElement).text("Show Replies");
+                }
+            });
             /*$('div.replyCommentBoard').hide();
             $('div.boardComment').mouseenter(function(event) {
                 $(event.srcElement).next().stop(true, true).show();
@@ -266,10 +302,17 @@ function LoadBoardComments(from, to, prepend)
     });
 }
 
+/**
+ * Welcome to GamersHub's Command Parser ™. This will be the main function to parse commands written by the users.
+ * Commands must start with the character "/", the same character used in World of Warcraft chat system.
+ * Almost all things in the web are going to be able to be done with commands. From start a window chat to delete a message board or remove a friend from the friends list.
+ * @param string command A text string representing the command that must be executed.
+ * @returns integer By the way, returns 0 if the command is executed successfully, or -1 if something fails. Later, we must add codes for each specific error (like syntax error, invalid params, etc...)
+ */
 function ParseCommand(command)
 {
     if (command.length < 2)
-        return;
+        return -1;
     
     var cmdParams = new Array();
     cmdParams = command.substring(1).split(" ");
@@ -288,9 +331,31 @@ function ParseCommand(command)
             $('a#tempFancyboxLink').fancybox();
             $('a#tempFancyboxLink').trigger("click");
             $('.commentInputTextBox').val("Something interesting to say?");
+            $('a#tempFancyBoxLink').remove();
             return 0;
-       default:
-           return;
+        case "friend":
+            if (!cmdParams[1] || !cmdParams[2])
+                return -1;
+            
+            switch(cmdParams[1])
+            {
+                case "add":
+                    // Do nothing by the way, the friend request system must be structured properly.
+                    return 0;
+                case "remove":
+                    // Remove a friend system must be structured also...
+                    // Create temp link to spawn fancybox:
+                    $('body').append('<a id="tempFancyboxLink" href="ajax/removefriendconfirmation.php?friendName=' + cmdParams[2] + '" style="display:none"></a>')
+                    $('a#tempFancyboxLink').fancybox();
+                    $('a#tempFancyboxLink').trigger("click");
+                    $('.commentInputTextBox').val("Something interesting to say?");
+                    $('a#tempFancyBoxLink').remove();
+                    return 0;
+                default:
+                    return -1;
+            }
+        default:
+            return -1;
     }
 }
 

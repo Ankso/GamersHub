@@ -52,6 +52,13 @@ define("PRIVACY_LEVEL_CLAN_MEMBERS", 2);
 define("PRIVACY_LEVEL_EVERYONE", 3);
 
 /**
+ * User space customization option
+ */
+define("CUSTOM_OPTION_LIVESTREAM", 0);
+define("CUSTOM_OPTION_LIVESTREAM_COMMENTS", 1);
+define("CUSTOM_OPTION_LATEST_NEWS", 2);
+
+/**
  * User's board defines
  */
 define("USER_HAS_NO_BOARD_MESSAGES", 0);

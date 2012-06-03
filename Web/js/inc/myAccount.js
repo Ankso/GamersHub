@@ -101,3 +101,32 @@ function SubmitPrivacyChanges()
         }
     });
 }
+
+function SubmitCustomizationChanges()
+{
+    var liveStream = ($('input:checkbox[name=liveStream]').is(":checked") ? 1 : 0);
+    var liveStreamComments = ($('input:checkbox[name=liveStreamComments]').is(":checked") ? 1 : 0);
+    var latestNews = ($('input:checkbox[name=latestNews]').is(":checked") ? 1 : 0);
+    $('span.myAccountSubmitResult').css("color", "#FFFFFF");
+    $('span.myAccountSubmitResult').text("Sending...");
+    $.post("core/sessions/customization.php", {liveStream : liveStream, liveStreamComments : liveStreamComments, latestNews : latestNews}, function(data) {
+        if (data.length > 0)
+        {
+            if (data == "SUCCESS")
+            {
+                $('span.myAccountSubmitResult').css("color", "#00FF00");
+                $('span.myAccountSubmitResult').text("Customization settings updated successfully!");
+            }
+            else
+            {
+                $('span.myAccountSubmitResult').css("color", "#FF0000");
+                $('span.myAccountSubmitResult').text("An error occurred. Please try again in a few moments.");
+            }
+        }
+        else
+        {
+            $('span.myAccountSubmitResult').css("color", "#FF0000");
+            $('span.myAccountSubmitResult').text("An error occurred. Please make sure that you are connected to the internet.");
+        }
+    });
+}

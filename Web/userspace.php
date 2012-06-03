@@ -1,4 +1,7 @@
-<?php 
+<?php
+/*
+ * TODO: Redo "Add a friend" and "Remove friend" Structure.
+ */
 require_once("../common/SharedDefines.php");
 require_once("../common/Common.php");
 require_once("../classes/Database.Class.php");
@@ -48,6 +51,7 @@ else
 // Get private messages(if any) for later use.
 $privateMessages = $user->GetPrivateMessages();
 $userAvatarPath = $user->GetAvatarHostPath();
+$customOptions = $spaceOwner->GetCustomOptions();
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -217,16 +221,30 @@ $(document).ready(function() {
 </div>
 <div class="mainContent">
 	<div class="mainBoard">
+        <?php
+		if ($customOptions[CUSTOM_OPTION_LIVESTREAM])
+		{
+        ?>
 		<div class="mainLivestream">
 			<div class="videoWindow">
 				<br/><br/><br/><br/><br/><br/><br/>-- Here is your live streaming video (640x360) --
 			</div>
+            <?php
+			if ($customOptions[CUSTOM_OPTION_LIVESTREAM_COMMENTS])
+			{
+            ?>
 			<div class="videoComments">
 				<br/><br/>-- Live comments about the livestream here --<br/><br/><br/>
 			</div>
+            <?php
+			}
+            ?>
 		</div>
+		<?php 
+		}
+		?>
 		<div id="commentsBoard" class="commentsBoard">
-<?php
+		<?php
 	    if ($isOwner)
 		{
 		?>
@@ -234,7 +252,7 @@ $(document).ready(function() {
 				<input class="commentInputTextBox" type="text" value="Something interesting to say?" />
 				<div id="sendBoardMessage" class="sendBoardMessage" onclick="SendBoardComment($('.commentInputTextBox').val(), <?php echo $spaceOwner->GetId(); ?>);"><img src="images/send_comment.png" /></div>
 			</div>
-<?php 
+        <?php 
 		}
 		?>
 			<div id="commentsHistory" class="commentsHistory">
@@ -270,9 +288,16 @@ $(document).ready(function() {
 			</div>
 			<div class="editProfileButton" onclick="SwitchProfileDetails();">View profile</div>
 		</div>
+		<?php
+		if ($customOptions[CUSTOM_OPTION_LATEST_NEWS])
+		{
+		?>
 		<div class="latestNews">
 			<br/><br/><br/><br/><br/><br/><br/>-- The latest news in real-time about your friends, clans, games... --
 		</div>
+		<?php
+		}
+		?>
 		<div class="customAdvert">
 			<br/>-- An advertisement may be? --<br/><br/>
 		</div>

@@ -3,6 +3,12 @@ require_once ($_SERVER['DOCUMENT_ROOT'] . "/../common/SharedDefines.php");
 require_once ($_SERVER['DOCUMENT_ROOT'] . "/../classes/Database.Class.php");
 require_once ($_SERVER['DOCUMENT_ROOT'] . "/../common/PreparedStatements.php");
 
+/**
+ * Main User class. Can be initilized with a valid username or a valid user ID.<br />
+ * It stores data about an user, and has all the methods to access that data.<br />
+ * It also has methods representing user actions, like sending a private message to another user.<br />
+ * @author Ankso
+ */
 Class User
 {
     /**
@@ -384,11 +390,12 @@ Class User
         $email = (int)$email;
         $profile = (int)$profile;
         $liveStream = (int)$liveStream;
+        // Check the values
         if ($email > PRIVACY_LEVEL_EVERYONE || $email < PRIVACY_LEVEL_NOBODY
             || $profile > PRIVACY_LEVEL_EVERYONE || $profile < PRIVACY_LEVEL_FRIENDS
             || $liveStream > PRIVACY_LEVEL_EVERYONE || $liveStream < PRIVACY_LEVEL_FRIENDS)
             return false;
-        if (($result = $this->_db->ExecuteStmt(Statements::REPLACE_USER_PRIVACY, $this->_db->BuildStmtArray("iiii", $this->GetId(), $email, $profile, $liveStream))))
+        if (($result = $this->_db->ExecuteStmt(Statements::UPDATE_USER_PRIVACY, $this->_db->BuildStmtArray("iiii", $email, $profile, $liveStream, $this->GetId()))))
             return true;
         return false;
         
@@ -743,6 +750,21 @@ Class User
     }
     
     /**
+     * Deletes a specified board message from the database. Note that the message will be deleted only if this user is the message's writer.
+     * @param long $messageId The ID of the message to be deleted (Note: not the message number, but the message unique ID)
+     * @return boolean Returns true on success, or false in caso of failure.
+     */
+    public function DeleteBoardMessage($messageId)
+    {
+        // Note that we don't need to delete the related rows in tables like user_board_replies
+        // because the FK has the ON DELETE CASCADE and ON UPDATE CASCADE properties. This rows are going to be deleted automatically.
+        // Also note that the operation that checks that the user is the writer of the message is in the SQL statement itself.
+        if ($this->_db->ExecuteStmt(Statements::DELETE_USER_BOARD, $this->_db->BuildStmtArray("ii", $messageId, $this->GetId())))
+            return true;
+        return false;
+    }
+    
+    /**
      * Obtains all the replies for a specific user's message
      * @param long $messageId An integer representing an unique message ID
      * @return mixed Returns a bidimensional array with all the replies and more data like the writer username and avatar path for later use, USER_COMMENT_HAS_NO_REPLIES if the comment has not replies, or false if something fails.
@@ -770,7 +792,48 @@ Class User
         }
         return false;
     }
-
+    
+    /**
+     * Gets the customization options for this user.
+     * @return boolean Returns an array with the values for all the custom options, or false if something fails.
+     */
+    public function GetCustomOptions()
+    {
+        if (($result = $this->_db->ExecuteStmt(Statements::SELECT_USER_CUSTOM_OPTIONS, $this->_db->BuildStmtArray("i", $this->GetId()))))
+        {
+            $row = $result->fetch_assoc();
+            return array(
+                CUSTOM_OPTION_LIVESTREAM          => (bool)$row['option_livestream'],
+                CUSTOM_OPTION_LIVESTREAM_COMMENTS => (bool)$row['option_livestream_livecomments'],
+                CUSTOM_OPTION_LATEST_NEWS         => (bool)$row['option_latest_news'],
+            );
+        }
+        return false;
+    }
+    
+    /**
+     * Sets the values of the custom options for this user.
+     * @param boolean $livestream Livestream enabled (true) or disabled (false).
+     * @param boolean $livestreamComments Livestream LiveComments enabled (true) or disabled (false).
+     * @param boolean $latestNews Latest News Section enabled (true) or disabled (false).
+     * @return boolean Returns true on success, false on failure.
+     */
+    public function SetCustomOptions($liveStream, $liveStreamComments, $latestNews)
+    {
+        $liveStream = (int)$liveStream;
+        $liveStreamComments = (int)$liveStreamComments;
+        $latestNews = (int)$latestNews;
+        // Check that the values of the params are valid ones
+        if ($liveStream > 1 || $liveStream < 0 || $liveStreamComments > 1 || $liveStreamComments < 0 || $latestNews > 1 || $latestNews < 0)
+            return false;
+        // If livestream is disabled, the LiveStream LiveComments section must be disabled also
+        if ($liveStream === 0)
+            $liveStreamComments = 0;
+        if ($this->_db->ExecuteStmt(Statements::UPDATE_USER_CUSTOM_OPTIONS, $this->_db->BuildStmtArray("iiii", $liveStream, $liveStreamComments, $latestNews, $this->GetId())))
+            return true;
+        return false;
+    }
+    
     private $_id;                // The user's unique ID
     private $_username;          // The user's username (nickname)
     private $_passwordSha1;      // The encripted user's password

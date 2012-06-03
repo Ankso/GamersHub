@@ -12,8 +12,9 @@ $user = new User($_SESSION['userId']);
 
 if (isset($_POST['message']))
 {
+    // Create new message board
     $message = strip_tags($_POST['message']);
-    // TODO: Here we must much more things, like photos or links to profiles etc.
+    // TODO: Here we must parse much more things, like photos or links to profiles etc.
     // Parse all links:
     $message = preg_replace("#(http://)([a-z0-9_\-\?\/.=&~]*)#i", '<a href="http://$2" target="_blank">http://$2</a>', $message);
     // Parse youtube links and embed the video instead of the simple link:
@@ -23,8 +24,21 @@ if (isset($_POST['message']))
     else
         die("FAILED");
 }
+elseif(isset($_POST['messageId']) && isset($_POST['spaceOwner']))
+{
+    // Delete a message board
+    // Messages can only be removed from self space
+    if ($user->GetId() !== (int)$_POST['spaceOwner'])
+        die("FAILED");
+    // Anyway, the message won't be deleted of the user is not the writer.
+    if ($user->DeleteBoardMessage((int)$_POST['messageId']))
+        echo "SUCCESS";
+    else
+        die("FAILED");
+}
 elseif (isset($_POST['spaceOwner']) && isset($_POST['from']) && isset($_POST['to']))
 {
+    // Load the messages between the specified interval
     if (!$user->IsFriendOf((int)$_POST['spaceOwner']) && $user->GetId() !== (int)$_POST['spaceOwner'])
         die("You are not a friend of this user!");
     
@@ -32,8 +46,12 @@ elseif (isset($_POST['spaceOwner']) && isset($_POST['from']) && isset($_POST['to
     {
         $from = (int)$_POST['from'];
         $to = (int)$_POST['to'];
+        $isOwner = false;
         if ($user->GetId() == (int)$_POST['spaceOwner'])
+        {
             $spaceOwner = $user;
+            $isOwner = true;
+        }
         else
             $spaceOwner = new User((int)$_POST['spaceOwner']);
         $boardMessages = $spaceOwner->GetBoardMessages($from, $to);
@@ -47,14 +65,20 @@ elseif (isset($_POST['spaceOwner']) && isset($_POST['from']) && isset($_POST['to
             foreach ($boardMessages as $i => $value)
             {
 ?>
-<div class="boardComment">
+<div class="boardComment" data-id="<?php echo $boardMessages[$i]['messageId']; ?>">
+	<?php if ($isOwner) { ?><div class="deleteBoardComment"><img src="images/delete_16.png" /></div> <?php } ?>
 	<div class="boardCommentBody"><?php echo $boardMessages[$i]['message']; ?></div>
 	<div class="boardCommentBottom"><?php echo "By ", ($spaceOwner->GetId() == $user->GetId() ? "You" : $spaceOwner->GetUsername()), " ", $boardMessages[$i]['date']; ?></div>
-	<!--
-	<div class="replyCommentBoard">
-		<div style="border-radius:0.4em; border:1px #FFFFFF solid; width:50px; height:20px; margin-top:7px; margin-left:100%; background-color:#222222; cursor:pointer;"><a class="fancyboxCommentReply" href="#fancyCommentReply" style="color:#FFFFFF; text-decoration:none">Reply</a></div>
+	<div class="repliesCommentBoard" style="display:none">
+    	<div class="newReplyCommentBoard">
+    		<div class="newReplyCommentBoardInput">
+    			<div><input class="newReplyCommentBoardInputTextbox" type="text" value="Not yet implemented" /></div>
+    			<div class="newReplyCommentBoardInputSend">Comment</div>
+    		</div>
+    		<div class="newReplyCommentBoardAvatar"><img src="<?php echo $userAvatarHost; ?>" style="width:40px; height:40px; border:1px #00FF00 solid; border-radius:0.3em;" /></div>
+    	</div>
 	</div>
-	-->
+	<div class="displayCommentBoardReplies">Show Replies</div>
 </div>
 <?php
             }
