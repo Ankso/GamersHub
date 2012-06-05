@@ -61,12 +61,11 @@ elseif (isset($_POST['spaceOwner']) && isset($_POST['from']) && isset($_POST['to
             exit("You haven't write anything yet. Start ASAP!");
         else
         {
-            // Load an array with the IDs of the messages loaded to load the replies for those messages.
+            // Create an array with the IDs of the messages loaded to load the replies for those messages.
             $messageIds = array();
             foreach ($boardMessages as $i => $value)
                 $messageIds[] = $boardMessages[$i]['messageId'];
             $boardReplies = $spaceOwner->GetBoardMessageReplies($messageIds);
-            //var_dump($boardReplies);
             if ($boardReplies === false)
                 die("Error connecting to the server. Please, try again in a few moments.");
             $userAvatarHost = $user->GetAvatarHostPath();
