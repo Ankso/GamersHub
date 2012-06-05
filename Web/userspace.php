@@ -2,6 +2,7 @@
 /*
  * TODO: Redo "Add a friend" and "Remove friend" Structure.
  */
+$loadTime = microtime(true);
 require_once("../common/SharedDefines.php");
 require_once("../common/Common.php");
 require_once("../classes/Database.Class.php");
@@ -75,6 +76,7 @@ $customOptions = $spaceOwner->GetCustomOptions();
 $(document).ready(function() {
     totalMessages = <?php echo $spaceOwner->GetBoardMessagesCount(); ?>;
     ownerId = <?php echo $spaceOwner->GetId(); ?>;
+    userAvatar = '<?php echo $userAvatarPath; ?>';
     $("a#friendRequests").fancybox();
     $("a#removeFriend").fancybox();
     $("a#sendPrivateMessage").fancybox();
@@ -130,7 +132,7 @@ $(document).ready(function() {
         $(event.srcElement).remove();
     });
     $('#addNewFriend').load('ajax/friendsfinder.html');
-    LoadBoardComments(1, 5, false);
+    LoadBoardComments(1, 5, true);
     $('.commentInputTextBox').focusin(function(event) {
         if ($(event.srcElement).val() == "Something interesting to say?")
         	$(event.srcElement).val("");
@@ -317,5 +319,6 @@ $(document).ready(function() {
 	</div>
 </div>
 -->
+<div style="position:fixed; text-align:center; bottom:0; right:0; font:12px Calibri;">Page loaded in <?php echo microtime(true) - $loadTime; ?> seconds.</div>
 </body>
 </html>

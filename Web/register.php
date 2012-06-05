@@ -87,14 +87,24 @@ if (isset($_POST['username']) && isset($_POST['email']) && isset($_POST['passwor
                 // Now we can initialize the User object. Note that this is for obtain the user ID to create the rows in user_detailed_data and user_privacy tables.
                 $user = new User($username);
                 $allOk = true;
-                // Begin the transaction and insert the data.
+                // Begin the transaction and insert the data. This is to create all the rows in the related tables of the users Database.
                 $DB->BeginTransaction();
                 if ($DB->ExecuteStmt(Statements::INSERT_USER_DETAILED_DATA, $DB->BuildStmtArray("issss", $user->GetId(), NULL, NULL, NULL, NULL)))
                 {
                     if ($DB->ExecuteStmt(Statements::INSERT_USER_PRIVACY, $DB->BuildStmtArray("iiii", $user->GetId(), 1, 1, 1)))
                     {
-                        $DB->CommitTransaction();
-                        echo "\nUser created successfully! You can now <a href=\"login.php\">log in</a>";
+                        if ($DB->ExecuteStmt(Statements::INSERT_USER_AVATARS_PATH, $DB->BuildStmtArray("is", $user->GetId(), "/images/default_avatar.png")))
+                        {
+                            if ($DB->ExecuteStmt(Statements::INSERT_USER_CUSTOM_OPTIONS, $DB->BuildStmtArray("iiii", $user->GetId(), 0, 0, 1)))
+                            {
+                                $DB->CommitTransaction();
+                                echo "\nUser created successfully! You can now <a href=\"login.php\">log in</a>";
+                            }
+                            else
+                                $allOk = false;
+                        }
+                        else
+                            $allOk = false;
                     }
                     else
                         $allOk = false;
@@ -104,14 +114,9 @@ if (isset($_POST['username']) && isset($_POST['email']) && isset($_POST['passwor
             }
             if (!$allOk)
             {
-                // TODO: We must delete the user_data row inserted previusly at this point.
                 $DB->RollbackTransaction();
+                $DB->ExecuteStmt(Statements::DELETE_USER_DATA, $DB->BuildStmtArray("i", $user->GetId()));
                 echo "\nAn error occurred. Please, try again in a few moments.";
-            }
-            else
-            {
-                $DB->RollbackTransaction();
-                echo "\nDatabase server error, please try again in a few moments.";
             }
         }
     }

@@ -169,7 +169,7 @@ class Database
         {
             $StmtArray[$j][0] = $varTypes;
             for ($i = 0; $i < ($varCount / $queryCount); ++$i)
-                    $StmtArray[$j][$i + 1] = array_shift($args);
+                $StmtArray[$j][$i + 1] = array_shift($args);
         }
         return $StmtArray;
     }

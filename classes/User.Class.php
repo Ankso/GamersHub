@@ -4,9 +4,8 @@ require_once ($_SERVER['DOCUMENT_ROOT'] . "/../classes/Database.Class.php");
 require_once ($_SERVER['DOCUMENT_ROOT'] . "/../common/PreparedStatements.php");
 
 /**
- * Main User class. Can be initilized with a valid username or a valid user ID.<br />
- * It stores data about an user, and has all the methods to access that data.<br />
- * It also has methods representing user actions, like sending a private message to another user.<br />
+ * Main User class. Can be initilized with a valid username or a valid user ID.<br />It stores data about an user, and has all the methods to access that data.<br />It also has methods representing user actions, like sending a private message to another user.<br />
+ * TODO: Create classes for some objects like Board messages, Board message replies, Private messages, Custom options, Privacy options, etc, instead of returning bi-dimensional arrays or even tri-dimensional arrays with the values.
  * @author Ankso
  */
 Class User
@@ -286,13 +285,8 @@ Class User
     {
         if (($result = $this->_db->ExecuteStmt(Statements::SELECT_USER_AVATARS_PATH, $this->_db->BuildStmtArray("i", $this->GetId()))))
         {
-            if ($result->num_rows > 0)
-            {
-                $row = $result->fetch_assoc();
-                return $row['avatar_path'];
-            }
-            else
-                return "/images/default_avatar.png";
+            $row = $result->fetch_assoc();
+            return $row['avatar_path'];
         }
         return false;
     }
@@ -764,35 +758,109 @@ Class User
         return false;
     }
     
+    public function SendBoardMessageReply($messageId, $content)
+    {
+        if ($this->_db->ExecuteStmt(Statements::INSERT_USER_BOARD_REPLY, $this->_db->BuildStmtArray("iiss", $this->GetId(), $messageId, $content, date("Y-m-d H:i:s", time()))))
+            return true;
+        return false;
+    }
+    
     /**
      * Obtains all the replies for a specific user's message
-     * @param long $messageId An integer representing an unique message ID
-     * @return mixed Returns a bidimensional array with all the replies and more data like the writer username and avatar path for later use, USER_COMMENT_HAS_NO_REPLIES if the comment has not replies, or false if something fails.
+     * @param long $messageId An integer representing an unique message ID, or an array of message IDs to retrieve more than the replies of one message.
+     * @return mixed Returns a bidimensional array with all the replies and more data like the writer username and avatar path for later use if one ID is suplied, a tridimensional array with the replies for each supplied ID if the input param is an array of IDs; USER_COMMENT_HAS_NO_REPLIES if the comment has not replies, and finally false if something fails.
      */
     public function GetBoardMessageReplies($messageId)
     {
-        if (($result = $this->_db->ExecuteStmt(Statements::SELECT_USER_BOARD_REPLIES, $this->_db->BuildStmtArray("ii", $this->GetId(), $messageId))))
+        if (is_array($messageId))
         {
-            if ($result->num_rows === 0)
-                return USER_COMMENT_HAS_NO_REPLIES;
-            
-            $replies = array();
-            while (($row = $result->fetch_assoc()))
+            // First, we must create an array with the params for the function Database::BuildStmtPackage()
+            // Add the number of times the query is going to be executed, and the string with the var types for bind_params() function.
+            $builtParams = array(
+                0 => count($messageId),
+                1 => "ii",
+            );
+            // Now we can add the message IDs to the array
+            foreach ($messageId as $i => $value)
             {
-                $replies[] = array(
-                    'reply_id'   => $row['reply_id'],
-                    'sender_id'  => $row['sender_id'],
-                    'message'    => $row['message'],
-                    'date'       => $row['date'],
-                    'username'   => $row['username'],
-                    'avatarPath' => $row['avatar_path'],
-                );
+                $builtParams[] = $this->GetId();
+                $builtParams[] = $messageId[$i];
             }
-            return $replies;
+            // Here the array with the params must be properly intialized
+            if (($result = $this->_db->ExecuteStmt(Statements::SELECT_USER_BOARD_REPLIES, call_user_func_array(array($this->_db, "BuildStmtPackage"), $builtParams))))
+            {
+                // This conversion is very important. Remember that Database::ExecuteStmt returns an array
+                // of results _only_ if more than one query is executed. We can have that situation here, if
+                // only one message ID is passed as param, but inside an array (mainly from boardmessages.php)
+                if (!is_array($result))
+                {
+                    $result = array(
+                        0 => $result,
+                    );
+                }
+                $replies = array();
+                // We must process each of the returned values
+                foreach ($result as $i => $value)
+                {
+                    if ($result[$i]->num_rows === 0)
+                    {
+                        // We'll have one result per message ID
+                        $replies[$i][] = array(
+                            'messageId' => $messageId[$i],
+                            'replyId'   => USER_COMMENT_HAS_NO_REPLIES,
+                        );
+                    }
+                    else
+                    {
+                        while (($row = $result[$i]->fetch_assoc()))
+                        {
+                            $replies[$i][] = array(
+                                'messageId'  => $messageId[$i],
+                                'replyId'    => $row['reply_id'],
+                                'senderId'   => $row['sender_id'],
+                                'message'    => $row['message'],
+                                'date'       => $row['date'],
+                                'username'   => $row['username'],
+                                'avatarPath' => $row['avatar_path'],
+                            );
+                        }
+                    }
+                }
+                return $replies;
+            }
+        }
+        else
+        {
+            if (($result = $this->_db->ExecuteStmt(Statements::SELECT_USER_BOARD_REPLIES, $this->_db->BuildStmtArray("ii", $this->GetId(), $messageId))))
+            {
+                if ($result->num_rows === 0)
+                    return USER_COMMENT_HAS_NO_REPLIES;
+                
+                $replies = array();
+                while (($row = $result->fetch_assoc()))
+                {
+                    $replies[] = array(
+                        'reply_id'   => $row['reply_id'],
+                        'sender_id'  => $row['sender_id'],
+                        'message'    => $row['message'],
+                        'date'       => $row['date'],
+                        'username'   => $row['username'],
+                        'avatarPath' => $row['avatar_path'],
+                    );
+                }
+                return $replies;
+            }
         }
         return false;
     }
     
+    public function DeleteBoardMessageReply($replyId)
+    {
+        // TODO: Checks checks checks!
+        if ($this->_db->ExecuteStmt(Statements::DELETE_USER_BOARD_REPLY, $this->_db->BuildStmtArray("i", $replyId)))
+            return true;
+        return false;
+    }
     /**
      * Gets the customization options for this user.
      * @return boolean Returns an array with the values for all the custom options, or false if something fails.

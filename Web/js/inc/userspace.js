@@ -10,6 +10,7 @@ var openedControlPanel;
 var totalMessages;
 var lastLoadedComment;
 var ownerId;
+var userAvatar;
 
 function PercentageWidthToPx(percentWidth)
 {
@@ -264,6 +265,9 @@ function LoadBoardComments(from, to, prepend)
     $.post("ajax/boardmessages.php", { from: realFrom, to: realTo, spaceOwner: ownerId }, function(data) {
         if (data.length > 0)
         {
+            if (data == "You haven't write anything yet. Start ASAP!" && !prepend)
+                return;
+            
             if (prepend)
                 $("#commentsHistory").prepend(data);
             else
@@ -283,25 +287,62 @@ function LoadBoardComments(from, to, prepend)
                     $(event.srcElement).text("Show Replies");
                 }
             });
-            /*$('div.replyCommentBoard').hide();
-            $('div.boardComment').mouseenter(function(event) {
-                $(event.srcElement).next().stop(true, true).show();
+            $('div.newReplyCommentBoardInputSend').click(function(event) {
+                SendMessageBoardReply(event);
             });
-            $('div.boardComment').mouseleave(function(event) {
-                $(event.srcElement).next().stop(true, true).hide();
+            $('img.deleteBoardReply').click(function(event) {
+                DeleteBoardCommentReply(event);
             });
-            $('div.replyCommentBoard').mouseenter(function(event) {
-                $(event.srcElement).stop(true, true).show();
-            });
-            $('div.replyCommentBoard').mouseleave(function(event) {
-                $(event.srcElement).stop(true, true).hide();
-            });*/
         }
         else
             $("#commentsHistory").text("An error occurred while connecting to the server. Please try again in a few moments.");
     });
 }
 
+function SendMessageBoardReply(event)
+{
+   var reply = $(event.srcElement).prev().val();
+   var messageId = $(event.srcElement).attr("data-id");
+   
+   $.post("ajax/boardreplies.php", {reply: reply, messageId: messageId}, function(data) {
+       if (data.length > 0)
+       {
+           if (data == "SUCCESS")
+           {
+               // Add the new reply to the list
+               var date = new Date();
+               var newReply = '<div class="boardCommentReply" data-id="' + messageId + '">' + "\n";
+               newReply = newReply + '<div class="deleteBoardComment" style="margin-top:4px;"><img src="images/delete_16.png" style="width:10px; height:10px;" /></div>' + "\n";
+               newReply = newReply + '<div class="boardCommentReplyBody">' + "\n";
+               newReply = newReply + '<div class="boardCommentReplyAvatar"><img src="' + userAvatar + '" style="width:40px; height:40px; border-radius:0.3em;" alt="avatar" /></div>' + "\n";
+               newReply = newReply + '<div class="boardCommentReplyContent">' + reply + '</div>' + "\n";
+               newReply = newReply + '</div>' + "\n";
+               newReply = newReply + '<div class="boardCommentReplyBottom">By You ' + date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds() + '</div>' + "\n";
+               newReply = newReply + '</div>' + "\n";
+               $(event.srcElement.parentElement.parentElement).prev().prepend(newReply);
+           }
+           else
+               $(event.srcElement).prev().val("An error occurred while sending your reply. Please try again.");
+       }
+       else
+           $(event.srcElement).prev().val("Connection to the server lost. Please try again in a few moments.");
+   });
+}
+
+function DeleteBoardCommentReply(event)
+{
+    var replyId = $(event.srcElement.parentElement).attr("data-id");
+    if (!replyId)
+        return;
+        
+    $.post("ajax/boardreplies.php", {replyId: replyId}, function(data) {
+        if (data.length > 0)
+        {
+            if (data == "SUCCESS")
+                $(event.srcElement.parentElement).fadeOut(500);
+        }
+    });
+}
 /**
  * Welcome to GamersHub's Command Parser ™. This will be the main function to parse commands written by the users.
  * Commands must start with the character "/", the same character used in World of Warcraft chat system.
@@ -358,27 +399,3 @@ function ParseCommand(command)
             return -1;
     }
 }
-
-/*
-function SendCommentReply(messageId)
-{
-    var reply = $(event.srcElement.parentElement.children[1].children[0]).val();
-    if (reply == "")
-        return;
-    
-    $.post("ajax/boardreplies.php", { messageId: messageId }, function(data) {
-        if (data.length > 0)
-        {
-            if (data == "SUCCESS")
-            {
-                
-            }
-        }
-    });
-}
-
-function LoadBoardCommentReplies(messageNumber)
-{
-    
-}
-*/

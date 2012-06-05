@@ -93,8 +93,8 @@ $user->SetMessagesAsReaded($friend);
             echo '            <div class="messageHeader">Sended by <b>', ($conversationHistory[$i]['sender'] === $friend ? $_GET['friendName'] : "You"), "</b> (", $conversationHistory[$i]['date'], ")</div>";
             echo '            <div class="messageBody">', $conversationHistory[$i]['message'], '</div>';
             echo '        </div>';
-            // We can show a maximun of 7 messages in the history. TODO: Move this to a constant.
-            if ($i > 7)
+            // We can show a maximun of 7 messages in the history.
+            if ($i > MESSAGES_HISTORY_MAX)
                 break;
         }
     }
