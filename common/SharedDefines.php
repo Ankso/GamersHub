@@ -10,8 +10,9 @@ $SERVER_INFO = array(
 );
 // Databases's names
 $DATABASES = array(
-    'USERS' => "users",
-    'GAMES' => "games",
+    'USERS'    => "users",
+    'GAMES'    => "games",
+    'SESSIONS' => "sessions",
 );
 
 /**

@@ -1,7 +1,18 @@
 <?php
-require_once("../classes/User.Class.php");
-require_once("../common/Common.php");
+require_once($_SERVER['DOCUMENT_ROOT'] . "/../classes/User.Class.php");
+require_once($_SERVER['DOCUMENT_ROOT'] . "/../common/Common.php");
+require_once($_SERVER['DOCUMENT_ROOT'] . "/../classes/SessionHandler.Class.php");
 
+$sessionsHandler = new CustomSessionsHandler();
+session_set_save_handler(
+    array($sessionsHandler, "open"),
+    array($sessionsHandler, "close"),
+    array($sessionsHandler, "read"),
+    array($sessionsHandler, "write"),
+    array($sessionsHandler, "destroy"),
+    array($sessionsHandler, "gc")
+    );
+register_shutdown_function("session_write_close");
 session_start();
 // If user is already loged in, redirect to his or her main page
 if (isset($_SESSION['userId']))

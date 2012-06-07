@@ -287,8 +287,12 @@ function LoadBoardComments(from, to, prepend)
                     $(event.srcElement).text("Show Replies");
                 }
             });
-            $('div.newReplyCommentBoardInputSend').click(function(event) {
-                SendMessageBoardReply(event);
+            //$('div.newReplyCommentBoardInputSend').click(function(event) {
+            //    SendMessageBoardReply(event);
+            //});
+            $('input.newReplyCommentBoardInputTextbox').keydown(function(event) {
+                if (event.keyCode == 13)
+                    $(event.srcElement.nextElementSibling).trigger("click");
             });
             $('img.deleteBoardReply').click(function(event) {
                 DeleteBoardCommentReply(event);
@@ -301,32 +305,40 @@ function LoadBoardComments(from, to, prepend)
 
 function SendMessageBoardReply(event)
 {
-   var reply = $(event.srcElement).prev().val();
-   var messageId = $(event.srcElement).attr("data-id");
+    var element = null;
+    if (event.isTrigger)
+        element = event.target;
+    else
+        element = event.srcElement;
+    var reply = $(element).prev().val();
+    var messageId = $(element).attr("data-id");
    
-   $.post("ajax/boardreplies.php", {reply: reply, messageId: messageId}, function(data) {
-       if (data.length > 0)
-       {
-           if (data == "SUCCESS")
-           {
-               // Add the new reply to the list
-               var date = new Date();
-               var newReply = '<div class="boardCommentReply" data-id="' + messageId + '">' + "\n";
-               newReply = newReply + '<div class="deleteBoardComment" style="margin-top:4px;"><img src="images/delete_16.png" style="width:10px; height:10px;" /></div>' + "\n";
-               newReply = newReply + '<div class="boardCommentReplyBody">' + "\n";
-               newReply = newReply + '<div class="boardCommentReplyAvatar"><img src="' + userAvatar + '" style="width:40px; height:40px; border-radius:0.3em;" alt="avatar" /></div>' + "\n";
-               newReply = newReply + '<div class="boardCommentReplyContent">' + reply + '</div>' + "\n";
-               newReply = newReply + '</div>' + "\n";
-               newReply = newReply + '<div class="boardCommentReplyBottom">By You ' + date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds() + '</div>' + "\n";
-               newReply = newReply + '</div>' + "\n";
-               $(event.srcElement.parentElement.parentElement).prev().prepend(newReply);
-           }
-           else
-               $(event.srcElement).prev().val("An error occurred while sending your reply. Please try again.");
-       }
-       else
-           $(event.srcElement).prev().val("Connection to the server lost. Please try again in a few moments.");
-   });
+    $.post("ajax/boardreplies.php", {reply: reply, messageId: messageId}, function(data) {
+        if (data.length > 0)
+        {
+            if (data == "SUCCESS")
+            {
+                // Add the new reply to the list
+                var date = new Date();
+                var newReply = '<div class="boardCommentReply" data-id="' + messageId + '">' + "\n"
+                + '<div class="deleteBoardComment" style="margin-top:4px;"><img src="images/delete_16.png" style="width:10px; height:10px;" /></div>' + "\n"
+                + '<div class="boardCommentReplyBody">' + "\n"
+                + '<div class="boardCommentReplyAvatar"><img src="' + userAvatar + '" style="width:40px; height:40px; border-radius:0.3em;" alt="avatar" /></div>' + "\n"
+                + '<div class="boardCommentReplyContent">' + reply + '</div>' + "\n"
+                + '</div>' + "\n"
+                + '<div class="boardCommentReplyBottom">By You ' + date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds() + '</div>' + "\n"
+                + '</div>' + "\n";
+                $(element.parentElement.parentElement).prev().prepend(newReply);
+                $('img.deleteBoardReply').click(function(event) {
+                    DeleteBoardCommentReply(event);
+                });
+            }
+            else
+                $(element).prev().val("An error occurred while sending your reply. Please try again.");
+        }
+        else
+            $(element).prev().val("Connection to the server lost. Please try again in a few moments.");
+    });
 }
 
 function DeleteBoardCommentReply(event)

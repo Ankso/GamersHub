@@ -174,6 +174,16 @@ class Database
         return $StmtArray;
     }
     
+    /**
+     * Escapes special characters in a string to be used in a SQL sentence
+     * @param string $string The string to escape.
+     * @return mixed The escaped string or false on error.
+     */
+    public function RealEscapeString($string)
+    {
+        return $this->_mysqli->real_escape_string($string);
+    }
+    
     private $_mysqli;
 }
 ?>

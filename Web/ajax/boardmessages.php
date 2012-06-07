@@ -1,7 +1,18 @@
 <?php
 require_once($_SERVER['DOCUMENT_ROOT'] . "/../common/Common.php");
 require_once($_SERVER['DOCUMENT_ROOT'] . "/../classes/User.Class.php");
+require_once($_SERVER['DOCUMENT_ROOT'] . "/../classes/SessionHandler.Class.php");
 
+$sessionsHandler = new CustomSessionsHandler();
+session_set_save_handler(
+    array($sessionsHandler, "open"),
+    array($sessionsHandler, "close"),
+    array($sessionsHandler, "read"),
+    array($sessionsHandler, "write"),
+    array($sessionsHandler, "destroy"),
+    array($sessionsHandler, "gc")
+    );
+register_shutdown_function("session_write_close");
 session_start();
 // Check if the user is logged in
 if (!isset($_SESSION['userId']))
@@ -77,30 +88,30 @@ elseif (isset($_POST['spaceOwner']) && isset($_POST['from']) && isset($_POST['to
 	<div class="boardCommentBody"><?php echo $boardMessages[$i]['message']; ?></div>
 	<div class="boardCommentBottom"><?php echo "By ", ($spaceOwner->GetId() == $user->GetId() ? "You" : $spaceOwner->GetUsername()), " ", $boardMessages[$i]['date']; ?></div>
 	<div class="repliesCommentBoard" style="display:none">
-	<div>
+		<div>
 	        <?php
 	            foreach ($boardReplies[$i] as $j => $val)
 	            {
 	                if ($boardReplies[$i][$j]['replyId'] !== USER_COMMENT_HAS_NO_REPLIES)
 	                {
 	        ?>
-		<div class="boardCommentReply" data-id="<?php echo $boardReplies[$i][$j]['replyId']; ?>">
-			<?php if ($isOwner || $boardReplies[$i][$j]['username'] == $user->GetUsername()) { ?><img src="images/delete_16.png" class="deleteBoardReply" /> <?php } ?>
-			<div class="boardCommentReplyBody">
-				<div class="boardCommentReplyAvatar"><img src="<?php echo $boardReplies[$i][$j]['avatarPath']; ?>" style="width:40px; height:40px; border-radius:0.3em;" alt="avatar" /></div>
-				<div class="boardCommentReplyContent"><?php echo $boardReplies[$i][$j]['message']; ?></div>
-			</div>
-			<div class="boardCommentReplyBottom">By <?php echo ($boardReplies[$i][$j]['username'] == $user->Getusername() ? "You" : $boardReplies[$i][$j]['username']), " ", $boardReplies[$i][$j]['date']; ?></div>
-		</div>
+    		<div class="boardCommentReply" data-id="<?php echo $boardReplies[$i][$j]['replyId']; ?>">
+    			<?php if ($isOwner || $boardReplies[$i][$j]['username'] == $user->GetUsername()) { ?><img src="images/delete_16.png" class="deleteBoardReply" /> <?php } ?>
+    			<div class="boardCommentReplyBody">
+    				<div class="boardCommentReplyAvatar"><img src="<?php echo $boardReplies[$i][$j]['avatarPath']; ?>" style="width:40px; height:40px; border-radius:0.3em;" alt="avatar" /></div>
+    				<div class="boardCommentReplyContent"><?php echo $boardReplies[$i][$j]['message']; ?></div>
+    			</div>
+    			<div class="boardCommentReplyBottom">By <?php echo ($boardReplies[$i][$j]['username'] == $user->Getusername() ? "You" : $boardReplies[$i][$j]['username']), " ", $boardReplies[$i][$j]['date']; ?></div>
+    		</div>
 		    <?php
 	                }
 	            }
 		    ?>
-	</div>
+		</div>
     	<div class="newReplyCommentBoard">
     		<div class="newReplyCommentBoardInput">
-    			<input class="newReplyCommentBoardInputTextbox" type="text" value="Not yet implemented" />
-    			<div class="newReplyCommentBoardInputSend" data-id="<?php echo $messageIds[$i]; ?>">Comment</div>
+    			<input class="newReplyCommentBoardInputTextbox" type="text" value="" />
+    			<div class="newReplyCommentBoardInputSend" onclick="SendMessageBoardReply(event);" data-id="<?php echo $messageIds[$i]; ?>">Comment</div>
     		</div>
     		<div class="newReplyCommentBoardAvatar"><img src="<?php echo $userAvatarHost; ?>" style="width:40px; height:40px; border:1px #00FF00 solid; border-radius:0.3em;" /></div>
     	</div>

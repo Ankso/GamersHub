@@ -1,6 +1,7 @@
 <?php
 /**
  * This class acts as an enum with all the prepared statements that the application needs.
+ * That's why it isn't placed in /classes folder.
  * @author Ankso
  */
 class Statements
