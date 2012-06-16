@@ -2,8 +2,16 @@
 require_once($_SERVER['DOCUMENT_ROOT'] . "/../classes/Database.Class.php");
 require_once($_SERVER['DOCUMENT_ROOT'] . "/../common/SharedDefines.php");
 
+/**
+ * Implementation of a custom sessions handler over the PHP's default, using a MySQL database to store sessions
+ * @author Ankso
+ */
 class CustomSessionsHandler
 {
+    /**
+     * Establishes the connection with the MySQL database.
+     * @return true, or kills the script if something fails.
+     */
     public function open()
     {
         global $DATABASES;
@@ -12,6 +20,10 @@ class CustomSessionsHandler
         return true;
     }
     
+    /**
+     * Closes the connection to the MySQL database.
+     * @returns true
+     */
     public function close()
     {
         // Nothing to do here really
@@ -19,6 +31,11 @@ class CustomSessionsHandler
         return true;
     }
     
+    /**
+     * Gets the session data from the MySQL database.
+     * @param string id The PHPSESSID of this session
+     * @return string Returns the data retrieved ("" if no data was found).
+     */
     public function read($id)
     {
         $id = $this->_sessionsDb->RealEscapeString($id);
@@ -32,7 +49,13 @@ class CustomSessionsHandler
         }
         return "";
     }
-    
+
+    /** 
+     * Saves session data in the MySQL database
+     * @param string id The PHPSESSID of this session
+     * @param string data The data that needs to be stores, as a string.
+     * @return boolean Returns true on success, false in case of failure.
+     */
     public function write($id, $data)
     {
         $id = $this->_sessionsDb->RealEscapeString($id);
@@ -43,6 +66,11 @@ class CustomSessionsHandler
         return false;
     }
     
+    /**
+     * Destroys a session, removing the data from the MySQL database.
+     * @param string id The PHPSESSID.
+     * @return boolean Returns true on success, or false on failure.
+     */
     public function destroy($id)
     {
         $id = $this->_sessionsDb->RealEscapeString($id);
@@ -51,6 +79,11 @@ class CustomSessionsHandler
         return false;
     }
     
+    /**
+     * Removes expired session's data from the MySQL database when called.
+     * @param integer max The maximun time a session can be stored without updates, defined in the PHP config file.
+     * @return Returns true on success, or false on failure.
+     */
     public function gc($max)
     {
         $outdated = $this->_sessionsDb->RealEscapeString(time() - $max);
@@ -59,6 +92,6 @@ class CustomSessionsHandler
         return false;
     }
     
-    private $_sessionsDb;
+    private $_sessionsDb;     // The connection to the MySQL database.
 }
 ?>
