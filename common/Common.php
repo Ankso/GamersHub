@@ -39,7 +39,7 @@ function GetUsernameFromId($id)
  */
 function GetIdFromUsername($username)
 {
-    global $DATABASES, $SERVER_INFO;
+    global $DATABASES;
     $DB = new Database($DATABASES['USERS']);
     $result = $DB->ExecuteStmt(Statements::SELECT_USER_DATA_ID, $DB->BuildStmtArray("s", $username));
     if ($result)
@@ -83,9 +83,9 @@ function PrintTopBar($user)
     if ($isLoggedIn)
     {
         // Note that the order of the buttons is inverted
-        echo '            <div id="myGamesButton" class="topbarButton" style="float:right;" onclick="OpenControlPanel(\'#myGames\');">My games</div>', "\n";
-        echo '            <div id="mySocialButton" class="topbarButton" style="float:right;" onclick="OpenControlPanel(\'#mySocial\');">Social</div>', "\n";
-        echo '            <div id="myAccountButton" class="topbarButton" style="float:right;" onclick="OpenControlPanel(\'#myAccount\');">My account</div>', "\n";
+        echo '            <div id="myGamesButton" class="topbarButton" style="float:right;">My games</div>', "\n";
+        echo '            <div id="mySocialButton" class="topbarButton" style="float:right;">Social</div>', "\n";
+        echo '            <div id="myAccountButton" class="topbarButton" style="float:right;">My account</div>', "\n";
     }
     echo '        </div>', "\n";
     echo '        <div class="topbarRight">', "\n";
@@ -95,10 +95,28 @@ function PrintTopBar($user)
             echo '            <div class="newFriendRequests">&nbsp;<a id="friendRequests" href="ajax/friendrequests.php">No friend requests</a>&nbsp;</div>', "\n";
         elseif (is_integer($friendRequestsCount) && $friendRequestsCount > 0)
             echo '            <div class="newFriendRequests">&nbsp;<a id="friendRequests" href="ajax/friendrequests.php">New friend requests!</a>&nbsp;</div>', "\n";
-        echo '            <div style="float:right; border-left:2px #333333 solid;height:51px; width:40px;"><a href="logout.php" onclick="FadeOut(event, \'logout.php\');"><img src="images/logout.png" height="30px" width="30px" alt="Logout" style="margin-top:10px; float:right;"/></a></div>', "\n";
+        echo '            <div style="float:right; border-left:2px #333333 solid;height:51px; width:40px;"><a id="topbarLogOffButton" href="logout.php"><img src="images/logout.png" height="30px" width="30px" alt="Logout" style="margin-top:10px; float:right;"/></a></div>', "\n";
     }
     echo '        </div>', "\n";
     echo '    </div>', "\n";
     echo '</div>', "\n";
+}
+
+/**
+ * Gets the total number of online users based in the number of active PHP sessions.
+ * @return mixed Returns an integer representing the number of online users, or false if something fails.
+ */
+function GetOnlineUsersCount()
+{
+    global $DATABASES;
+    
+    $sessionsDb = New Database($DATABASES['SESSIONS']);
+    // We don't need a prepared statement here because there are no variables in the query
+    if ($result = $sessionsDb->Execute("SELECT COUNT(*) FROM sessions"))
+    {
+        if ($row = $result->fetch_array(MYSQLI_NUM))
+            return $row[0];
+    }
+    return false;
 }
 ?>

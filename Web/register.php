@@ -90,9 +90,9 @@ if (isset($_POST['username']) && isset($_POST['email']) && isset($_POST['passwor
             $ip = $_SERVER['REMOTE_ADDR'];
             $data;
             if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6))
-                $data = $DB->BuildStmtArray("sssssis", $username, CreateSha1Pass($username, $password), $email, NULL, $ip, 0, "1000-01-01 00:00:00");
+                $data = $DB->BuildStmtArray("sssssis", $username, CreateSha1Pass($username, $password), NULL, $email, NULL, $ip, 0, "1000-01-01 00:00:00");
             else
-                $data = $DB->BuildStmtArray("sssssis", $username, CreateSha1Pass($username, $password), $email, $ip, NULL, 0, "1000-01-01 00:00:00");
+                $data = $DB->BuildStmtArray("sssssis", $username, CreateSha1Pass($username, $password), NULL, $email, $ip, NULL, 0, "1000-01-01 00:00:00");
             if ($DB->ExecuteStmt(Statements::INSERT_USER_DATA, $data))
             {
                 // Now we can initialize the User object. Note that this is for obtain the user ID to create the rows in user_detailed_data and user_privacy tables.

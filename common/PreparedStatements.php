@@ -7,9 +7,9 @@
 class Statements
 {
     // Basic load/save user data queries
-    const SELECT_USER_DATA_BY_ID              = "SELECT id, username, password_sha1, email, ip_v4, ip_v6, last_login FROM user_data WHERE id = ?";
-    const SELECT_USER_DATA_BY_USERNAME        = "SELECT id, username, password_sha1, email, ip_v4, ip_v6, last_login FROM user_data WHERE username = ?";
-    const REPLACE_USER_DATA                   = "REPLACE INTO user_data VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    const SELECT_USER_DATA_BY_ID              = "SELECT id, username, password_sha1, random_session_id, email, ip_v4, ip_v6, last_login FROM user_data WHERE id = ?";
+    const SELECT_USER_DATA_BY_USERNAME        = "SELECT id, username, password_sha1, random_session_id, email, ip_v4, ip_v6, last_login FROM user_data WHERE username = ?";
+    const REPLACE_USER_DATA                   = "REPLACE INTO user_data VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     const SELECT_USER_DATA_ID                 = "SELECT id FROM user_data WHERE username = ?";
     const SELECT_USER_DATA_USERNAME           = "SELECT username FROM user_data WHERE id = ?";
     // For user's data updates and profile changers functions
@@ -60,9 +60,10 @@ class Statements
     const UPDATE_USER_PRIVATE_MESSAGES_READED = "UPDATE user_private_messages SET readed = ? WHERE receiver_id = ? AND sender_id = ?";
     // Login system
     const SELECT_USER_DATA_LOGIN              = "SELECT username, password_sha1 FROM user_data WHERE username = ?";
+    const UPDATE_USER_DATA_RND_IDENTIFIER     = "UPDATE user_data SET random_session_id = ? WHERE id = ?";
     // Registration management
     const SELECT_USER_DATA_REGISTER           = "SELECT username, email FROM user_data WHERE username = ? OR email = ?";
-    const INSERT_USER_DATA                    = "INSERT INTO user_data (username, password_sha1, email, ip_v4, ip_v6, is_online, last_login) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    const INSERT_USER_DATA                    = "INSERT INTO user_data (username, password_sha1, random_session_id, email, ip_v4, ip_v6, is_online, last_login) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     const DELETE_USER_DATA                    = "DELETE FROM user_data WHERE user_id = ?";
     const INSERT_USER_DETAILED_DATA           = "INSERT INTO user_detailed_data (user_id, bio, birthday, country, city) VALUES (?, ?, ?, ?, ?)";
     //const DELETE_USER_DETAILED_DATA           = "DELETE FROM user_detailed_data WHERE user_id = ?";

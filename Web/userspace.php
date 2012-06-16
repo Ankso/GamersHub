@@ -70,8 +70,8 @@ $customOptions = $spaceOwner->GetCustomOptions();
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title><?php echo $spaceOwner->GetUsername(); ?>'s profile - GamersNet</title>
-<link href="css/userspace.css" media="all" rel="stylesheet" type="text/css" />
 <link href="css/main.css" media="all" rel="stylesheet" type="text/css" />
+<link href="css/userspace.css" media="all" rel="stylesheet" type="text/css" />
 <link href="css/myaccount.css" media="all" rel="stylesheet" type="text/css" />
 <link href="css/fancyboxjQuery.css" rel="stylesheet" type="text/css" media="screen" />
 <link href="css/dark-hive/jquery-ui-1.8.20.custom.css" rel="stylesheet" type="text/css" media="screen" />
@@ -79,15 +79,26 @@ $customOptions = $spaceOwner->GetCustomOptions();
 <script type="text/javascript" src="js/inc/jquery-ui-1.8.20.custom.min.js"></script>
 <script type="text/javascript" src="js/inc/jquery.cookie.js"></script>
 <script type="text/javascript" src="js/inc/jquery.fancybox-1.3.4.js"></script>
+<script type="text/javascript" src="js/inc/socket.io.js"></script>
 <script type="text/javascript" src="js/inc/myAccount.js"></script>
 <script type="text/javascript" src="js/inc/privateMessages.js"></script>
 <script type="text/javascript" src="js/inc/userspace.js"></script>
 <script type="text/javascript">
 // TODO: Move all the inline function calls from the HTML to here
 $(document).ready(function() {
-    totalMessages = <?php echo $spaceOwner->GetBoardMessagesCount(); ?>;
-    ownerId = <?php echo $spaceOwner->GetId(); ?>;
-    userAvatar = '<?php echo $userAvatarPath; ?>';
+    space.totalMessages = <?php echo $spaceOwner->GetBoardMessagesCount(); ?>;
+    user.id = <?php echo $user->GetId(); ?>;
+    spaceOwner.id = <?php echo $spaceOwner->GetId(); ?>;
+    user.avatarPath = "<?php echo $userAvatarPath; ?>";
+    user.randomSessionId = "<?php echo $user->GetRandomSessionId(); ?>";
+	// Top bar functions:
+    $("div#myAccountButton").click(TriggerOpenControlPanel);
+    $("div#mySocialButton").click(TriggerOpenControlPanel);
+    $("div#myGamesButton").click(TriggerOpenControlPanel);
+    $("a#topbarLogOffButton").click(function(event) {
+        FadeOut(event, "logout.php");
+    });
+    // FancyBox(es)
     $("a#friendRequests").fancybox();
     $("a#removeFriend").fancybox();
     $("a#sendPrivateMessage").fancybox();
@@ -106,22 +117,30 @@ $(document).ready(function() {
     <?php
     }
     ?>
-    var myFriendsPanelWidth = PercentageWidthToPx(18);
+    var myFriendsPanelWidth = space.PercentageWidthToPx(18);
     if (myFriendsPanelWidth >= 250)
-    	$('#myFriendsPanel').css("width", myFriendsPanelWidth.toString() + "px");
+        $('#myFriendsPanel').css("width", myFriendsPanelWidth.toString() + "px");
     else
         $('#myFriendsPanel').css("width", "250px");
+    $("div#myFriendsPanelFlapClosed").click(function(/*event*/) {
+        space.ShowMyFriendsPanel();
+    });
+    $("div#closeMyFriendsPanel").click(function(/*event*/) {
+        space.CloseMyFriendsPanel();
+    });
     if ($.cookie("FriendsPanel") == "closed")
     {
-    	$('#myFriendsPanel').hide();
-    	$('#myFriendsPanelFlapOpened').hide();
+        $('#myFriendsPanel').hide();
+        $('#myFriendsPanelFlapOpened').hide();
     }
     else
         $('#myFriendsPanelFlapClosed').hide();
     $('#profileDetails').hide();
     $('.controlPanel').hide();
     $('.friendPanelOptions').hide();
-    $('img#moreOptionsImg').click(SwitchFriendOptionsMenu);
+    $('img#moreOptionsImg').click(function(event) {
+        SwitchFriendOptionsMenu(event);
+    });
     $('img#moreOptionsImg').hide();
     $('.friendHeader').mouseenter(function(event) {
         try {
@@ -143,33 +162,46 @@ $(document).ready(function() {
         $(event.srcElement).remove();
     });
     $('#addNewFriend').load('ajax/friendsfinder.html');
-    LoadBoardComments(1, 5, true);
+    space.LoadBoardComments(1, 5, true);
+    $("div#sendBoardMessage").click(function(/*event*/) {
+        space.SendBoardComment($('.commentInputTextBox').val());
+    });
     $('.commentInputTextBox').focusin(function(event) {
         if ($(event.srcElement).val() == "Something interesting to say?")
-        	$(event.srcElement).val("");
+            $(event.srcElement).val("");
     });
     $('.commentInputTextBox').focusout(function(event) {
         if ($(event.srcElement).val() == "")
-			$(event.srcElement).val("Something interesting to say?");
+            $(event.srcElement).val("Something interesting to say?");
     });
     $('.commentInputTextBox').keydown(function(event) {
         if (event.keyCode == 13)
-            SendBoardComment($('.commentInputTextBox').val());
+            space.SendBoardComment($('.commentInputTextBox').val());
     });
     $('span#moreCommentsHistoryButton').click(function(event) {
-        if (lastLoadedComment < totalMessages)
-        	LoadBoardComments(lastLoadedComment + 1, lastLoadedComment + 6, false)
-        if (lastLoadedComment >= totalMessages)
+        if (space.lastLoadedComment < space.totalMessages)
+            space.LoadBoardComments(space.lastLoadedComment + 1, space.lastLoadedComment + 6, false)
+        if (space.lastLoadedComment >= space.totalMessages)
             $(event.srcElement).fadeOut(250);
     });
-    openedControlPanel = "#none";
+    $("div.editProfileButton").click(function(/*event*/) {
+        space.SwitchProfileDetails();
+    });
+    $("div.editProfileText").click(function(/*event*/) {
+        space.EditProfileDetails();
+    });
+    $("input.chatBoxInput").keydown(function(event) {
+        if (event.keyCode == 13)
+            chatManager.SendChatMessage(event);
+    });
     FadeIn();
+    socket.ConnectToRealTimeServer();
 });
 </script>
 </head>
-<body>
+<body style="display:none">
 <?php PrintTopBar($user); ?>
-<div id="myFriendsPanelFlapClosed" class="myFriendsPanelFlapClosed" onclick="ShowMyFriendsPanel();">
+<div id="myFriendsPanelFlapClosed" class="myFriendsPanelFlapClosed">
 	<b>Friends</b><div class="imgMyFriendsPanelFlap"><img src="images/more_info_large.png" style="height:25px; width:25px;" /></div>
 </div>
 <div id="myFriendsPanelFlapOpened" class="myFriendsPanelFlapOpened">
@@ -203,7 +235,7 @@ $(document).ready(function() {
     ?>
     <div id="friendWrapper" class="friendWrapper">
 		<div id="friendHeader" class="friendHeader" <?php if ($i === $totalFriends - 1) echo 'style="border-bottom-left-radius:0.5em;"';?>>
-    		<div class="friendName"><img src="images/<?php echo ($friendsList[$i][2] ? "friend_online" : "friend_offline"); ?>.png" /><a class="friendSpaceLink" href="/<?php echo $friendsList[$i][1]; ?>"><?php echo $friendsList[$i][1]; ?></a></div>
+    		<div class="friendName"><img id="friendOnlineImg<?php echo $friendsList[$i][0]; ?>" src="images/<?php echo ($friendsList[$i][2] ? "friend_online" : "friend_offline"); ?>.png" /><a class="friendSpaceLink" href="/<?php echo $friendsList[$i][1]; ?>"><?php echo $friendsList[$i][1]; ?></a></div>
     		<div class="plusImg"><img id="moreOptionsImg" src="images/more_info_large.png" style="height:25px; width:25px;" /></div>
     		<?php
     		if ($privateMessagesSenders !== false)
@@ -218,7 +250,7 @@ $(document).ready(function() {
     		?>
 		</div>
 		<div class="friendPanelOptions">
-			<div class="friendOption">Invite to chat</div>
+			<div class="friendOption" onclick="chatManager.CreateChatConversation(<?php echo $friendsList[$i][0], ", '", $friendsList[$i][1], "'"; ?>, false)">Invite to chat</div>
 			<div class="friendOption">Invite to LiveStream</div>
 			<div class="friendOption"><a id="sendPrivateMessage" href="ajax/privatemessage.php?friendName=<?php echo $friendsList[$i][1]; ?>" style="text-decoration:none; color:#FFFFFF;">Send private message</a></div>
 			<div class="friendOptionRemove"><a id="removeFriend" href="ajax/removefriendconfirmation.php?friendName=<?php echo $friendsList[$i][1]; ?>" style="text-decoration:none; color:#FFFFFF;">Remove friend</a></div>
@@ -228,7 +260,7 @@ $(document).ready(function() {
         }
     } 
     ?>
-    <div id="closeMyFriendsPanel" class="closeMyFriendsPanel" onclick="CloseMyFriendsPanel();">
+    <div id="closeMyFriendsPanel" class="closeMyFriendsPanel">
     	<b>Hide</b><!-- We must put an image here, like a minus sign or a minimize icon, may be a left arrow, something like that -->
     </div>
 </div>
@@ -263,7 +295,7 @@ $(document).ready(function() {
 		?>
 			<div id="commentsBoardInput" class="commentsBoardInput">
 				<input class="commentInputTextBox" type="text" value="Something interesting to say?" />
-				<div id="sendBoardMessage" class="sendBoardMessage" onclick="SendBoardComment($('.commentInputTextBox').val(), <?php echo $spaceOwner->GetId(); ?>);"><img src="images/send_comment.png" /></div>
+				<div id="sendBoardMessage" class="sendBoardMessage"><img src="images/send_comment.png" /></div>
 			</div>
         <?php 
 		}
@@ -294,12 +326,12 @@ $(document).ready(function() {
             	<div id="countryDiv" class="profileText"><b>Country: </b><span id="countrySpan"><?php echo $details[USER_DETAILS_COUNTRY]; ?></span></div><br />
             	<div id="cityDiv" class="profileText"><b>City: </b><span id="citySpan"><?php echo $details[USER_DETAILS_CITY]; ?></span></div>
             	<?php if ($isOwner) { ?>
-            	<div class="editProfileText" onclick="EditProfileDetails();"><img src="images/edit.png" style="height:25px; width:25px; float:right;" /><br /></div>
+            	<div class="editProfileText"><img src="images/edit.png" style="height:25px; width:25px; float:right;" /><br /></div>
             	<?php } else { ?>
             	<br />
             	<?php } ?>
 			</div>
-			<div class="editProfileButton" onclick="SwitchProfileDetails();">View profile</div>
+			<div class="editProfileButton">View profile</div>
 		</div>
 		<?php
 		if ($customOptions[CUSTOM_OPTION_LATEST_NEWS])
@@ -322,14 +354,19 @@ $(document).ready(function() {
 <div id="myAccount" class="controlPanel"></div>
 <div id="mySocial" class="controlPanel"></div>
 <div id="myGames" class="controlPanel"></div>
-<!--
-<div id="chatWindows" class="chatWindows">
-	<div style="float:right; height:40px;">
-		<div class="chatTab">ChatTab#1</div>
-		<div class="chatTab">ChatTab#2</div>
+<div class="chatBoxWrapper">
+    <div class="chatBox">
+    	<div class="chatBoxTextWrapper">
+    	</div>
+    	<input class="chatBoxInput" type="text" />
 	</div>
 </div>
--->
-<div style="position:fixed; text-align:center; bottom:0; right:0; font:12px Calibri;">Page loaded in <?php echo microtime(true) - $loadTime; ?> seconds.</div>
+<div id="chatWindows" class="chatWindows">
+	<div class="chatTabsWrapper">
+    </div>
+</div>
+<div id="realTimeNotification" class="realTimeNotification" style="display:none"></div>
+<div id="nodeServerStatus" style="position:fixed; text-align:center; bottom:0; left:0; font:12px Calibri; margin-bottom:20px;">Unknown</div>
+<div style="position:fixed; text-align:center; bottom:0; left:0; font:12px Calibri;">Page loaded in <?php echo microtime(true) - $loadTime; ?> seconds.</div>
 </body>
 </html>

@@ -23,13 +23,17 @@ if (isset($_SESSION['userId']))
     header("location:../../". GetUsernameFromId($_SESSION['userId']));
 else
 {
+    $loginResult = array('status' => "");
     // If the user access directly to this page, we can redirect him to the login page
     if (isset($_POST['username']) && isset($_POST['password']))
     {
         $username = $_POST['username'];
         $password = $_POST['password'];
         if ($username === "" || $password === "")
-            die("INCORRECT");
+        {
+            $loginResult['status'] = "INCORRECT";
+            die(json_encode($loginResult));
+        }
 
     	$DB = new Database($DATABASES['USERS']);
     	if (($result = $DB->ExecuteStmt(Statements::SELECT_USER_DATA_LOGIN, $DB->BuildStmtArray("s", $username))))
@@ -41,17 +45,30 @@ else
     	            // Create the user object
     	            $user = new User($username);
     	            $user->SetOnline(true);
+    	            $user->GenerateRandomSessionId();
+    	            $loginResult['sessionId'] = $user->GetRandomSessionId();
     	            $_SESSION['userId'] = $user->GetId();
-    	            echo "SUCCESS";
+    	            $loginResult['userId'] = $user->GetId();
+    	            $loginResult['status'] = "SUCCESS";
+    	            echo json_encode($loginResult);
     	        }
     	        else
-    	            echo "INCORRECT";
+    	        {
+    	            $loginResult['status'] = "INCORRECT";
+    	            die(json_encode($loginResult));
+    	        }
     	    }
     	    else
-    	        echo "INCORRECT";
+    	    {
+    	        $loginResult['status'] = "INCORRECT";
+    	        die(json_encode($loginResult));
+    	    }
     	}
     	else
-    	    echo "FAILED";
+    	{
+    	    $loginResult['status'] = "FAILED";
+    	    die(json_encode($loginResult));
+    	}
     }
     else
         header("location:../../login.php");

@@ -52,6 +52,7 @@ Class User
             $this->_id = $userData['id'];
             $this->_username = $userData['username'];
             $this->_passwordSha1 = $userData['password_sha1'];
+            $this->_randomSessionId = $userData['random_session_id'];
             $this->_email = $userData['email'];
             if (is_null($userData['ip_v6']))
                 $this->_ip = $userData['ip_v4'];
@@ -71,13 +72,52 @@ Class User
     {
         $data;
         if (filter_var($this->GetLastIp(), FILTER_VALIDATE_IP, FILTER_FLAG_IPV4))
-            $data = $this->_db->BuildStmtArray("issssss", $this->GetId(), $this->GetUsername(), $this->GetPasswordSha1(), $this->GetEmail(), $this->GetLastIp(), NULL, $this->_lastLogin);
+            $data = $this->_db->BuildStmtArray("isssssss", $this->GetId(), $this->GetUsername(), $this->GetPasswordSha1(), $this->GetRandomSessionId(), $this->GetEmail(), $this->GetLastIp(), NULL, $this->_lastLogin);
         else
-            $data = $this->_db->BuildStmtArray("issssss", $this->GetId(), $this->GetUsername(), $this->GetPasswordSha1(), $this->GetEmail(), NULL, $this->GetLastIp(), $this->_lastLogin);
+            $data = $this->_db->BuildStmtArray("isssssss", $this->GetId(), $this->GetUsername(), $this->GetPasswordSha1(), $this->GetRandomSessionId(), $this->GetEmail(), NULL, $this->GetLastIp(), $this->_lastLogin);
         $this->_db->BeginTransaction();
         if ($this->_db->ExecuteStmt(Statements::REPLACE_USER_DATA, $data))
         {
             $this->_db->CommitTransaction();
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Obtains the user's unique random session identifier for this login.
+     * @return mixed Returns a 128 characters length string with the WHIRLPOOL hash of the session identifier, or NULL if the session identifier has not been initilized yet.
+     */
+    public function GetRandomSessionId()
+    {
+        return $this->_randomSessionId;
+    }
+    
+    /**
+     * Generates (or re-generates) a new random unique session identifier for this user, and stores it in the database. This ID is sended to the client to identify itself when connecting to the real time server app.
+     * @return boolean Returns true on success, false in case of failure.
+     */
+    public function GenerateRandomSessionId()
+    {
+        $unbreakable = $this->GetUsername() . "-:-" . MAGIC_STRING . "-" . microtime(true) . $this->GetPasswordSha1();
+        $unbreakable = hash("whirlpool", $unbreakable);
+        if ($this->_db->ExecuteStmt(Statements::UPDATE_USER_DATA_RND_IDENTIFIER, $this->_db->BuildStmtArray("si", $unbreakable, $this->GetId())))
+        {
+            $this->_randomSessionId = $unbreakable;
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Destroys (Removes from database) the user's unique random session identifier. This will force the user to relog if he wants to continue using the real time information systems.
+     * @return boolean Returns true on success, or false on failure.
+     */
+    public function DestroyRandomSessionId()
+    {
+        if ($this->_db->ExecuteStmt(Statements::UPDATE_USER_DATA_RND_IDENTIFIER, $this->_db->BuildStmtArray("si", NULL, $this->GetId())))
+        {
+            $this->_randomSessionId = NULL;
             return true;
         }
         return false;
@@ -905,6 +945,7 @@ Class User
     private $_id;                // The user's unique ID
     private $_username;          // The user's username (nickname)
     private $_passwordSha1;      // The encripted user's password
+    private $_randomSessionId;   // The user's unique session identifier. It changes on every new login.
     private $_email;             // The user's e-mail
     private $_ip;                // The user's last used IP address
     private $_isOnline;          // True if the user is online, else false

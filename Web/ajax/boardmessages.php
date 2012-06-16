@@ -111,7 +111,7 @@ elseif (isset($_POST['spaceOwner']) && isset($_POST['from']) && isset($_POST['to
     	<div class="newReplyCommentBoard">
     		<div class="newReplyCommentBoardInput">
     			<input class="newReplyCommentBoardInputTextbox" type="text" value="" />
-    			<div class="newReplyCommentBoardInputSend" onclick="SendMessageBoardReply(event);" data-id="<?php echo $messageIds[$i]; ?>">Comment</div>
+    			<div class="newReplyCommentBoardInputSend" onclick="space.SendMessageBoardReply(event);" data-id="<?php echo $messageIds[$i]; ?>">Comment</div>
     		</div>
     		<div class="newReplyCommentBoardAvatar"><img src="<?php echo $userAvatarHost; ?>" style="width:40px; height:40px; border:1px #00FF00 solid; border-radius:0.3em;" /></div>
     	</div>

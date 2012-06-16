@@ -7,7 +7,6 @@ class CustomSessionsHandler
     public function open()
     {
         global $DATABASES;
-        // Note that the name of the variable doesn't fits the standards, that's because it shouldn't be modified (it's more like a constant)
         $this->_sessionsDb = New Database($DATABASES['SESSIONS']);
         // We don't need to return false if the connection to the DB can't be stablished, because the Database contructor kill the script execution if something fails (with die())
         return true;

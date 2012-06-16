@@ -16,10 +16,9 @@ register_shutdown_function("session_write_close");
 session_start();
 // If user is already loged in, redirect to his or her main page
 if (isset($_SESSION['userId']))
-{
-    $user = new User($_SESSION['userId']);
-    header("location:". $user->GetUsername());
-}
+    header("location:". GetUsernameFromId($_SESSION['userId']));
+else
+    session_destroy();
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -78,40 +77,80 @@ function FadeIn()
 function SetLoginTopMargin()
 {
     var htop = ($(window).height() - 250) / 2;
-    $('div.login').css('margin-top', htop.toString() + 'px');
+    $("div.login").css("margin-top", htop.toString() + "px");
     setTimeout("SetLoginLeftMargin()", 100);
 }
 
 function SetLoginLeftMargin()
 {
 	var wleft = ($(window).width() - 360) / 2;
-	$('div.login').css('margin-left', wleft.toString() + 'px');
+	$("div.login").css("margin-left", wleft.toString() + "px");
 	setTimeout("SetLoginTopMargin()", 100);
 }
 
 function SendLogin()
 {
-	var userName = $('.inputUser').val();
-	var password = $('.inputPass').val();
-	if (userName == '' || password == '')
-		$('#loginError').text("You must fill both username and password fields!");
+	var userName = $(".inputUser").val();
+	var password = $(".inputPass").val();
+	if (userName == "" || password == "")
+		$("#loginError").text("You must fill both username and password fields!");
 	else
 	{
+		$("#loginError").css("color", "#00FF00");
+		$("#loginError").text("Connecting to server...");
     	$.post("core/sessions/initialize.php", {username: userName, password: password}, function(data) {
-    		if (data.length > 0)
+    		if (data)
     		{
-    			if (data == "SUCCESS")
-    			    $('body').fadeOut(1000, function() {window.location = '/' + userName;});
-    			else if (data == "INCORRECT")
-    				$('#loginError').text("Incorrect username or password");
-    			else if (data == "FAILED")
-    				$('#loginError').text("Error connecting to the login server, please try again soon");
-    			else
-    				$('#loginError').text("Error connecting to the main server, please try again soon");
+    			if (data.status == "SUCCESS")
+    			{
+        			$("#loginError").text("Connecting to real time server...");
+    			    $.ajax({
+    			        dataType: "jsonp",
+    			        data: "",
+    			        url: "http://127.0.0.1:5124/login?userId=" + data.userId + "&sessionId=" + data.sessionId + "&callback=?",
+    			        success: function(response) {
+							if (response.status == "SUCCESS")
+								$("#loginError").text("Connection successful.");
+							else
+							{
+								$("#loginError").css("color", "#FF6633");
+							    $("#loginError").text("Connection to real time server failed.");
+							}
+							setTimeout(function() {
+								$("body").fadeOut(1000, function() {
+									window.location = "/" + userName;
+								});
+							}, 500);
+        			    },
+    			    	error: function() {
+    			    	    $("#loginError").css("color", "#FF6633");
+    			    	    $("#loginError").text("Connection to real time server failed.");
+    			    	    setTimeout(function() {
+								$("body").fadeOut(1000, function() {
+									window.location = "/" + userName;
+								});
+    			    	    }, 500);
+        			    },
+        			    timeout: 5000,
+    			    });
+    			}
+        		else 
+            	{
+                	$("#loginError").css("color", "#FF0000");
+                	if (data.status == "INCORRECT")
+        				$("#loginError").text("Incorrect username or password");
+        			else if (data.status == "FAILED")
+        				$("#loginError").text("Error connecting to the login server, please try again soon");
+        			else
+        				$("#loginError").text("Error connecting to the main server, please try again soon");
+            	}
     		}
     		else
-    			$('#loginError').text("Unknown error, please try again soon.");
-    	});
+    		{
+    		    $("#loginError").css("color", "#FF0000");
+    			$("#loginError").text("Unknown error, please try again soon.");
+    		}
+    	}, "json");
 	}
 }
 

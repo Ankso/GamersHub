@@ -11,6 +11,10 @@ body {
     /*overflow-x:hidden;*/
 }
 
+img {
+    border: 0px #000000 solid;
+}
+
 /* Top bar */
 #topbar {
 	position:fixed;
@@ -222,20 +226,86 @@ body {
 
 .chatWindows {
 	position:fixed;
-    width:99%;
-    height:40px;
+    width:100%;
     bottom:0px;
     z-index:100;
 }
 
-.chatTab {
+.chatBoxWrapper {
+	width:100%;
+	bottom:0;
+    position:fixed;
+    z-index:100;
+    display:none;
+}
+
+.chatBox {
+	margin-bottom:50px;
+    height:300px;
+    width:250px;
+    border:1px #FFFFFF solid;
+    float:right;
+    margin-right:15px;
+    padding:10px;
+    border-radius:0.5em;
+    background-color:#222222;
+}
+
+.chatBoxTextWrapper {
+    height:250px;
+    width:250px;
+}
+
+.chatBoxText {
+    height:250px;
+    width:234px;
+    border:1px #FFFFFF solid;
+    padding:7px;
+    background-color:#000000;
+    display:none;
+    overflow:auto;
+}
+
+.chatBoxInput {
+    width:246px;
+    margin-top:25px;
+    border-radius:0.3em;
+}
+
+.chatWindow {
     float:left;
+}
+
+.chatTabsWrapper {
+	float:right;
+	height:40px;
+}
+
+.chatTab {
     border:1px #FFFFFF solid;
     padding:5px 5px 5px 5px;
-    background-color:#222222;
+    background-color:#606060;
     margin-right:5px;
+    float:left;
+    border-radius:0.3em;
 }
 
 .chatTab:hover {
     cursor:pointer;
+}
+
+/* Real Time Notification System */
+
+.realTimeNotification {
+    position:fixed;
+    top:0;
+    right:1%;
+    width:18%;
+    margin-top:65px;
+    background-color:rgba(0,0,0,0.8);
+    border:2px #909090 solid;
+    border-radius:0.5em;
+    text-align:center;
+    padding-top:10px;
+    padding-bottom:10px;
 }

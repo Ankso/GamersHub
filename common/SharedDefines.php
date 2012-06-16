@@ -65,5 +65,9 @@ define("CUSTOM_OPTION_LATEST_NEWS", 2);
  */
 define("USER_HAS_NO_BOARD_MESSAGES", 0);
 define("USER_COMMENT_HAS_NO_REPLIES", -1);
-
+/**
+ * String used to encrypt the unique user's random session identifier.
+ * TODO: It must be put in a external-well-protected file when this becomes live.
+ */
+define("MAGIC_STRING", "Vou mErcar Un focKing Rolls roYce")
 ?>

@@ -20,6 +20,7 @@ if (isset($_SESSION['userId']))
     $user->SetLastLogin(date("Y-m-d H:i:s", time()));
     $user->SetLastIp($_SERVER['REMOTE_ADDR']);
     $user->SetOnline(false);
+    $user->DestroyRandomSessionId();
 }
 session_destroy();
 header("location:index.php");
