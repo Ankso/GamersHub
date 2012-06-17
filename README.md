@@ -43,90 +43,90 @@ Private data members must be preceded by a "_":
 >*$_myPrivateVariable*
 
 Constants: All contants must be named using capital letters and using "_" as word separator:
->*$MY_CONSTANT, $MY_CONSTANT_ARRAY['INDEX'] (Not $My_Constant or $MY_CONSTANT_ARRAY['index'])*
+>*$MY_CONSTANT, $MY_CONSTANT_ARRAY\['INDEX'\] (Not $My_Constant or $MY_CONSTANT_ARRAY['index'])*
 
 **All private class variables must be accessed using the specific Set() and Get() methods.** The __set() and __get()built-in methods can be used, but only if the variable accesed has no relation with a database field or doesn't need any kind of check.
 
 ###if () ... else/*if ()*/ ... blocks:
 
-    ```php
-    // The "(" must be separated from the "if" by a space:
-    if ($myVar > MY_CONSTANT_LIMIT)
+```php
+// The "(" must be separated from the "if" by a space:
+if ($myVar > MY_CONSTANT_LIMIT)
+{
+    // My sentences
+}
+else
+{
+    // My alternative sentences
+}
+
+// The "{}" could be omitted if only one sentece is going to be executed:
+if ($myVar > MY_CONSTANT_LIMIT)
+    // My sentence
+else
+    // My other sentence
+
+// Or for example:
+if ($myVar > MY_CONSTANT_LIMIT)
+{
+    // My sentences
+}
+else
+    // My other sentence
+
+// If there is only one sentence, but it is a composed one like a loop, the "{}" are a must:
+if ($myVar > MY_CONSTANT_LIMIT)
+{
+    while ($myControl < MY_CONTROL_LIMIT)
     {
         // My sentences
     }
-    else
-    {
-        // My alternative sentences
-    }
-
-    // The "{}" could be omitted if only one sentece is going to be executed:
-    if ($myVar > MY_CONSTANT_LIMIT)
+}
+else
+{
+    for($i = 0; $i < MY_CONTROL_LIMIT2; ++$i)
         // My sentence
-    else
-        // My other sentence
-
-    // Or for example:
-    if ($myVar > MY_CONSTANT_LIMIT)
-    {
-        // My sentences
-    }
-    else
-        // My other sentence
-
-    // If there is only one sentence, but it is a composed one like a loop, the "{}" are a must:
-    if ($myVar > MY_CONSTANT_LIMIT)
-    {
-        while ($myControl < MY_CONTROL_LIMIT)
-        {
-            // My sentences
-        }
-    }
-    else
-    {
-        for($i = 0; $i < MY_CONTROL_LIMIT2; ++$i)
-            // My sentence
-    }
-    ```
+}
+```
 
 ###Functions:
 All functions must be commented before the declaration following the next scheme:
 
-    ```php
-    /**
-     * Function description.
-     * @param var_type $varName Variable description.
-     * @return var_type Variable description.
-     */
-     ```
+```php
+/**
+ * Function description.
+ * @param var_type $varName Variable description.
+ * @return var_type Variable description.
+ */
+ ```
 
 Function names should follow the next scheme: no "_", each word starts with capital letter. For example:
 >*MyFunction(), MyOtherFunction() (not myFunction() or myotherfunction() or my_function())*
 
 Function declarations should follow the next scheme: no space between the function name and the params section, the opening bracket "{" must be in the next line. For example:
 
-    ```php
-    function MyFunction($myParam, $myOtherParam)
-    {
-        return ($myParam + $myOtherParam);
-    }
-    ```
+```php
+function MyFunction($myParam, $myOtherParam)
+{
+    return ($myParam + $myOtherParam);
+}
+```
 
 Full example:
 
-    ```php
-    /**
-     * Adds two numbers if both are positive.
-     * @param integer $oneNumber One of the numbers that must be added
-     * @param integer $otherNumber The other number
-     * @return mixed Returns the sum of both numbers, or false if one (or both) of the numbers is negative.
-     */
-    function AddTwoNumbers($oneNumber, $otherNumber)
-    {
-        if ($oneNumber < 0 || $otherNumber < 0)
-            return fals;
-        return ($oneNumber + $otherNumber);
-    }
-    ```
+```php
+/**
+ * Adds two numbers if both are positive.
+ * @param integer $oneNumber One of the numbers that must be added
+ * @param integer $otherNumber The other number
+ * @return mixed Returns the sum of both numbers, or false if one (or both) of the numbers is negative.
+ */
+function AddTwoNumbers($oneNumber, $otherNumber)
+{
+    if ($oneNumber < 0 || $otherNumber < 0)
+        return fals;
+    return ($oneNumber + $otherNumber);
+}
+```
 
 To be continued...
