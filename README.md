@@ -1,9 +1,11 @@
 #GamersNet (The Project) README:
 
+```php
 /*
 First: Note that "GamersNet" is not (and probably it won't be) the final project name!
 So, is better call it just "The Project"
 */
+```
 
 ##Documentation:
 - Git:
@@ -47,7 +49,7 @@ Constants: All contants must be named using capital letters and using "_" as wor
 
 **All private class variables must be accessed using the specific Set() and Get() methods.** The __set() and __get()built-in methods can be used, but only if the variable accesed has no relation with a database field or doesn't need any kind of check.
 
-###if () ... else/*if ()*/ ... blocks:
+###if () ... else/\*if ()\*/ ... blocks:
 
 ```php
 // The "(" must be separated from the "if" by a space:
@@ -98,7 +100,7 @@ All functions must be commented before the declaration following the next scheme
  * @param var_type $varName Variable description.
  * @return var_type Variable description.
  */
- ```
+```
 
 Function names should follow the next scheme: no "_", each word starts with capital letter. For example:
 >*MyFunction(), MyOtherFunction() (not myFunction() or myotherfunction() or my_function())*
