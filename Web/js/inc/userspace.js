@@ -13,6 +13,11 @@ var STATUS = {
     CONNECTION_LOST : 3
 };
 
+// Time between pings to the Real Time Server (in ms)
+var TIME_BETWEEN_PINGS = 10000;
+// The maximum time that an user can be idle (in minutes)
+var MAX_USER_IDLE_TIME = 20;
+
 /**
  * User object constructor
  * @returns {User}
@@ -22,6 +27,7 @@ function User() {
     this.username = null;
     this.randomSessionId = null;
     this.avatarPath = null;
+    this.isAfk = false;
 };
 
 /**
@@ -36,6 +42,7 @@ function Space() {
     this.openedControlPanel = "#none";
     this.totalMessages = null;
     this.lastLoadedComment = null;
+    this.idleTime = 0;
     this.userFriends = new Array();
 };
 
@@ -70,7 +77,7 @@ Space.prototype.EditProfileDetails = function () {
     $('#cityDiv').html('City: <input type="text" id="cityInput"  value="' + this.previousCity + '" />');
     $('div.editProfileText').hide();
     $('#profileDetails').append('<div id="submitCancelEdit" style="height:20px; margin-top:7px;"><span style="float:left; color:#00FF00; cursor:pointer;" onclick="space.SubmitEditedProfileDetails();">Submit</span><span style="float:right; color:#FF0000; cursor:pointer;" onclick="space.CancelEditProfileDetails();">Cancel</span></div>');
-}
+};
 
 /**
  * Shows/hides the profile details of the space owner.
@@ -86,7 +93,7 @@ Space.prototype.SwitchProfileDetails = function () {
         $('#profileDetails').slideUp(400);
         $('div.editProfileButton').text("View profile");
     }
-}
+};
 
 /**
  * Deactivates "Edition mode" for the space owner's profile details.
@@ -99,7 +106,7 @@ Space.prototype.CancelEditProfileDetails = function () {
     $('#submitCancelEdit').remove();
     $('#submitProfileError').remove();
     $('div.editProfileText').show();
-}
+};
 
 /**
  * Submits the changes done to the space owner profile details.
@@ -132,7 +139,7 @@ Space.prototype.SubmitEditedProfileDetails = function () {
             $('#profileDetails').append('<div id="submitProfileError" style="text-align:center; color:#FF0000;">Unable to connect to the server. Please make sure that you are connected to the internet and try again.</div>');
         }
     });
-}
+};
 
 /**
  * Shows the My Friends panel.
@@ -143,7 +150,7 @@ Space.prototype.ShowMyFriendsPanel = function () {
         $('#myFriendsPanel').show("slide", 300);
     });
     $.cookie("FriendsPanel", "opened");
-}
+};
 
 /**
  * Hides the My Friends panel.
@@ -154,7 +161,7 @@ Space.prototype.CloseMyFriendsPanel = function () {
         $('#myFriendsPanelFlapClosed').show("slide", 150);
     })
     $.cookie("FriendsPanel", "closed");
-}
+};
 
 /**
  * Sends a new board message to the server.
@@ -193,7 +200,7 @@ Space.prototype.SendBoardComment = function(message) {
         else
             $('#commentsHistory').prepend("An error occurred while connecting to the server, please try again in a few moments.");
     });
-}
+};
 
 /**
  * Deletes a board message from both the space view and the server.
@@ -217,7 +224,7 @@ Space.prototype.DeleteBoardComment = function(event) {
         else
             $('#commentsHistory').prepend("An error occurred while connecting to the server, please try again in a few moments.");
     });
-}
+};
 
 /**
  * Loads a specified number of board comments in the user's space.
@@ -275,7 +282,7 @@ Space.prototype.LoadBoardComments = function(from, to, prepend) {
         else
             $("#commentsHistory").text("An error occurred while connecting to the server. Please try again in a few moments.");
     });
-}
+};
 
 /**
  * Sends a reply to a message board.
@@ -307,9 +314,11 @@ Space.prototype.SendMessageBoardReply = function(event) {
                 + '</div>' + "\n";
                 $(element.parentElement.parentElement).prev().prepend(newReply);
                 // TODO: This isn't working as expected
-                $('img.deleteBoardReply').click(function(event) {
-                    space.DeleteBoardCommentReply(event);
-                });
+                setTimeout(function() {
+                    $('img.deleteBoardReply').click(function(event) {
+                        space.DeleteBoardCommentReply(event);
+                    });
+                }, 500);
             }
             else
                 $(element).prev().val("An error occurred while sending your reply. Please try again.");
@@ -317,7 +326,7 @@ Space.prototype.SendMessageBoardReply = function(event) {
         else
             $(element).prev().val("Connection to the server lost. Please try again in a few moments.");
     });
-}
+};
 
 /**
  * Deletes a reply from the user's board. The reply can only be deleted by the space owner or by the writer (this check is server-side)
@@ -335,7 +344,7 @@ Space.prototype.DeleteBoardCommentReply = function(event) {
                 $(event.srcElement.parentElement).fadeOut(500);
         }
     });
-}
+};
 
 /**
  * Opens (or moves to) another control panel.
@@ -356,6 +365,7 @@ Space.prototype.OpenControlPanel = function(panelName) {
         else
             $(panelName).show("slide", { direction: direction }, 500);
         $(self.openedControlPanel + 'Button').css("background-color", "transparent");
+        // Note this unbind(). It's very important unbind the previous attached event handler.
         $(self.openedControlPanel + "Button").unbind("click");
         $(self.openedControlPanel + "Button").click(TriggerOpenControlPanel);
     }
@@ -382,7 +392,7 @@ Space.prototype.OpenControlPanel = function(panelName) {
             break;
     }
     self.openedControlPanel = panelName;
-}
+};
 
 /**
  * Closes the opened control panel.
@@ -398,7 +408,34 @@ Space.prototype.CloseControlPanel = function() {
     $(self.openedControlPanel + "Button").unbind("click");
     $(self.openedControlPanel + 'Button').click(TriggerOpenControlPanel);
     self.openedControlPanel = "#none";
-}
+};
+
+Space.prototype.IncrementIdleTimer = function() {
+    if (user.isAfk)
+        return;
+    
+    this.idleTime = this.idleTime + 1;
+    if (this.idleTime >= MAX_USER_IDLE_TIME)
+    {
+        this.EnableAfkMode();
+        this.idleTime = 0;
+    }
+};
+
+Space.prototype.EnableAfkMode = function() {
+    $("div.afkWindow").fadeIn(750);
+    $("body").css("overflow-y", "hidden");
+    socket.Emit("enableAfk", { userId : user.id });
+    user.isAfk = true;
+};
+
+Space.prototype.DisableAfkMode = function() {
+    var password = $("input#afkPassword").val();
+    
+    if (password)
+        socket.Emit("disableAfk", { userId : user.id, password : password });
+    $("input#afkPassword").val("");
+};
 
 /**
  * Socket object constructor
@@ -434,7 +471,7 @@ Socket.prototype.ConnectToRealTimeServer = function() {
             self.status = STATUS.CONNECTED;
             self.pingTimeout = setTimeout(function() {
                 socket.Ping();
-            }, 60000);
+            }, TIME_BETWEEN_PINGS);
         }
         else if (data.status == "INCORRECT")
         {
@@ -481,10 +518,23 @@ Socket.prototype.ConnectToRealTimeServer = function() {
     self.socket.on("enterChat", function(data) {
         chatManager.CreateChatConversation(data.friendId, data.friendName, true);
     });
-    self.socket.on("parseChatMessage", function(data){
-        chatManager.ReceiveChatMessage(data.friendName, data.message);
+    self.socket.on("parseChatMessage", function(data) {
+        chatManager.ReceiveChatMessage(data.friendId, data.friendName, data.message);
     });
-}
+    self.socket.on("afkModeDisabled", function(data) {
+        $("span#errorAfkPassword").remove();
+        if (data.success)
+        {
+            $("div.afkWindow").fadeOut(750);
+            $("body").css("overflow-y", "auto");
+            user.isAfk = false;
+        }
+        else
+        {
+            $("div.afkWindowContainer").append('<span id="span#errorAfkPassword" style="color:#FF0000;">Incorrect password</span>')
+        }
+    });
+};
 
 /**
  * Pings the Real Time Server to refresh inactivity time.
@@ -493,8 +543,8 @@ Socket.prototype.Ping = function() {
     this.socket.emit("ping", { userId: user.id });
     this.pingTimeout = setTimeout(function() {
         socket.Ping();
-    }, 60000);
-}
+    }, TIME_BETWEEN_PINGS);
+};
 
 /**
  * Sends a message to the Real Time Server.
@@ -503,7 +553,7 @@ Socket.prototype.Ping = function() {
  */
 Socket.prototype.Emit = function(opcode, packet) {
     this.socket.emit(opcode, packet);
-}
+};
 
 /**
  * ChatManager object constructor.
@@ -515,6 +565,7 @@ function ChatManager() {
             id  : null,
             name: null
     };
+    this.activeChats = new Array();
 };
 
 /**
@@ -535,13 +586,18 @@ ChatManager.prototype.CreateChatConversation = function(friendId, friendName, is
     });
     if ($("div.chatBoxWrapper").is(":hidden"))
         $("div.chatBoxWrapper").show();
-    $("div.chatBoxTextWrapper").prepend('<div class="chatBoxText" id="chatBoxText' + friendName + '" data-id="' + friendId + '" style="display:inherit">-----' + friendName + '-----</div>');
+    $("div.chatBoxTextWrapper").prepend('<div class="chatBoxText" id="chatBoxText' + friendName + '" data-id="' + friendId + '" style="display:inherit"></div>');
     $("input.chatBoxInput").focus();
     this.focusConversation.id = friendId;
     this.focusConversation.name = friendName;
+    this.activeChats.push(friendId);
     if (!isInvitation)
         socket.Emit("chatInvitation", { userId: user.id, friendId: friendId });
-}
+};
+
+ChatManager.prototype.CloseChatConversation = function(friendId, friendName) {
+    
+};
 
 /**
  * Switchs between chat windows.
@@ -564,7 +620,7 @@ ChatManager.prototype.SwitchChatConversation = function(event) {
     $("div#chatBoxText" + friendName).prop({ scrollTop: $("div#chatBoxText" + friendName).prop("scrollHeight") });
     this.focusConversation.id = friendId;
     this.focusConversation.name = friendName;
-}
+};
 
 /**
  * Sends a chat message.
@@ -579,19 +635,22 @@ ChatManager.prototype.SendChatMessage = function(event) {
     $("div#chatBoxText" + this.focusConversation.name).prop({ scrollTop: $("div#chatBoxText" + this.focusConversation.name).prop("scrollHeight") });
     $(event.srcElement).val("");
     socket.Emit("chatMessage", { userId: user.id, friendId: this.focusConversation.id , message: message });
-}
+};
 
 /**
  * Processes a received message from the Real Time Server.
  * @param friendName string The name of the friend that sends the message.
  * @param message strign The message itself.
  */
-ChatManager.prototype.ReceiveChatMessage = function(friendName, message) {
+ChatManager.prototype.ReceiveChatMessage = function(friendId, friendName, message) {
+    // Create new chat window if none exists
+    if (this.activeChats.indexOf(friendId) === -1)
+        this.CreateChatConversation(friendId, friendName, true);
     $("div#chatBoxText" + friendName).append('<br /><b>' + friendName + ': </b>' + message);
     $("div#chatBoxText" + friendName).prop({ scrollTop: $("div#chatBoxText" + friendName).prop("scrollHeight") });
     if (friendName != this.focusConversation.name)
         $("div#chatTab" + friendName).css("background-color", "#CC6633");
-}
+};
 
 /**
  * Friend object constructor. The Friend object is used to manage the friends panel on the left.
@@ -618,6 +677,10 @@ Friend.prototype.SwitchOnline = function() {
     return false;
 };
 
+/**
+ * CommandsManager object constructor.
+ * @returns {CommandsManager}
+ */
 function CommandsManager() {
 };
 

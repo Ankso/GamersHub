@@ -194,6 +194,20 @@ $(document).ready(function() {
         if (event.keyCode == 13)
             chatManager.SendChatMessage(event);
     });
+    // For idle time and more:
+    setInterval(function() {
+        space.IncrementIdleTimer();
+    }, 60000);
+    $(this).mousemove(function(/*event*/) {
+        space.idleTime = 0;
+    });
+    $(this).keypress(function(/*event*/) {
+        space.idleTime = 0;
+    });
+    $("input#afkPassword").keydown(function(event) {
+        if (event.keyCode == 13)
+            space.DisableAfkMode();
+    });
     FadeIn();
     socket.ConnectToRealTimeServer();
 });
@@ -368,5 +382,11 @@ $(document).ready(function() {
 <div id="realTimeNotification" class="realTimeNotification" style="display:none"></div>
 <div id="nodeServerStatus" style="position:fixed; text-align:center; bottom:0; left:0; font:12px Calibri; margin-bottom:20px;">Unknown</div>
 <div style="position:fixed; text-align:center; bottom:0; left:0; font:12px Calibri;">Page loaded in <?php echo microtime(true) - $loadTime; ?> seconds.</div>
+<div class="afkWindow" style="display:none;">
+	<div class="afkWindowContainer">
+		You have been too much time AFK. Please enter your password to restore your session:<br />
+		<input id="afkPassword" type="password" style="border-radius:0.3em; text-align:center; margin-top:20px;" />
+	</div>
+</div>
 </body>
 </html>

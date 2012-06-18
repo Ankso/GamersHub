@@ -52,13 +52,14 @@ function GetIdFromUsername($username)
 }
 
 /**
- * Gets the avatar host path of a specific user without creating a full user class
+ * [NOT IMPLEMENTED] Gets the avatar host path of a specific user without creating a full user class
  * @param long $userId The user's unique ID
  * @return mixed Returns a string representing the host path of the user's avatar, or false if something fails..
  */
 function GetAvatarHostPathFromId($userId)
 {
-    
+    // Not yet implemented
+    return false;
 }
 
 /**

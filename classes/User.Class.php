@@ -38,7 +38,6 @@ Class User
     
     /**
      * Load all user's data from DB into the Class variables.
-     * @param $username
      * @return bool Returns true if the user is loaded successfully, or false if something fails.
      */
     private function LoadFromDB()
@@ -138,7 +137,7 @@ Class User
     
     /**
      * Sets the user's ID to a new one. This function is private and must be used with a _lot_ of caution.
-     * @param $newId The new user's unique ID
+     * @param long $newId The new user's unique ID
      * @return bool Returns true if success, or false in case of failure.
      */
     private function SetId($newId)
@@ -162,7 +161,7 @@ Class User
     
     /**
      * Sets the user's username.
-     * @param $newUsername
+     * @param string $newUsername The new user's username.
      * @return bool Returns true if success, or false in case of failure.
      */
     public function SetUsername($newUsername)
@@ -177,6 +176,7 @@ Class User
     
     /**
      * Gets the encripted user's password.
+     * @return string The encrypted user's password.
      */
     public function GetPasswordSha1()
     {
@@ -185,7 +185,7 @@ Class User
     
     /**
      * Sets the encripted user's password to a new one.<p>Note that this function doesn't check if the password is encripted or anything, just sets the password to the passed string.</p>
-     * @param $newPasswordSha1 The new encripted user's password as a string. The param must be checked _after_ the function is called.
+     * @param string $newPasswordSha1 The new encripted user's password as a string. The param must be checked _after_ the function is called.
      * @return bool Returns true if success, or false in case of failure.
      */
     public function SetPasswordSha1($newPasswordSha1)
@@ -209,7 +209,7 @@ Class User
     
     /**
      * Set's the user's e-mail.
-     * @param $newEmail
+     * @param string $newEmail The new user's e-mail.
      * @return bool Returns true if success, or false in case of failure.
      */
     public function SetEmail($newEmail)
@@ -257,7 +257,7 @@ Class User
     
     /**
      * Changes the user's online status.
-     * @param bool $isOnline
+     * @param bool $isOnline Obiusly, true if the user is online.
      * @return bool Returns true if success or false if failure.
      */
     public function SetOnline($isOnline)
@@ -524,7 +524,7 @@ Class User
     }
     
     /**
-     * [INCOMPLETE] Sends a new friend request. Note that the target friend must be updated in real-time when the function is complete.
+     * Sends a new friend request. The target user must be updated in real-time via the Real Time Server (RTS)
      * @param long $friendId The request target ID
      * @param string $message The message that the user sends to his new friend
      * @return bool Returns true on success, USER_IS_ALREADY_FRIEND if the users are friends, RESQUEST_ALREADY_SENT if the friend request has been sent and is waiting for aproval, or false on failure
