@@ -305,7 +305,7 @@ Space.prototype.SendMessageBoardReply = function(event) {
                 // Add the new reply to the list
                 var date = new Date();
                 var newReply = '<div class="boardCommentReply" data-id="' + messageId + '">' + "\n"
-                + '<div class="deleteBoardComment" style="margin-top:4px;"><img src="images/delete_16.png" style="width:10px; height:10px;" /></div>' + "\n"
+                + '<img src="images/delete_16.png" class="deleteBoardReply" />' + "\n"
                 + '<div class="boardCommentReplyBody">' + "\n"
                 + '<div class="boardCommentReplyAvatar"><img src="' + user.avatarPath + '" style="width:40px; height:40px; border-radius:0.3em;" alt="avatar" /></div>' + "\n"
                 + '<div class="boardCommentReplyContent">' + reply + '</div>' + "\n"
@@ -313,12 +313,10 @@ Space.prototype.SendMessageBoardReply = function(event) {
                 + '<div class="boardCommentReplyBottom">By You ' + date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds() + '</div>' + "\n"
                 + '</div>' + "\n";
                 $(element.parentElement.parentElement).prev().prepend(newReply);
-                // TODO: This isn't working as expected
-                setTimeout(function() {
-                    $('img.deleteBoardReply').click(function(event) {
-                        space.DeleteBoardCommentReply(event);
-                    });
-                }, 500);
+                $('img.deleteBoardReply').click(function(e) {
+                    space.DeleteBoardCommentReply(e);
+                });
+                $(element).prev().val("");
             }
             else
                 $(element).prev().val("An error occurred while sending your reply. Please try again.");
