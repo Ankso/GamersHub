@@ -47,7 +47,7 @@ Private data members must be preceded by a "_":
 Constants: All contants must be named using capital letters and using "_" as word separator:
 >*$MY_CONSTANT, $MY_CONSTANT_ARRAY\['INDEX'\] (Not $My_Constant or $MY_CONSTANT_ARRAY['index'])*
 
-**All private class variables must be accessed using the specific Set() and Get() methods.** The __set() and __get()built-in methods can be used, but only if the variable accesed has no relation with a database field or doesn't need any kind of check.
+**All private class variables must be accessed using the specific Set() and Get() methods.** The __set() and __get() built-in methods can be used, but only if the variable accesed has no relation with a database field or doesn't need any kind of check.
 
 ###if () ... else/\*if ()\*/ ... blocks:
 
@@ -126,7 +126,7 @@ Full example:
 function AddTwoNumbers($oneNumber, $otherNumber)
 {
     if ($oneNumber < 0 || $otherNumber < 0)
-        return fals;
+        return false;
     return ($oneNumber + $otherNumber);
 }
 ```
