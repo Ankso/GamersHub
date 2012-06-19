@@ -144,7 +144,7 @@ $(document).ready(function() {
     $('img#moreOptionsImg').hide();
     $('.friendHeader').mouseenter(function(event) {
         try {
-            $(event.srcElement.children[1].children[0]).stop().fadeIn(100);
+            $(event.target.children[1].children[0]).stop().fadeIn(100);
         }
         catch(e) {
             $('img#moreOptionsImg').hide();
@@ -152,14 +152,14 @@ $(document).ready(function() {
     });
     $('.friendHeader').mouseleave(function(event) {
         try {
-            $(event.srcElement.children[1].children[0]).stop.fadeOut(100);
+            $(event.target.children[1].children[0]).stop.fadeOut(100);
         }
         catch(e) {
             $('img#moreOptionsImg').hide();
         }
     });
     $('div#newPrivateMessage').click(function(event) {
-        $(event.srcElement).remove();
+        $(event.target).remove();
     });
     $('#addNewFriend').load('ajax/friendsfinder.html');
     space.LoadBoardComments(1, 5, true);
@@ -167,12 +167,12 @@ $(document).ready(function() {
         space.SendBoardComment($('.commentInputTextBox').val());
     });
     $('.commentInputTextBox').focusin(function(event) {
-        if ($(event.srcElement).val() == "Something interesting to say?")
-            $(event.srcElement).val("");
+        if ($(event.target).val() == "Something interesting to say?")
+            $(event.target).val("");
     });
     $('.commentInputTextBox').focusout(function(event) {
-        if ($(event.srcElement).val() == "")
-            $(event.srcElement).val("Something interesting to say?");
+        if ($(event.target).val() == "")
+            $(event.target).val("Something interesting to say?");
     });
     $('.commentInputTextBox').keydown(function(event) {
         if (event.keyCode == 13)
@@ -182,7 +182,7 @@ $(document).ready(function() {
         if (space.lastLoadedComment < space.totalMessages)
             space.LoadBoardComments(space.lastLoadedComment + 1, space.lastLoadedComment + 6, false)
         if (space.lastLoadedComment >= space.totalMessages)
-            $(event.srcElement).fadeOut(250);
+            $(event.target).fadeOut(250);
     });
     $("div.editProfileButton").click(function(/*event*/) {
         space.SwitchProfileDetails();
