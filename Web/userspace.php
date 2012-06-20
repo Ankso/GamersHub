@@ -197,7 +197,7 @@ $(document).ready(function() {
     // For idle time and more:
     setInterval(function() {
         space.IncrementIdleTimer();
-    }, 60000);
+    }, IDLE_TIMER_STEP);
     $(this).mousemove(function(/*event*/) {
         space.idleTime = 0;
     });
