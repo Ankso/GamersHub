@@ -17,6 +17,8 @@ var STATUS = {
 var TIME_BETWEEN_PINGS = 10000;
 // The maximum time that an user can be idle (in minutes)
 var MAX_USER_IDLE_TIME = 20;
+// Time between idle timer increments (and step size) (in ms)
+var IDLE_TIMER_STEP = 60000;
 
 /**
  * User object constructor
@@ -404,11 +406,14 @@ Space.prototype.CloseControlPanel = function() {
     self.openedControlPanel = "#none";
 };
 
+/**
+ *  Increments the idle timer by the amout specified in IDLE_TIMER_STEP. If necessary, enables AFK mode.
+ */
 Space.prototype.IncrementIdleTimer = function() {
     if (user.isAfk)
         return;
     
-    this.idleTime = this.idleTime + 1;
+    this.idleTime = this.idleTime + (IDLE_TIMER_STEP / 60000);
     if (this.idleTime >= MAX_USER_IDLE_TIME)
     {
         this.EnableAfkMode();
@@ -416,6 +421,9 @@ Space.prototype.IncrementIdleTimer = function() {
     }
 };
 
+/**
+ * Enables AFK mode for this user.
+ */
 Space.prototype.EnableAfkMode = function() {
     $("div.afkWindow").fadeIn(750);
     $("body").css("overflow-y", "hidden");
@@ -423,6 +431,9 @@ Space.prototype.EnableAfkMode = function() {
     user.isAfk = true;
 };
 
+/**
+ * Sends a solicitation to the Real Time Server to disable AFK mode.
+ */
 Space.prototype.DisableAfkMode = function() {
     var password = $("input#afkPassword").val();
     
@@ -452,12 +463,14 @@ Socket.prototype.ConnectToRealTimeServer = function() {
     
     // Open new socket with the real time events server
     self.socket = io.connect("http://127.0.0.1:5124");
+    // Called when the user tries to log in the Real Time Server and wants to open a socket.
     self.socket.on("requestCredentials", function(data) {
         self.socket.emit("sendCredentials", {
             userId: user.id,
             sessionId: user.randomSessionId,
         });
     });
+    // Called after trying to log in by the user. The data is the connection status.
     self.socket.on("logged", function(data) {
         if (data.status == "SUCCESS")
         {
@@ -478,21 +491,25 @@ Socket.prototype.ConnectToRealTimeServer = function() {
             self.status = STATUS.DISCONNECTED;
         }
     });
+    // Called when the user is logged off of the Real Time Server, due to inactivity, bad log in credentials or other possible reasons.
     self.socket.on("disconnection", function(data) {
         $("a#topbarLogOffButton").trigger("click");
         clearTimeout(self.pingTimeout);
         self.status = STATUS.DISCONNECTED;
     });
+    // Called when the connection to the Real Time Server is lost. It has no handler server-side.
     self.socket.on("disconnect", function(data) {
         $("div#nodeServerStatus").text("Websocket connection status: CONNECTION LOST.");
         clearTimeout(self.pingTimeout);
         self.status = STATUS.CONNECTION_LOST;
     });
+    // Called when the socket client-side can't connect to the Real Time Server. It has no handler server-side.
     self.socket.on("error", function() {
         $("div#nodeServerStatus").text("Websocket connection status: SERVER OFFLINE.")
         clearTimeout(self.pingTimeout);
         self.status = STATUS.SERVER_OFFLINE;
     });
+    // Called when a friend of this user logs in. Used to display the log in notification, etc.
     self.socket.on("friendLogin", function(data) {
         $("div#realTimeNotification").html('<img src="' + data.friendAvatarPath + '" alt="Avatar" style="width:35px; height:35px; border:2px #00FF00 solid; border-radius:0.3em; float:left; margin-left:10px;" /> <span style="float:left; margin-top:10px; margin-left:7px;"><b>' + data.friendName + '</b> has logged in.</span>');
         $("div#realTimeNotification").stop().fadeIn(1500);
@@ -501,6 +518,7 @@ Socket.prototype.ConnectToRealTimeServer = function() {
             $("div#realTimeNotification").stop().fadeOut(1500);
         }, 6500);
     });
+    // Called when a friend of this user logs off. Used to display the log off notification, etc.
     self.socket.on("friendLogoff", function(data) {
         $("div#realTimeNotification").html('<img src="' + data.friendAvatarPath + '" alt="Avatar" style="width:35px; height:35px; border:2px #FF0000 solid; border-radius:0.3em; float:left; margin-left:10px;" /> <span style="float:left; margin-top:10px; margin-left:7px;"><b>' + data.friendName + '</b> has logged off.');
         $("div#realTimeNotification").stop().fadeIn(1500);
@@ -509,12 +527,15 @@ Socket.prototype.ConnectToRealTimeServer = function() {
             $("div#realTimeNotification").stop().fadeOut(1500);
         }, 6500);
     });
+    // Called when a friend opens a chat window with this user.
     self.socket.on("enterChat", function(data) {
         chatManager.CreateChatConversation(data.friendId, data.friendName, true);
     });
+    // Called when the user receives a chat message from another user.
     self.socket.on("parseChatMessage", function(data) {
         chatManager.ReceiveChatMessage(data.friendId, data.friendName, data.message);
     });
+    // Called in response to a "disable AFK mode" request. Disables AFK mode if the sended password to unlock the session was correct.
     self.socket.on("afkModeDisabled", function(data) {
         $("span#errorAfkPassword").remove();
         if (data.success)
