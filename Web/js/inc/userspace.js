@@ -1,5 +1,5 @@
 /**
- * User's space javascript functions and procedures.
+ * User's space javascript objects and methods.
  * TODO: A rewrite of a lot of functions is needed. Structure design.
  */
 
@@ -69,31 +69,31 @@ Space.prototype.PercentageWidthToPx = function(percentWidth, element) {
  * Activates "Edit mode" for the profile details of a space owner.
  */
 Space.prototype.EditProfileDetails = function () {
-    this.previousBio = $('#bioSpan').html();
-    $('#bioDiv').html('Bio: <textarea id="bioInput" style="min-height:100px; width:95%;">' + this.previousBio + '</textarea>');
-    this.previousBirthday = $('#birthdaySpan').text();
-    $('#birthdayDiv').html('Birthday: <input type="text" id="birthdayInput"  value="' + this.previousBirthday + '" />');
-    this.previousCountry = $('#countrySpan').text();
-    $('#countryDiv').html('Country: <input type="text" id="countryInput"  value="' + this.previousCountry + '" />');
-    this.previousCity = $('#citySpan').text();
-    $('#cityDiv').html('City: <input type="text" id="cityInput"  value="' + this.previousCity + '" />');
-    $('div.editProfileText').hide();
-    $('#profileDetails').append('<div id="submitCancelEdit" style="height:20px; margin-top:7px;"><span style="float:left; color:#00FF00; cursor:pointer;" onclick="space.SubmitEditedProfileDetails();">Submit</span><span style="float:right; color:#FF0000; cursor:pointer;" onclick="space.CancelEditProfileDetails();">Cancel</span></div>');
+    this.previousBio = $("#bioSpan").html();
+    $("#bioDiv").html('Bio: <textarea id="bioInput" style="min-height:100px; width:95%;">' + this.previousBio + '</textarea>');
+    this.previousBirthday = $("#birthdaySpan").text();
+    $("#birthdayDiv").html('Birthday: <input type="text" id="birthdayInput"  value="' + this.previousBirthday + '" />');
+    this.previousCountry = $("#countrySpan").text();
+    $("#countryDiv").html('Country: <input type="text" id="countryInput"  value="' + this.previousCountry + '" />');
+    this.previousCity = $("#citySpan").text();
+    $("#cityDiv").html('City: <input type="text" id="cityInput"  value="' + this.previousCity + '" />');
+    $("div.editProfileText").hide();
+    $("#profileDetails").append('<div id="submitCancelEdit" style="height:20px; margin-top:7px;"><span style="float:left; color:#00FF00; cursor:pointer;" onclick="space.SubmitEditedProfileDetails();">Submit</span><span style="float:right; color:#FF0000; cursor:pointer;" onclick="space.CancelEditProfileDetails();">Cancel</span></div>');
 };
 
 /**
  * Shows/hides the profile details of the space owner.
  */
 Space.prototype.SwitchProfileDetails = function () {
-    if ($('#profileDetails').is(":hidden"))
+    if ($("#profileDetails").is(":hidden"))
     {
-        $('#profileDetails').slideDown(400);
-        $('div.editProfileButton').text("Hide");
+        $("#profileDetails").slideDown(400);
+        $("div.editProfileButton").text("Hide");
     }
     else
     {
-        $('#profileDetails').slideUp(400);
-        $('div.editProfileButton').text("View profile");
+        $("#profileDetails").slideUp(400);
+        $("div.editProfileButton").text("View profile");
     }
 };
 
@@ -101,23 +101,23 @@ Space.prototype.SwitchProfileDetails = function () {
  * Deactivates "Edition mode" for the space owner's profile details.
  */
 Space.prototype.CancelEditProfileDetails = function () {
-    $('#bioDiv').html('Bio: <span id="bioSpan">' + this.previousBio + '</span>');
-    $('#birthdayDiv').html('Birthday: <span id="birthdaySpan">' + this.previousBirthday + '</span>');
-    $('#countryDiv').html('Country: <span id="countrySpan">' + this.previousCountry + '</span>');
-    $('#cityDiv').html('City: <span id="citySpan">' + this.previousCity + '</span>');
-    $('#submitCancelEdit').remove();
-    $('#submitProfileError').remove();
-    $('div.editProfileText').show();
+    $("#bioDiv").html('Bio: <span id="bioSpan">' + this.previousBio + '</span>');
+    $("#birthdayDiv").html('Birthday: <span id="birthdaySpan">' + this.previousBirthday + '</span>');
+    $("#countryDiv").html('Country: <span id="countrySpan">' + this.previousCountry + '</span>');
+    $("#cityDiv").html('City: <span id="citySpan">' + this.previousCity + '</span>');
+    $("#submitCancelEdit").remove();
+    $("#submitProfileError").remove();
+    $("div.editProfileText").show();
 };
 
 /**
  * Submits the changes done to the space owner profile details.
  */
 Space.prototype.SubmitEditedProfileDetails = function () {
-    var bio = $('#bioInput').val();
-    var birthday = $('#birthdayInput').val();
-    var country = $('#countryInput').val();
-    var city = $('#cityInput').val();
+    var bio = $("#bioInput").val();
+    var birthday = $("#birthdayInput").val();
+    var country = $("#countryInput").val();
+    var city = $("#cityInput").val();
     $.post("ajax/editdetailedprofile.php", {bio : bio, birthday : birthday, country : country, city : city}, function(data) {
         if (data.length > 0)
         {
@@ -131,14 +131,14 @@ Space.prototype.SubmitEditedProfileDetails = function () {
             }
             else
             {
-                $('#submitProfileError').remove();
-                $('#profileDetails').append('<div id="submitProfileError" style="text-align:center; color:#FF0000;">An error has occurred. Please try again.</div>');
+                $("#submitProfileError").remove();
+                $("#profileDetails").append('<div id="submitProfileError" style="text-align:center; color:#FF0000;">An error has occurred. Please try again.</div>');
             }
         }
         else
         {
-            $('#submitProfileError').remove();
-            $('#profileDetails').append('<div id="submitProfileError" style="text-align:center; color:#FF0000;">Unable to connect to the server. Please make sure that you are connected to the internet and try again.</div>');
+            $("#submitProfileError").remove();
+            $("#profileDetails").append('<div id="submitProfileError" style="text-align:center; color:#FF0000;">Unable to connect to the server. Please make sure that you are connected to the internet and try again.</div>');
         }
     });
 };
@@ -147,9 +147,11 @@ Space.prototype.SubmitEditedProfileDetails = function () {
  * Shows the My Friends panel.
  */
 Space.prototype.ShowMyFriendsPanel = function () {
-    $('#myFriendsPanelFlapClosed').hide("slide", 150, function() {
-        setTimeout("$('#myFriendsPanelFlapOpened').show();", 150);
-        $('#myFriendsPanel').show("slide", 300);
+    $("#myFriendsPanelFlapClosed").hide("slide", 150, function() {
+        setTimeout(function() {
+            $("#myFriendsPanelFlapOpened").show()
+        }, 150);
+        $("#myFriendsPanel").show("slide", 300);
     });
     $.cookie("FriendsPanel", "opened");
 };
@@ -158,9 +160,9 @@ Space.prototype.ShowMyFriendsPanel = function () {
  * Hides the My Friends panel.
  */
 Space.prototype.CloseMyFriendsPanel = function () {
-    $('#myFriendsPanel').hide("slide", 300);
-    $('#myFriendsPanelFlapOpened').hide("slide", 300, function() {
-        $('#myFriendsPanelFlapClosed').show("slide", 150);
+    $("#myFriendsPanel").hide("slide", 300);
+    $("#myFriendsPanelFlapOpened").hide("slide", 300, function() {
+        $("#myFriendsPanelFlapClosed").show("slide", 150);
     })
     $.cookie("FriendsPanel", "closed");
 };
@@ -191,16 +193,16 @@ Space.prototype.SendBoardComment = function(message) {
             if (data == "SUCCESS")
             {
                 if (space.totalMessages == 0)
-                    $('#commentsHistory').text("");
+                    $("#commentsHistory").text("");
                 ++space.totalMessages;
                 self.LoadBoardComments(1, 1, true)
-                $('.commentInputTextBox').val("Something interesting to say?");
+                $(".commentInputTextBox").val("Something interesting to say?");
             }
             else
-                $('#commentsHistory').prepend("An error occurred, please try again in a few moments.");
+                $("#commentsHistory").prepend("An error occurred, please try again in a few moments.");
         }
         else
-            $('#commentsHistory').prepend("An error occurred while connecting to the server, please try again in a few moments.");
+            $("#commentsHistory").prepend("An error occurred while connecting to the server, please try again in a few moments.");
     });
 };
 
@@ -221,10 +223,10 @@ Space.prototype.DeleteBoardComment = function(event) {
                 $(event.target.parentElement.parentElement).fadeOut(500);
             }
             else
-                $('#commentsHistory').prepend("An error occurred, please try again in a few moments.");
+                $("#commentsHistory").prepend("An error occurred, please try again in a few moments.");
         }
         else
-            $('#commentsHistory').prepend("An error occurred while connecting to the server, please try again in a few moments.");
+            $("#commentsHistory").prepend("An error occurred while connecting to the server, please try again in a few moments.");
     });
 };
 
@@ -255,10 +257,13 @@ Space.prototype.LoadBoardComments = function(from, to, prepend) {
                 $("#commentsHistory").prepend(data);
             else
                 $("#commentsHistory").append(data);
-            $('div.deleteBoardComment').click(function(event) {
+            
+            $("div.deleteBoardComment").unbind("click");
+            $("div.deleteBoardComment").click(function(event) {
                 space.DeleteBoardComment(event);
             });
-            $('div.displayCommentBoardReplies').click(function(event) {
+            $("div.displayCommentBoardReplies").unbind("click");
+            $("div.displayCommentBoardReplies").click(function(event) {
                 if ($(event.target).prev().is(":hidden"))
                 {
                     $(event.target).prev().slideDown(200);
@@ -270,14 +275,17 @@ Space.prototype.LoadBoardComments = function(from, to, prepend) {
                     $(event.target).text("Show Replies");
                 }
             });
-            //$('div.newReplyCommentBoardInputSend').click(function(event) {
-            //    SendMessageBoardReply(event);
-            //});
-            $('input.newReplyCommentBoardInputTextbox').keydown(function(event) {
+            $("div.newReplyCommentBoardInputSend").unbind("click");
+            $("div.newReplyCommentBoardInputSend").click(function(event) {
+                SendMessageBoardReply(event);
+            });
+            $("input.newReplyCommentBoardInputTextbox").unbind("click");
+            $("input.newReplyCommentBoardInputTextbox").keydown(function(event) {
                 if (event.keyCode == 13)
                     $(event.target.nextElementSibling).trigger("click");
             });
-            $('img.deleteBoardReply').click(function(event) {
+            $("img.deleteBoardReply").unbind("click");
+            $("img.deleteBoardReply").click(function(event) {
                 space.DeleteBoardCommentReply(event);
             });
         }
@@ -311,7 +319,7 @@ Space.prototype.SendMessageBoardReply = function(event) {
                 + '<div class="boardCommentReplyBottom">By You ' + date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds() + '</div>' + "\n"
                 + '</div>' + "\n";
                 $(element.parentElement.parentElement).prev().prepend(newReply);
-                $('img.deleteBoardReply').click(function(e) {
+                $("img.deleteBoardReply").click(function(e) {
                     space.DeleteBoardCommentReply(e);
                 });
                 $(element).prev().val("");
@@ -360,16 +368,16 @@ Space.prototype.OpenControlPanel = function(panelName) {
             $(panelName).slideUp(500);
         else
             $(panelName).show("slide", { direction: direction }, 500);
-        $(self.openedControlPanel + 'Button').css("background-color", "transparent");
+        $(self.openedControlPanel + "Button").css("background-color", "transparent");
         // Note this unbind(). It's very important unbind the previous attached event handler.
         $(self.openedControlPanel + "Button").unbind("click");
         $(self.openedControlPanel + "Button").click(TriggerOpenControlPanel);
     }
     else
         $(panelName).slideDown(500);
-    $(panelName + 'Button').css("background-color", "#333333");
+    $(panelName + "Button").css("background-color", "#333333");
     $(panelName + "Button").unbind("click");
-    $(panelName + 'Button').click(function(/*event*/) {
+    $(panelName + "Button").click(function(/*event*/) {
         space.CloseControlPanel();
     });
     $(panelName).text("Loading...");
@@ -400,9 +408,9 @@ Space.prototype.CloseControlPanel = function() {
         // Here we must implement a cache system or something...
         $(self.openedControlPanel).html("");
     });
-    $(self.openedControlPanel + 'Button').css("background-color", "transparent");
+    $(self.openedControlPanel + "Button").css("background-color", "transparent");
     $(self.openedControlPanel + "Button").unbind("click");
-    $(self.openedControlPanel + 'Button').click(TriggerOpenControlPanel);
+    $(self.openedControlPanel + "Button").click(TriggerOpenControlPanel);
     self.openedControlPanel = "#none";
 };
 
@@ -723,11 +731,11 @@ CommandsManager.prototype.ParseCommand = function(command) {
                 return -1;
 
             // Create temp link to spawn fancybox:
-            $('body').append('<a id="tempFancyboxLink" href="ajax/privatemessage.php?friendName=' + cmdParams[1] + '" style="display:none"></a>');
-            $('a#tempFancyboxLink').fancybox();
-            $('a#tempFancyboxLink').trigger("click");
-            $('.commentInputTextBox').val("Something interesting to say?");
-            $('a#tempFancyBoxLink').remove();
+            $("body").append('<a id="tempFancyboxLink" href="ajax/privatemessage.php?friendName=' + cmdParams[1] + '" style="display:none"></a>');
+            $("a#tempFancyboxLink").fancybox();
+            $("a#tempFancyboxLink").trigger("click");
+            $(".commentInputTextBox").val("Something interesting to say?");
+            $("a#tempFancyBoxLink").remove();
             return 0;
         case "friend":
             if (!cmdParams[1] || !cmdParams[2])
@@ -741,11 +749,11 @@ CommandsManager.prototype.ParseCommand = function(command) {
                 case "remove":
                     // Remove a friend system must be structured also...
                     // Create temp link to spawn fancybox:
-                    $('body').append('<a id="tempFancyboxLink" href="ajax/removefriendconfirmation.php?friendName=' + cmdParams[2] + '" style="display:none"></a>')
-                    $('a#tempFancyboxLink').fancybox();
-                    $('a#tempFancyboxLink').trigger("click");
-                    $('.commentInputTextBox').val("Something interesting to say?");
-                    $('a#tempFancyBoxLink').remove();
+                    $("body").append('<a id="tempFancyboxLink" href="ajax/removefriendconfirmation.php?friendName=' + cmdParams[2] + '" style="display:none"></a>')
+                    $("a#tempFancyboxLink").fancybox();
+                    $("a#tempFancyboxLink").trigger("click");
+                    $(".commentInputTextBox").val("Something interesting to say?");
+                    $("a#tempFancyBoxLink").remove();
                     return 0;
                 default:
                     return -1;
@@ -766,7 +774,7 @@ function FadeOut(event, redirectUrl)
 {
     event.preventDefault();
     socket.Emit("logoff");
-    $('body').fadeOut(1000, function() { window.location = redirectUrl; });
+    $("body").fadeOut(1000, function() { window.location = redirectUrl; });
 }
 
 function FadeIn()
@@ -795,25 +803,25 @@ function TriggerOpenControlPanel(event)
 function SwitchFriendOptionsMenu(event)
 {
     var node = event.target.parentElement.parentElement.parentElement.children[1];
-    if ($(node).is(':hidden'))
+    if ($(node).is(":hidden"))
     {
-        $('.friendPanelOptions').slideUp();
-        $('.friendHeader').mouseleave(function(event) {
+        $(".friendPanelOptions").slideUp();
+        $(".friendHeader").mouseleave(function(event) {
             $(event.target.children[1].children[0]).hide();
         });
-        $('img#moreOptionsImg').hide();
+        $("img#moreOptionsImg").hide();
         $(event.target).show();
         $(node).slideDown();
-        $(event.target.parentElement.parentElement).off('mouseleave');
+        $(event.target.parentElement.parentElement).off("mouseleave");
     }
     else
     {
-        $('.friendHeader').mouseleave(function(event) {
+        $(".friendHeader").mouseleave(function(event) {
             try {
                 $(event.target.children[1].children[0]).hide();
             }
             catch(e) {
-                $('img#moreOptionsImg').hide();
+                $("img#moreOptionsImg").hide();
             }
         });
         $(node).slideUp();

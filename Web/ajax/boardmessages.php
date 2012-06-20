@@ -27,7 +27,7 @@ if (isset($_POST['message']))
     $message = strip_tags($_POST['message']);
     // TODO: Here we must parse much more things, like photos or links to profiles etc.
     // Parse all links:
-    $message = preg_replace("#(http://)([a-z0-9_\-\?\/.=&~]*)#i", '<a href="http://$2" target="_blank">http://$2</a>', $message);
+    $message = preg_replace("#(http(s)?://)([a-z0-9_\-\?\/.=&~]*)#i", '<a href="http$2://$3" target="_blank">http$2://$3</a>', $message);
     // Parse youtube links and embed the video instead of the simple link:
     $message = preg_replace("#(<a href=\"http://(www.)?youtube.com)?/(v/|watch\?v=)([a-z0-9\-_~]+)([^<]+)(</a>)#i", '<div style="text-align:center;"><iframe width="640" height="480" src="http://www.youtube.com/embed/$4?wmode=transparent" frameborder="0" allowfullscreen></iframe></div><br />', $message);
     if ($user->SendBoardMessage($message))
@@ -97,11 +97,11 @@ elseif (isset($_POST['spaceOwner']) && isset($_POST['from']) && isset($_POST['to
 	        ?>
     		<div class="boardCommentReply" data-id="<?php echo $boardReplies[$i][$j]['replyId']; ?>">
     			<?php if ($isOwner || $boardReplies[$i][$j]['username'] == $user->GetUsername()) { ?><img src="images/delete_16.png" class="deleteBoardReply" /> <?php } ?>
-    			<div class="boardCommentReplyBody">
+    			<div class="boardCommentReplyBody" <?php if ($boardReplies[$i][$j]['senderId'] == $spaceOwner->GetId()) echo 'style="background-color:rgba(204, 153, 51, 0.1);"'?>>
     				<div class="boardCommentReplyAvatar"><img src="<?php echo $boardReplies[$i][$j]['avatarPath']; ?>" style="width:40px; height:40px; border-radius:0.3em;" alt="avatar" /></div>
     				<div class="boardCommentReplyContent"><?php echo $boardReplies[$i][$j]['message']; ?></div>
     			</div>
-    			<div class="boardCommentReplyBottom">By <?php echo ($boardReplies[$i][$j]['username'] == $user->Getusername() ? "You" : $boardReplies[$i][$j]['username']), " ", $boardReplies[$i][$j]['date']; ?></div>
+    			<div class="boardCommentReplyBottom" <?php if ($boardReplies[$i][$j]['senderId'] == $spaceOwner->GetId()) echo 'style="background-color:rgba(204, 153, 51, 0.1);"'?>>By <?php echo ($boardReplies[$i][$j]['username'] == $user->Getusername() ? "You" : $boardReplies[$i][$j]['username']), " ", $boardReplies[$i][$j]['date']; ?></div>
     		</div>
 		    <?php
 	                }
