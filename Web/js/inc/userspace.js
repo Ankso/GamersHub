@@ -679,7 +679,7 @@ function CommandsManager() {
 };
 
 /**
- * Welcome to GamersHub's Command Parser �. This will be the main function to parse commands written by the users.
+ * Welcome to GamersHub's Command Parser ™. This will be the main function to parse commands written by the users.
  * Commands must start with the character "/", the same character used in World of Warcraft chat system.
  * Almost all things in the web are going to be able to be done with commands. From start a window chat to delete a message board or remove a friend from the friends list.
  * @param string command A text string representing the command that must be executed.
