@@ -161,7 +161,7 @@ $(document).ready(function() {
     $('div#newPrivateMessage').click(function(event) {
         $(event.target).remove();
     });
-    $('#addNewFriend').load('ajax/friendsfinder.html');
+    $('#addNewFriend').load('core/ajax/friendsfinder.html');
     space.LoadBoardComments(1, 5, true);
     $("div#sendBoardMessage").click(function(/*event*/) {
         space.SendBoardComment($('.commentInputTextBox').val());
@@ -257,7 +257,7 @@ $(document).ready(function() {
     		    if (in_array($friendsList[$i][0], $privateMessagesSenders))
     		    {
     		?>
-			<div id="newPrivateMessage" class="newPrivateMessage"><a id="sendPrivateMessage" href="ajax/privatemessage.php?friendName=<?php echo $friendsList[$i][1]; ?>"><img src="images/new_message.png" /></a></div>
+			<div id="newPrivateMessage" class="newPrivateMessage"><a id="sendPrivateMessage" href="core/ajax/privatemessage.php?friendName=<?php echo $friendsList[$i][1]; ?>"><img src="images/new_message.png" /></a></div>
     		<?php 
     		    }
     		}
@@ -266,8 +266,8 @@ $(document).ready(function() {
 		<div class="friendPanelOptions">
 			<div class="friendOption" onclick="chatManager.CreateChatConversation(<?php echo $friendsList[$i][0], ", '", $friendsList[$i][1], "'"; ?>, false)">Invite to chat</div>
 			<div class="friendOption">Invite to LiveStream</div>
-			<div class="friendOption"><a id="sendPrivateMessage" href="ajax/privatemessage.php?friendName=<?php echo $friendsList[$i][1]; ?>" style="text-decoration:none; color:#FFFFFF;">Send private message</a></div>
-			<div class="friendOptionRemove"><a id="removeFriend" href="ajax/removefriendconfirmation.php?friendName=<?php echo $friendsList[$i][1]; ?>" style="text-decoration:none; color:#FFFFFF;">Remove friend</a></div>
+			<div class="friendOption"><a id="sendPrivateMessage" href="core/ajax/privatemessage.php?friendName=<?php echo $friendsList[$i][1]; ?>" style="text-decoration:none; color:#FFFFFF;">Send private message</a></div>
+			<div class="friendOptionRemove"><a id="removeFriend" href="core/ajax/removefriendconfirmation.php?friendName=<?php echo $friendsList[$i][1]; ?>" style="text-decoration:none; color:#FFFFFF;">Remove friend</a></div>
 		</div>
 	</div>
 	<?php
@@ -327,7 +327,7 @@ $(document).ready(function() {
 			<div class="imgAvatar">
 				<div style="background:transparent url('<?php echo $spaceOwner->GetAvatarHostPath(); ?>') no-repeat center center; background-size:100%; height:200px; width:200px; border-radius:0.5em;">
 					<?php if ($isOwner) { ?>
-					<div class="editAvatar"><a id="changeAvatar" href="ajax/changeavatar.php"><img src="images/edit.png" alt="Edit" style="height:22px;width:22px;margin-top:3px;"/></a></div>
+					<div class="editAvatar"><a id="changeAvatar" href="core/ajax/changeavatar.php"><img src="images/edit.png" alt="Edit" style="height:22px;width:22px;margin-top:3px;"/></a></div>
 					<?php } ?>
 				</div>
 			</div>

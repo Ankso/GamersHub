@@ -118,7 +118,7 @@ Space.prototype.SubmitEditedProfileDetails = function () {
     var birthday = $("#birthdayInput").val();
     var country = $("#countryInput").val();
     var city = $("#cityInput").val();
-    $.post("ajax/editdetailedprofile.php", {bio : bio, birthday : birthday, country : country, city : city}, function(data) {
+    $.post("core/ajax/editdetailedprofile.php", {bio : bio, birthday : birthday, country : country, city : city}, function(data) {
         if (data.length > 0)
         {
             if (data == "SUCCESS")
@@ -187,7 +187,7 @@ Space.prototype.SendBoardComment = function(message) {
         return;
     }
 
-    $.post("ajax/boardmessages.php", { message: message }, function(data) {
+    $.post("core/ajax/boardmessages.php", { message: message }, function(data) {
         if (data.length > 0)
         {
             if (data == "SUCCESS")
@@ -214,7 +214,7 @@ Space.prototype.DeleteBoardComment = function(event) {
     var messageId = $(event.target.parentElement.parentElement).attr("data-id");
     if (!messageId)
         return;
-    $.post("ajax/boardmessages.php", { messageId: messageId, spaceOwner: spaceOwner.id}, function(data) {
+    $.post("core/ajax/boardmessages.php", { messageId: messageId, spaceOwner: spaceOwner.id}, function(data) {
         if (data.length > 0)
         {
             if (data == "SUCCESS")
@@ -247,7 +247,7 @@ Space.prototype.LoadBoardComments = function(from, to, prepend) {
     to = to - 1;
     realFrom = self.totalMessages - to;
     realTo = self.totalMessages - from;
-    $.post("ajax/boardmessages.php", { from: realFrom, to: realTo, spaceOwner: spaceOwner.id }, function(data) {
+    $.post("core/ajax/boardmessages.php", { from: realFrom, to: realTo, spaceOwner: spaceOwner.id }, function(data) {
         if (data.length > 0)
         {
             if (data == "You haven't write anything yet. Start ASAP!" && !prepend)
@@ -303,7 +303,7 @@ Space.prototype.SendMessageBoardReply = function(event) {
     var reply = $(element).prev().val();
     var messageId = $(element).attr("data-id");
    
-    $.post("ajax/boardreplies.php", {reply: reply, messageId: messageId}, function(data) {
+    $.post("core/ajax/boardreplies.php", {reply: reply, messageId: messageId}, function(data) {
         if (data.length > 0)
         {
             if (data == "SUCCESS")
@@ -341,7 +341,7 @@ Space.prototype.DeleteBoardCommentReply = function(event) {
     if (!replyId)
         return;
         
-    $.post("ajax/boardreplies.php", {replyId: replyId}, function(data) {
+    $.post("core/ajax/boardreplies.php", {replyId: replyId}, function(data) {
         if (data.length > 0)
         {
             if (data == "SUCCESS")
@@ -384,13 +384,13 @@ Space.prototype.OpenControlPanel = function(panelName) {
     switch (panelName)
     {
         case "#myAccount":
-            $(panelName).load("ajax/accountsettings.php");
+            $(panelName).load("core/ajax/accountsettings.php");
             break;
         case "#mySocial":
-            $(panelName).load("ajax/socialsettings.php");
+            $(panelName).load("core/ajax/socialsettings.php");
             break;
         case "#myGames":
-            $(panelName).load("ajax/gamessettings.php");
+            $(panelName).load("core/ajax/gamessettings.php");
             break;
         default:
             break;
@@ -519,7 +519,9 @@ Socket.prototype.ConnectToRealTimeServer = function() {
     });
     // Called when a friend of this user logs in. Used to display the log in notification, etc.
     self.socket.on("friendLogin", function(data) {
-        $("div#realTimeNotification").html('<img src="' + data.friendAvatarPath + '" alt="Avatar" style="width:35px; height:35px; border:2px #00FF00 solid; border-radius:0.3em; float:left; margin-left:10px;" /> <span style="float:left; margin-top:10px; margin-left:7px;"><b>' + data.friendName + '</b> has logged in.</span>');
+        $("div#realTimeNotification").html('<img src="' + data.friendAvatarPath + '" alt="Avatar" '
+                + 'style="width:35px; height:35px; border:2px #00FF00 solid; border-radius:0.3em; float:left; margin-left:10px;" /> '
+                + '<span style="float:left; margin-top:10px; margin-left:7px;"><b>' + data.friendName + '</b> has logged in.</span>');
         $("div#realTimeNotification").stop().fadeIn(1500);
         $("img#friendOnlineImg" + data.friendId).attr("src", "images/friend_online.png");
         setTimeout(function() {
@@ -605,7 +607,7 @@ ChatManager.prototype.CreateChatConversation = function(friendId, friendName, is
     }
     $("div.chatTabsWrapper").prepend('<div class="chatTab" id="chatTab' + friendName + '" data-id="' + friendId + '" style="background-color:#222222; cursor:inherit;">' + friendName + '</div>')
     $("div#chatTab" + friendName).click(function(event) {
-        SwitchChatConversation(event);
+        chatManager.SwitchChatConversation(event);
     });
     if ($("div.chatBoxWrapper").is(":hidden"))
         $("div.chatBoxWrapper").show();
@@ -613,7 +615,7 @@ ChatManager.prototype.CreateChatConversation = function(friendId, friendName, is
     $("input.chatBoxInput").focus();
     this.focusConversation.id = friendId;
     this.focusConversation.name = friendName;
-    this.activeChats.push(friendId);
+    this.activeChats.push(parseInt(friendId));
     if (!isInvitation)
         socket.Emit("chatInvitation", { userId: user.id, friendId: friendId });
 };
@@ -667,7 +669,7 @@ ChatManager.prototype.SendChatMessage = function(event) {
  */
 ChatManager.prototype.ReceiveChatMessage = function(friendId, friendName, message) {
     // Create new chat window if none exists
-    if (this.activeChats.indexOf(friendId) === -1)
+    if ($.inArray(parseInt(friendId), this.activeChats) == -1)
         this.CreateChatConversation(friendId, friendName, true);
     $("div#chatBoxText" + friendName).append('<br /><b>' + friendName + ': </b>' + message);
     $("div#chatBoxText" + friendName).prop({ scrollTop: $("div#chatBoxText" + friendName).prop("scrollHeight") });
@@ -731,7 +733,7 @@ CommandsManager.prototype.ParseCommand = function(command) {
                 return -1;
 
             // Create temp link to spawn fancybox:
-            $("body").append('<a id="tempFancyboxLink" href="ajax/privatemessage.php?friendName=' + cmdParams[1] + '" style="display:none"></a>');
+            $("body").append('<a id="tempFancyboxLink" href="core/ajax/privatemessage.php?friendName=' + cmdParams[1] + '" style="display:none"></a>');
             $("a#tempFancyboxLink").fancybox();
             $("a#tempFancyboxLink").trigger("click");
             $(".commentInputTextBox").val("Something interesting to say?");
@@ -749,7 +751,7 @@ CommandsManager.prototype.ParseCommand = function(command) {
                 case "remove":
                     // Remove a friend system must be structured also...
                     // Create temp link to spawn fancybox:
-                    $("body").append('<a id="tempFancyboxLink" href="ajax/removefriendconfirmation.php?friendName=' + cmdParams[2] + '" style="display:none"></a>')
+                    $("body").append('<a id="tempFancyboxLink" href="core/ajax/removefriendconfirmation.php?friendName=' + cmdParams[2] + '" style="display:none"></a>')
                     $("a#tempFancyboxLink").fancybox();
                     $("a#tempFancyboxLink").trigger("click");
                     $(".commentInputTextBox").val("Something interesting to say?");
