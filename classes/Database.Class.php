@@ -9,7 +9,7 @@ require_once($_SERVER['DOCUMENT_ROOT'] . "/../common/SharedDefines.php");
 class Database
 {
     /**
-     * Class constructor, establishes a MySQL connection to the specified DB.
+     * Class constructor, establishes a MySQL connection to the specified DB (or retrieves one active connection from the connections pool)
      * @param $dbToConnect Database where the operations are going to be executed.
      */
     function __construct($dbToConnect)
@@ -17,17 +17,16 @@ class Database
         if (!isset($dbToConnect))
             die("Fatal error: Missing argument when initializing the Database class.");
         global $SERVER_INFO;
-        $this->_mysqli = new mysqli($SERVER_INFO['HOST'], $SERVER_INFO['USERNAME'], $SERVER_INFO['PASSWORD'], $dbToConnect);
+        $this->_mysqli = new mysqli("p:" . $SERVER_INFO['HOST'], $SERVER_INFO['USERNAME'], $SERVER_INFO['PASSWORD'], $dbToConnect);
         if ($this->_mysqli->connect_errno)
             die("Fatal error ". $this->_mysqli->connect_errno .": ". $this->_mysqli->connect_error);
     }
     
     /**
-     * Class destructor, disconnects from the connected database.
+     * Class destructor. Does nothing.
      */
     function __destructor()
     {
-        $this->_mysqli->close();
     }
     
     /**
