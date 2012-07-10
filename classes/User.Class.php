@@ -786,15 +786,28 @@ Class User
     /**
      * Deletes a specified board message from the database. Note that the message will be deleted only if this user is the message's writer.
      * @param long $messageId The ID of the message to be deleted (Note: not the message number, but the message unique ID)
-     * @return boolean Returns true on success, or false in caso of failure.
+     * @return boolean Returns true on success, or false in case of failure.
      */
     public function DeleteBoardMessage($messageId)
     {
-        // Note that we don't need to delete the related rows in tables like user_board_replies
-        // because the FK has the ON DELETE CASCADE and ON UPDATE CASCADE properties. This rows are going to be deleted automatically.
-        // Also note that the operation that checks that the user is the writer of the message is in the SQL statement itself.
-        if ($this->_db->ExecuteStmt(Statements::DELETE_USER_BOARD, $this->_db->BuildStmtArray("ii", $messageId, $this->GetId())))
-            return true;
+        // We'll need the message number later
+        if ($result = $this->_db->ExecuteStmt(Statements::SELECT_USER_BOARD_MESSAGE_NUMBER, $this->_db->BuildStmtArray("i", $messageId)))
+        {
+            $row = $result->fetch_assoc();
+            $messageNumber = $row['message_number'];
+        }
+        else
+            return false;
+        
+        // We must update the message's numbers in order to maintain the structure used to obtain the messages.
+        if ($this->_db->ExecuteStmt(Statements::UPDATE_USER_BOARD_MESSAGE_NUMBERS, $this->_db->BuildStmtArray("ii", $this->GetId(), $messageNumber)))
+        {
+            // Note that we don't need to delete the related rows in tables like user_board_replies
+            // because the FK has the ON DELETE CASCADE and ON UPDATE CASCADE properties. This rows are going to be deleted automatically.
+            // Also note that the operation that checks that the user is the writer of the message is in the SQL statement itself.
+            if ($this->_db->ExecuteStmt(Statements::DELETE_USER_BOARD, $this->_db->BuildStmtArray("ii", $messageId, $this->GetId())))
+                return true;
+        }
         return false;
     }
     

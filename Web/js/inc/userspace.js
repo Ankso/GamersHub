@@ -13,11 +13,11 @@ var STATUS = {
     CONNECTION_LOST : 3
 };
 
-// Time between pings to the Real Time Server (in ms)
+// (CONST) Time between pings to the Real Time Server (in ms)
 var TIME_BETWEEN_PINGS = 10000;
-// The maximum time that an user can be idle (in minutes)
+// (CONST) The maximum time that an user can be idle (in minutes)
 var MAX_USER_IDLE_TIME = 20;
-// Time between idle timer increments (and step size) (in ms)
+// (CONST) Time between idle timer increments (and step size) (in ms)
 var IDLE_TIMER_STEP = 60000;
 
 /**
@@ -219,8 +219,8 @@ Space.prototype.DeleteBoardComment = function(event) {
         {
             if (data == "SUCCESS")
             {
-                --space.totalMessages;
                 $(event.target.parentElement.parentElement).fadeOut(500);
+                --space.totalMessages;
             }
             else
                 $("#commentsHistory").prepend("An error occurred, please try again in a few moments.");

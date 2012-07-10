@@ -69,7 +69,7 @@ $customOptions = $spaceOwner->GetCustomOptions();
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title><?php echo $spaceOwner->GetUsername(); ?>'s profile - GamersNet</title>
+<title><?php echo $spaceOwner->GetUsername(); ?>'s profile - GamersHub</title>
 <link href="css/main.css" media="all" rel="stylesheet" type="text/css" />
 <link href="css/userspace.css" media="all" rel="stylesheet" type="text/css" />
 <link href="css/myaccount.css" media="all" rel="stylesheet" type="text/css" />
@@ -381,7 +381,7 @@ $(document).ready(function() {
 </div>
 <div id="realTimeNotification" class="realTimeNotification" style="display:none"></div>
 <div id="nodeServerStatus" style="position:fixed; text-align:center; bottom:0; left:0; font:12px Calibri; margin-bottom:20px;">Unknown</div>
-<div style="position:fixed; text-align:center; bottom:0; left:0; font:12px Calibri;">Page loaded in <?php echo microtime(true) - $loadTime; ?> seconds.</div>
+<div style="position:fixed; text-align:center; bottom:0; left:0; font:12px Calibri;">Page generated in <?php echo microtime(true) - $loadTime; ?> seconds.</div>
 <div class="afkWindow" style="display:none;">
 	<div class="afkWindowContainer">
 		You have been too much time AFK. Please enter your password to restore your session:<br />
