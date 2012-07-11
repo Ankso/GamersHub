@@ -473,9 +473,8 @@ Socket.prototype.ConnectToRealTimeServer = function() {
     self.socket = io.connect("http://127.0.0.1:5124");
     // Called when the user tries to log in the Real Time Server and wants to open a socket.
     self.socket.on("requestCredentials", function(data) {
-        self.socket.emit("sendCredentials", {
-            userId: user.id,
-            sessionId: user.randomSessionId,
+        self.Emit("sendCredentials", {
+            userId:    user.id,
         });
     });
     // Called after trying to log in by the user. The data is the connection status.
@@ -565,18 +564,21 @@ Socket.prototype.ConnectToRealTimeServer = function() {
  * Pings the Real Time Server to refresh inactivity time.
  */
 Socket.prototype.Ping = function() {
-    this.socket.emit("ping", { userId: user.id });
+    this.Emit("ping", {
+        userId: user.id,
+    });
     this.pingTimeout = setTimeout(function() {
         socket.Ping();
     }, TIME_BETWEEN_PINGS);
 };
 
 /**
- * Sends a message to the Real Time Server.
+ * Sends a message to the Real Time Server. It adds the random session ID to all packets automatically.
  * @param opcode string The string opcode.
  * @param packet object The object with the data that must be sent.
  */
 Socket.prototype.Emit = function(opcode, packet) {
+    packet.sessionId = user.randomSessionId;
     this.socket.emit(opcode, packet);
 };
 
@@ -775,7 +777,10 @@ var commandsManager = new CommandsManager();
 function FadeOut(event, redirectUrl)
 {
     event.preventDefault();
-    socket.Emit("logoff");
+    if (!event.isTrigger)
+        socket.Emit("logoff", {
+            userId: user.id,
+        });
     $("body").fadeOut(1000, function() { window.location = redirectUrl; });
 }
 
