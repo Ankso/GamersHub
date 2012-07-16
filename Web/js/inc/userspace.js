@@ -461,7 +461,7 @@ Space.prototype.DisableAfkMode = function() {
     var password = $("input#afkPassword").val();
     
     if (password)
-        socket.Emit(ClientOpcode.OPCODE_DISABLE_AFK, { userId : user.id, password : password });
+        socket.Emit(ClientOpcodes.OPCODE_DISABLE_AFK, { userId : user.id, password : password });
     $("input#afkPassword").val("");
 };
 
