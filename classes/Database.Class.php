@@ -17,7 +17,7 @@ class Database
         if (!isset($dbToConnect))
             die("Fatal error: Missing argument when initializing the Database class.");
         global $SERVER_INFO;
-        $this->_mysqli = new mysqli("p:" . $SERVER_INFO['HOST'], $SERVER_INFO['USERNAME'], $SERVER_INFO['PASSWORD'], $dbToConnect);
+        $this->_mysqli = new mysqli(/*"p:" . */$SERVER_INFO['HOST'], $SERVER_INFO['USERNAME'], $SERVER_INFO['PASSWORD'], $dbToConnect);
         if ($this->_mysqli->connect_errno)
             die("Fatal error ". $this->_mysqli->connect_errno .": ". $this->_mysqli->connect_error);
     }
