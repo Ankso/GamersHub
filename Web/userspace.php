@@ -247,7 +247,7 @@ $(document).ready(function() {
         foreach ($friendsList as $i => $value)
         {
     ?>
-    <div id="friendWrapper" class="friendWrapper">
+    <div id="friendWrapper<?php echo $friendsList[$i][0]; ?>" class="friendWrapper">
 		<div id="friendHeader" class="friendHeader" <?php if ($i === $totalFriends - 1) echo 'style="border-bottom-left-radius:0.5em;"';?>>
     		<div class="friendName"><img id="friendOnlineImg<?php echo $friendsList[$i][0]; ?>" src="images/<?php echo ($friendsList[$i][2] ? "friend_online" : "friend_offline"); ?>.png" /><a class="friendSpaceLink" href="/<?php echo $friendsList[$i][1]; ?>"><?php echo $friendsList[$i][1]; ?></a></div>
     		<div class="plusImg"><img id="moreOptionsImg" src="images/more_info_large.png" style="height:25px; width:25px;" /></div>

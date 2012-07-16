@@ -19,6 +19,21 @@ var TIME_BETWEEN_PINGS = 10000;
 var MAX_USER_IDLE_TIME = 20;
 // (CONST) Time between idle timer increments (and step size) (in ms)
 var IDLE_TIMER_STEP = 60000;
+// (CONST) Opcodes used by the client
+var ClientOpcodes = {
+    OPCODE_NULL               : 0, // Null opcode, used for testing/debug.
+    OPCODE_LOGOFF            : 1, // Received when the client loggs off.
+    OPCODE_PING               : 2, // Received each time that the client pings the server.
+    OPCODE_ENABLE_AFK         : 3, // Received when AFK mode is enabled client-side.
+    OPCODE_DISABLE_AFK        : 4, // Received when the client tries to disable AFK mode with his or her password.
+    OPCODE_CHAT_INVITATION    : 5, // Received when a client invites other client to a chat conversation.
+    OPCODE_CHAT_MESSAGE       : 6, // Received with each chat message between clients.
+    TOTAL_CLIENT_OPCODES_COUNT: 7, // Total opcodes count (Not used by the way).
+};
+// (CONST) Opcodes used server-side
+var ServerOpcodes = {
+    // Not used by the way
+};
 
 /**
  * User object constructor
@@ -435,7 +450,7 @@ Space.prototype.IncrementIdleTimer = function() {
 Space.prototype.EnableAfkMode = function() {
     $("div.afkWindow").fadeIn(750);
     $("body").css("overflow-y", "hidden");
-    socket.Emit("enableAfk", { userId : user.id });
+    socket.Emit(ClientOpcodes.OPCODE_ENABLE_AFK, { userId : user.id });
     user.isAfk = true;
 };
 
@@ -446,7 +461,7 @@ Space.prototype.DisableAfkMode = function() {
     var password = $("input#afkPassword").val();
     
     if (password)
-        socket.Emit("disableAfk", { userId : user.id, password : password });
+        socket.Emit(ClientOpcode.OPCODE_DISABLE_AFK, { userId : user.id, password : password });
     $("input#afkPassword").val("");
 };
 
@@ -473,8 +488,10 @@ Socket.prototype.ConnectToRealTimeServer = function() {
     self.socket = io.connect("http://127.0.0.1:5124");
     // Called when the user tries to log in the Real Time Server and wants to open a socket.
     self.socket.on("requestCredentials", function(data) {
-        self.Emit("sendCredentials", {
+        // This is a special exception, the is no opcode here because this is part of the client-server handshaking process.
+        self.socket.emit("sendCredentials", {
             userId:    user.id,
+            sessionId: user.randomSessionId,
         });
     });
     // Called after trying to log in by the user. The data is the connection status.
@@ -498,7 +515,7 @@ Socket.prototype.ConnectToRealTimeServer = function() {
             self.status = STATUS.DISCONNECTED;
         }
     });
-    // Called when the user is logged off of the Real Time Server, due to inactivity, bad log in credentials or other possible reasons.
+    // Called when the user is logged off of the Real Time Server, due to inactivity, bad login credentials or other possible reasons.
     self.socket.on("disconnection", function(data) {
         $("a#topbarLogOffButton").trigger("click");
         clearTimeout(self.pingTimeout);
@@ -558,14 +575,27 @@ Socket.prototype.ConnectToRealTimeServer = function() {
             $("div.afkWindowContainer").append('<span id="span#errorAfkPassword" style="color:#FF0000;">Incorrect password</span>')
         }
     });
+    self.socket.on("receivePrivateMessage", function(data) {
+        if (data.senderId)
+        {
+            $("div#friendWrapper" + data.senderId)
+        }
+        else
+        {
+            
+        }
+    });
+    self.socket.on("receiveNew", function(data) {
+        // Not implemented
+    });
 };
 
 /**
  * Pings the Real Time Server to refresh inactivity time.
  */
 Socket.prototype.Ping = function() {
-    this.Emit("ping", {
-        userId: user.id,
+    this.Emit(ClientOpcodes.OPCODE_PING, {
+        userId : user.id,
     });
     this.pingTimeout = setTimeout(function() {
         socket.Ping();
@@ -578,8 +608,9 @@ Socket.prototype.Ping = function() {
  * @param packet object The object with the data that must be sent.
  */
 Socket.prototype.Emit = function(opcode, packet) {
+    packet.opcode = opcode;
     packet.sessionId = user.randomSessionId;
-    this.socket.emit(opcode, packet);
+    this.socket.emit("packet", packet);
 };
 
 /**
@@ -619,7 +650,7 @@ ChatManager.prototype.CreateChatConversation = function(friendId, friendName, is
     this.focusConversation.name = friendName;
     this.activeChats.push(parseInt(friendId));
     if (!isInvitation)
-        socket.Emit("chatInvitation", { userId: user.id, friendId: friendId });
+        socket.Emit(ClientOpcodes.OPCODE_CHAT_INVITATION, { userId: user.id, friendId: friendId });
 };
 
 ChatManager.prototype.CloseChatConversation = function(friendId, friendName) {
@@ -661,7 +692,7 @@ ChatManager.prototype.SendChatMessage = function(event) {
     $("div#chatBoxText" + this.focusConversation.name).append("<br /><b>You: </b>" + message)
     $("div#chatBoxText" + this.focusConversation.name).prop({ scrollTop: $("div#chatBoxText" + this.focusConversation.name).prop("scrollHeight") });
     $(event.target).val("");
-    socket.Emit("chatMessage", { userId: user.id, friendId: this.focusConversation.id , message: message });
+    socket.Emit(ClientOpcodes.OPCODE_CHAT_MESSAGE, { userId: user.id, friendId: this.focusConversation.id , message: message });
 };
 
 /**
@@ -778,7 +809,7 @@ function FadeOut(event, redirectUrl)
 {
     event.preventDefault();
     if (!event.isTrigger)
-        socket.Emit("logoff", {
+        socket.Emit(ClientOpcodes.OPCODE_LOGOFF, {
             userId: user.id,
         });
     $("body").fadeOut(1000, function() { window.location = redirectUrl; });
