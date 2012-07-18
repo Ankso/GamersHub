@@ -301,19 +301,8 @@ Class User
      */
     public function SetAvatarHost($avatarHost)
     {
-        if (($result = $this->_db->ExecuteStmt(Statements::SELECT_USER_AVATARS_PATH, $this->_db->BuildStmtArray("i", $this->GetId()))))
-        {
-            if ($result->num_rows === 0)
-            {
-                if (($result = $this->_db->ExecuteStmt(Statements::INSERT_USER_AVATARS_PATH, $this->_db->BuildStmtArray("is", $this->GetId(), $avatarHost))))
-                    return true;
-            }
-            else
-            {
-                if ($this->_db->ExecuteStmt(Statements::UPDATE_USER_AVATARS_PATH, $this->_db->BuildStmtArray("si", $avatarHost, $this->GetId())))
-                    return true;
-            }
-        }
+        if ($this->_db->ExecuteStmt(Statements::UPDATE_USER_DETAILED_DATA_AVATAR, $this->_db->BuildStmtArray("si", $avatarHost, $this->GetId())))
+            return true;
         return false;
     }
     
@@ -323,7 +312,7 @@ Class User
      */
     public function GetAvatarHostPath()
     {
-        if (($result = $this->_db->ExecuteStmt(Statements::SELECT_USER_AVATARS_PATH, $this->_db->BuildStmtArray("i", $this->GetId()))))
+        if (($result = $this->_db->ExecuteStmt(Statements::SELECT_USER_DETAILED_DATA_AVATAR, $this->_db->BuildStmtArray("i", $this->GetId()))))
         {
             $row = $result->fetch_assoc();
             return $row['avatar_path'];
@@ -481,7 +470,7 @@ Class User
     }
     
     /**
-     * Returns a bidimensional array containing all the IDs, usernames of the user's friends and they status (online, offline, and soon AFK)
+     * Returns a bidimensional array containing all the IDs, usernames of the user's friends, they status (online, offline, and soon AFK) and the avatar path.
      * @return array Returns a bidimensional array with each friend's ID, username and status, the constant USER_HAS_NO_FRIENDS if the user has no friends or false if something fails.
      */
     public function GetAllFriends()
@@ -497,7 +486,8 @@ Class User
             $friends[] = array(
                 0 => $row['id'],
                 1 => $row['username'],
-                2 => $row['is_online']
+                2 => $row['is_online'],
+                3 => $row['avatar_path'],
             );
         }
         return $friends;

@@ -21,11 +21,10 @@ class Statements
     const UPDATE_USER_DATA_IPV6               = "UPDATE user_data SET ip_v6 = ? WHERE id = ?";
     const UPDATE_USER_DATA_ONLINE             = "UPDATE user_data SET is_online = ? WHERE id = ?";
     const UPDATE_USER_DATA_LAST_LOGIN         = "UPDATE user_data SET last_login = ? WHERE id = ?";
-    const INSERT_USER_AVATARS_PATH            = "INSERT INTO user_avatars VALUES (?, ?)";
-    const UPDATE_USER_AVATARS_PATH            = "UPDATE user_avatars SET avatar_path = ? WHERE user_id = ?";
-    const SELECT_USER_AVATARS_PATH            = "SELECT avatar_path FROM user_avatars WHERE user_id = ?";
-    const REPLACE_USER_DETAILED_DATA          = "REPLACE INTO user_detailed_data VALUES (?, ?, ?, ?, ?)";
-    const SELECT_USER_DETAILED_DATA           = "SELECT bio, birthday, country, city FROM user_detailed_data WHERE user_id = ?";
+    const UPDATE_USER_DETAILED_DATA_AVATAR    = "UPDATE user_detailed_data SET avatar_path = ? WHERE user_id = ?";
+    const SELECT_USER_DETAILED_DATA_AVATAR    = "SELECT avatar_path FROM user_detailed_data WHERE user_id = ?";
+    const REPLACE_USER_DETAILED_DATA          = "REPLACE INTO user_detailed_data VALUES (?, ?, ?, ?, ?, ?)";
+    const SELECT_USER_DETAILED_DATA           = "SELECT bio, birthday, country, city, avatar_path FROM user_detailed_data WHERE user_id = ?";
     // Privacy System
     const SELECT_USER_PRIVACY                 = "SELECT view_email, view_profile, view_livestream FROM user_privacy WHERE user_id = ?";
     const UPDATE_USER_PRIVACY                 = "UPDATE user_privacy SET view_email = ?, view_profile = ?, view_livestream = ? WHERE user_id = ?";
@@ -38,13 +37,13 @@ class Statements
     const UPDATE_USER_BOARD_MESSAGE_NUMBERS   = "UPDATE user_board SET message_number = message_number - 1 WHERE user_id = ? AND message_number > ?";
     const INSERT_USER_BOARD_REPLY             = "INSERT INTO user_board_replies (sender_id, message_id, message, date) VALUES (?, ?, ?, ?)";
     // TODO: Remove the "DISTINCT" from this query. Research why the fuck it's needed here.
-    const SELECT_USER_BOARD_REPLIES           = "SELECT DISTINCT a.reply_id, a.sender_id, a.message, a.date, c.username, d.avatar_path FROM user_board_replies AS a, user_board AS b, user_data AS c, user_avatars AS d WHERE b.user_id = ? AND a.message_id = ? AND a.sender_id = c.id AND a.sender_id = d.user_id ORDER BY a.reply_id DESC";
+    const SELECT_USER_BOARD_REPLIES           = "SELECT DISTINCT a.reply_id, a.sender_id, a.message, a.date, c.username, d.avatar_path FROM user_board_replies AS a, user_board AS b, user_data AS c, user_detailed_data AS d WHERE b.user_id = ? AND a.message_id = ? AND a.sender_id = c.id AND a.sender_id = d.user_id ORDER BY a.reply_id DESC";
     const DELETE_USER_BOARD_REPLY             = "DELETE FROM user_board_replies WHERE reply_id = ?";
     // Friends system
     const DELETE_USER_FRIEND_REQUEST          = "DELETE FROM user_friend_requests WHERE user_id = ? AND requester_id = ?";
     const INSERT_USER_FRIEND                  = "INSERT INTO user_friends VALUES (?, ?)";
     const DELETE_USER_FRIEND                  = "DELETE FROM user_friends WHERE user_id = ? AND friend_id = ?";
-    const SELECT_USER_FRIENDS                 = "SELECT a.id, a.username, a.is_online FROM user_data AS a, user_friends AS b WHERE b.user_id = ? AND b.friend_id = a.id ORDER BY a.username";
+    const SELECT_USER_FRIENDS                 = "SELECT a.id, a.username, a.is_online, c.avatar_path FROM user_data AS a, user_friends AS b, user_detailed_data AS c WHERE b.user_id = ? AND b.friend_id = a.id AND b.friend_id = c.user_id ORDER BY a.username";
     const SELECT_USER_FRIENDS_BY_ID           = "SELECT friend_id FROM user_friends WHERE user_id = ?";
     const SELECT_USER_FRIENDS_BY_USERNAME     = "SELECT a.username, a.is_online FROM user_data AS a, user_friends AS b WHERE b.friend_id = a.id AND b.user_id = ? ORDER BY a.username";
     const SELECT_USER_FRIENDS_IS_FRIEND       = "SELECT user_id FROM user_friends AS a, user_data AS b WHERE b.username = ? AND a.user_id = ? AND b.id = a.friend_id";
