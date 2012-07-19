@@ -50,14 +50,14 @@ foreach ($friends as $i => $value)
 ?>
 </div>
 <div id="socialFriendRequests" class="socialTab">
-	Requests
+	Friend requests management - Not yet implemented here.
 </div>
 <div id="socialPrivateMessages" class="socialTab">
-	Messages
+	Private messages management - Not yet implemented here.
 </div>
 <div id="socialIgnoredList" class="socialTab">
-	Ignored list
+	Ignored list - Not yet implemented at all.
 </div>
 <div id="socialClans" class="socialTab" style="border-left:10px rgb(22, 22, 210) solid;">
-	The Clans System is not implemented yet!
+	The Clans System is not implemented yet at all.
 </div>
