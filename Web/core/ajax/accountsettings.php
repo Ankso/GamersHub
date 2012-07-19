@@ -23,14 +23,17 @@ $privacySettings = $user->GetPrivacySettings();
 $customOptions = $user->GetCustomOptions();
 ?>
 <script type="text/javascript">
-MenuOptionClick(0);
+$("div.myAccountMenuOption").click(function(event) {
+	MyAccountMenuOptionClick(event);
+});
+$("div#myAccountOptionBasic").trigger("click");
 </script>
 <div class="myAccountMenu">
 	<div class="myAccountMenuTop"><strong>Account configuration</strong></div>
-	<div id="myAccountOptionBasic" class="myAccountMenuOption" onclick="MenuOptionClick(0);">Basic</div>
-	<div id="myAccountOptionPrivacy" class="myAccountMenuOption" onclick="MenuOptionClick(1);">Privacy</div>
-	<div id="myAccountOptionCustomization" class="myAccountMenuOption" onclick="MenuOptionClick(2);">Customization</div>
-	<div id="myAccountOptionSecurity" class="myAccountMenuOption" onclick="MenuOptionClick(3);">Security</div>
+	<div id="myAccountOptionBasic" class="myAccountMenuOption">Basic</div>
+	<div id="myAccountOptionPrivacy" class="myAccountMenuOption">Privacy</div>
+	<div id="myAccountOptionCustomization" class="myAccountMenuOption">Customization</div>
+	<div id="myAccountOptionSecurity" class="myAccountMenuOption">Security</div>
 </div>
 <div id="myAccountBasic" class="myAccountTab">
 	<div class="myAccountTabItem">*Username: <input disabled type="text" value="<?php echo $user->GetUsername(); ?>" /></div>

@@ -484,10 +484,10 @@ Class User
         while ($row = $result->fetch_assoc())
         {
             $friends[] = array(
-                0 => $row['id'],
-                1 => $row['username'],
-                2 => $row['is_online'],
-                3 => $row['avatar_path'],
+                'id'         => $row['id'],
+                'username'   => $row['username'],
+                'isOnline'   => $row['is_online'],
+                'avatarPath' => $row['avatar_path'],
             );
         }
         return $friends;

@@ -73,6 +73,7 @@ $customOptions = $spaceOwner->GetCustomOptions();
 <link href="css/main.css" media="all" rel="stylesheet" type="text/css" />
 <link href="css/userspace.css" media="all" rel="stylesheet" type="text/css" />
 <link href="css/myaccount.css" media="all" rel="stylesheet" type="text/css" />
+<link href="css/social.css" media="all" rel="stylesheet" type="text/css" />
 <link href="css/fancyboxjQuery.css" rel="stylesheet" type="text/css" media="screen" />
 <link href="css/dark-hive/jquery-ui-1.8.20.custom.css" rel="stylesheet" type="text/css" media="screen" />
 <script type="text/javascript" src="js/inc/jquery-1.7.2.min.js"></script>
@@ -81,6 +82,7 @@ $customOptions = $spaceOwner->GetCustomOptions();
 <script type="text/javascript" src="js/inc/jquery.fancybox-1.3.4.js"></script>
 <script type="text/javascript" src="js/inc/socket.io.js"></script>
 <script type="text/javascript" src="js/inc/myAccount.js"></script>
+<script type="text/javascript" src="js/inc/social.js"></script>
 <script type="text/javascript" src="js/inc/privateMessages.js"></script>
 <script type="text/javascript" src="js/inc/userspace.js"></script>
 <script type="text/javascript">
@@ -247,14 +249,14 @@ $(document).ready(function() {
         foreach ($friendsList as $i => $value)
         {
     ?>
-    <div id="friendWrapper<?php echo $friendsList[$i][0]; ?>" class="friendWrapper">
+    <div id="friendWrapper<?php echo $friendsList[$i]['id']; ?>" class="friendWrapper">
 		<div id="friendHeader" class="friendHeader" <?php if ($i === $totalFriends - 1) echo 'style="border-bottom-left-radius:0.5em;"';?>>
-    		<div class="friendName"><img id="friendOnlineImg<?php echo $friendsList[$i][0]; ?>" src="images/<?php echo ($friendsList[$i][2] ? "friend_online" : "friend_offline"); ?>.png" /><a class="friendSpaceLink" href="/<?php echo $friendsList[$i][1]; ?>"><?php echo $friendsList[$i][1]; ?></a></div>
+    		<div class="friendName"><img id="friendOnlineImg<?php echo $friendsList[$i]['id']; ?>" src="images/<?php echo ($friendsList[$i]['isOnline'] ? "friend_online" : "friend_offline"); ?>.png" /><a class="friendSpaceLink" href="/<?php echo $friendsList[$i]['username']; ?>"><?php echo $friendsList[$i]['username']; ?></a></div>
     		<div class="plusImg"><img id="moreOptionsImg" src="images/more_info_large.png" style="height:25px; width:25px;" /></div>
     		<?php
     		if ($privateMessagesSenders !== false)
     		{
-    		    if (in_array($friendsList[$i][0], $privateMessagesSenders))
+    		    if (in_array($friendsList[$i]['id'], $privateMessagesSenders))
     		    {
     		?>
 			<div id="newPrivateMessage" class="newPrivateMessage"><a id="sendPrivateMessage" href="core/ajax/privatemessage.php?friendName=<?php echo $friendsList[$i][1]; ?>"><img src="images/new_message.png" /></a></div>
@@ -264,10 +266,10 @@ $(document).ready(function() {
     		?>
 		</div>
 		<div class="friendPanelOptions">
-			<div class="friendOption" onclick="chatManager.CreateChatConversation(<?php echo $friendsList[$i][0], ", '", $friendsList[$i][1], "'"; ?>, false)">Invite to chat</div>
+			<div class="friendOption" onclick="chatManager.CreateChatConversation(<?php echo $friendsList[$i]['id'], ", '", $friendsList[$i]['username'], "'"; ?>, false)">Invite to chat</div>
 			<div class="friendOption">Invite to LiveStream</div>
-			<div class="friendOption"><a id="sendPrivateMessage" href="core/ajax/privatemessage.php?friendName=<?php echo $friendsList[$i][1]; ?>" style="text-decoration:none; color:#FFFFFF;">Send private message</a></div>
-			<div class="friendOptionRemove"><a id="removeFriend" href="core/ajax/removefriendconfirmation.php?friendName=<?php echo $friendsList[$i][1]; ?>" style="text-decoration:none; color:#FFFFFF;">Remove friend</a></div>
+			<div class="friendOption"><a id="sendPrivateMessage" href="core/ajax/privatemessage.php?friendName=<?php echo $friendsList[$i]['username']; ?>" style="text-decoration:none; color:#FFFFFF;">Send private message</a></div>
+			<div class="friendOptionRemove"><a id="removeFriend" href="core/ajax/removefriendconfirmation.php?friendName=<?php echo $friendsList[$i]['username']; ?>" style="text-decoration:none; color:#FFFFFF;">Remove friend</a></div>
 		</div>
 	</div>
 	<?php

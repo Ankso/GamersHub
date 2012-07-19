@@ -61,6 +61,9 @@ function Space() {
     this.lastLoadedComment = null;
     this.idleTime = 0;
     this.userFriends = new Array();
+    this.isMyAccountPanelLoaded = false;
+    this.isSocialPanelLoaded = false;
+    this.isMyGamesPanelLoaded = false;
 };
 
 /**
@@ -395,17 +398,28 @@ Space.prototype.OpenControlPanel = function(panelName) {
     $(panelName + "Button").click(function(/*event*/) {
         space.CloseControlPanel();
     });
-    $(panelName).text("Loading...");
     switch (panelName)
     {
         case "#myAccount":
-            $(panelName).load("core/ajax/accountsettings.php");
+            if (!self.isMyAccountPanelLoaded)
+            {
+                $(panelName).text("Loading...");
+                $(panelName).load("core/ajax/accountsettings.php");
+            }
             break;
         case "#mySocial":
-            $(panelName).load("core/ajax/socialsettings.php");
+            if (!self.isSocialPanelLoaded)
+            {
+                $(panelName).text("Loading...");
+                $(panelName).load("core/ajax/socialsettings.php");
+            }
             break;
         case "#myGames":
-            $(panelName).load("core/ajax/gamessettings.php");
+            if (!self.isMyGamesPanelLoaded)
+            {
+                $(panelName).text("Loading...");
+                $(panelName).load("core/ajax/gamessettings.php");
+            }
             break;
         default:
             break;
@@ -419,10 +433,7 @@ Space.prototype.OpenControlPanel = function(panelName) {
 Space.prototype.CloseControlPanel = function() {
     var self = this;
     
-    $(self.openedControlPanel).slideUp(400, function() {
-        // Here we must implement a cache system or something...
-        $(self.openedControlPanel).html("");
-    });
+    $(self.openedControlPanel).slideUp(400);
     $(self.openedControlPanel + "Button").css("background-color", "transparent");
     $(self.openedControlPanel + "Button").unbind("click");
     $(self.openedControlPanel + "Button").click(TriggerOpenControlPanel);
@@ -543,6 +554,7 @@ Socket.prototype.ConnectToRealTimeServer = function() {
         setTimeout(function() {
             $("div#realTimeNotification").stop().fadeOut(1500);
         }, 6500);
+        $("div#socialFriend" + data.friendId).css("border-color", "#00FF00");
     });
     // Called when a friend of this user logs off. Used to display the log off notification, etc.
     self.socket.on("friendLogoff", function(data) {
@@ -552,6 +564,7 @@ Socket.prototype.ConnectToRealTimeServer = function() {
         setTimeout(function() {
             $("div#realTimeNotification").stop().fadeOut(1500);
         }, 6500);
+        $("div#socialFriend" + data.friendId).css("border-color", "#FF0000");
     });
     // Called when a friend opens a chat window with this user.
     self.socket.on("enterChat", function(data) {
