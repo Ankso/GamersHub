@@ -551,8 +551,10 @@ Class User
         while ($row = $result->fetch_assoc())
         {
             $friendRequests[] = array(
-                "username" => $row['username'],
-                "message"  => $row['message']
+                "id"         => $row['requester_id'],
+                "username"   => $row['username'],
+                "message"    => $row['message'],
+                "avatarPath" => $row['avatar_path'],
             );
         }
         return $friendRequests;

@@ -22,7 +22,7 @@ var IDLE_TIMER_STEP = 60000;
 // (CONST) Opcodes used by the client
 var ClientOpcodes = {
     OPCODE_NULL               : 0, // Null opcode, used for testing/debug.
-    OPCODE_LOGOFF            : 1, // Received when the client loggs off.
+    OPCODE_LOGOFF             : 1, // Received when the client loggs off.
     OPCODE_PING               : 2, // Received each time that the client pings the server.
     OPCODE_ENABLE_AFK         : 3, // Received when AFK mode is enabled client-side.
     OPCODE_DISABLE_AFK        : 4, // Received when the client tries to disable AFK mode with his or her password.
@@ -405,6 +405,7 @@ Space.prototype.OpenControlPanel = function(panelName) {
             {
                 $(panelName).text("Loading...");
                 $(panelName).load("core/ajax/accountsettings.php");
+                self.isMyAccountPanelLoaded = true;
             }
             break;
         case "#mySocial":
@@ -412,6 +413,7 @@ Space.prototype.OpenControlPanel = function(panelName) {
             {
                 $(panelName).text("Loading...");
                 $(panelName).load("core/ajax/socialsettings.php");
+                self.isSocialPanelLoaded = true;
             }
             break;
         case "#myGames":
@@ -419,6 +421,7 @@ Space.prototype.OpenControlPanel = function(panelName) {
             {
                 $(panelName).text("Loading...");
                 $(panelName).load("core/ajax/gamessettings.php");
+                self.isMyGamesPanelLoaded = true;
             }
             break;
         default:
@@ -844,6 +847,7 @@ function TriggerOpenControlPanel(event)
             targetPanel = "#myAccount";
             break;
         case "mySocialButton":
+            $("span#socialNewsAdvert").remove();
             targetPanel = "#mySocial";
             break;
         case "myGamesButton":

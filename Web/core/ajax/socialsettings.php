@@ -20,6 +20,7 @@ if(!isset($_SESSION['userId']))
 
 $user = new User($_SESSION['userId']);
 $friends = $user->GetAllFriends();
+$friendRequests = $user->GetFriendRequests();
 ?>
 <script type="text/javascript">
 $(document).ready(function() {
@@ -51,6 +52,12 @@ $(document).ready(function() {
         dialogObject.friendId = $(event.target).attr("data-id");
         dialogObject.dialogItem.dialog("open");
     });
+    $("span.socialAcceptFriendRequest").click(function(event) {
+		HandleFriendRequest($(event.target).parent().attr("data-id"), "ACCEPT");
+    });
+    $("span.socialDeclineFriendRequest").click(function(event) {
+        HandleFriendRequest($(event.target).parent().attr("data-id"), "DECLINE");
+    });
 });
 </script>
 <div class="socialMenu">
@@ -63,10 +70,12 @@ $(document).ready(function() {
 	<div id="socialOptionClans" class="socialMenuOption">My Clans</div>
 </div>
 <div id="socialFriends" class="socialTab">
-<?php 
-foreach ($friends as $i => $value)
+<?php
+if ($friends != USER_HAS_NO_FRIENDS)
 {
-?>
+    foreach ($friends as $i => $value)
+    {
+    ?>
 	<div class="socialTabItem">
 		<div id="socialFriend<?php echo $friends[$i]['id']; ?>" class="socialFriendItem" style="border:2px <?php echo $friends[$i]['isOnline'] ? "#00FF00" : "#FF0000"; ?> solid; background:transparent url('<?php echo $friends[$i]['avatarPath']; ?>') no-repeat center center;"></div>
 		<div class="socialFriendItemName">
@@ -74,14 +83,49 @@ foreach ($friends as $i => $value)
 			<div id="socialRemoveFriend" class="socialRemoveFriend" data-id="<?php echo $friends[$i]['id']; ?>" data-username="<?php echo $friends[$i]['username']; ?>">Remove</div>
 		</div>
 	</div>
+    <?php
+    }
+}
+else
+{
+?>
+    <div class="socialTabItem">You have now friends. Add new friends using the friends panel, in the top right corner!</div>
 <?php
 }
 ?>
-	<div class="socialFriendsError"></div>
+	<div id="socialFriendsError" class="socialError"></div>
 	<div id="socialRemoveFriendDialog">Are you really sure?</div>
 </div>
 <div id="socialFriendRequests" class="socialTab">
-	Friend requests management - Not yet implemented here.
+<?php 
+if ($friendRequests !== USER_HAS_NO_FRIEND_REQUESTS)
+{
+    foreach ($friendRequests as $i => $value)
+    {
+?>
+	<div class="socialTabItem">
+		<div class="socialFriendRequestContainer">
+    		<div id="socialFriendRequest<?php echo $friendRequests[$i]['id']; ?>" class="socialFriendItem" style="border:2px rgb(255, 122, 0) solid; background:transparent url('<?php echo $friendRequests[$i]['avatarPath']; ?>') no-repeat center center;"></div>
+    		<div class="socialFriendItemName">
+    			<a class="socialPlainLink" href="<?php echo "/", $friendRequests[$i]['username']; ?>"><?php echo $friendRequests[$i]['username']; ?></a>
+    			<div id="socialManageRequest<?php echo $friendRequests[$i]['id']; ?>" class="socialManageFriendRequest" data-id="<?php echo $friendRequests[$i]['id']; ?>">
+    				<span class="socialAcceptFriendRequest">Accept</span> - <span class="socialDeclineFriendRequest">Decline</span>
+    			</div>
+    		</div>
+		</div>
+		<div class="socialSubTabItem"><?php echo "Message from ", $friendRequests[$i]['username'], ": ", $friendRequests[$i]['message']; ?></div>
+	</div>
+<?php
+    }
+}
+else
+{
+?>
+	<div class="socialTabItem">You have no friend requests.</div>
+<?php
+}
+?>
+	<div id="socialFriendRequestsError" class="socialError"></div>
 </div>
 <div id="socialPrivateMessages" class="socialTab">
 	Private messages management - Not yet implemented here.

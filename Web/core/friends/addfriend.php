@@ -15,19 +15,20 @@ session_set_save_handler(
 register_shutdown_function("session_write_close");
 session_start();
 
-if (!isset($_POST['username']) || !isset($_POST['action']) || !isset($_SESSION['userId']))
+if (!isset($_POST['requesterId']) || !isset($_POST['action']) || !isset($_SESSION['userId']))
     die("FAILED");
     
 // Create the user object
+// TODO: Aditional checks are required.
 $user = new User($_SESSION['userId']);
-if ($_POST['action'] === 'a')
+if ($_POST['action'] === 'ACCEPT')
 {
-    if ($user->AcceptFriend(GetIdFromUsername($_POST['username'])))
+    if ($user->AcceptFriend((int)$_POST['requesterId']))
         die("SUCCESS");
 }
-elseif ($_POST['action'] === 'd')
+elseif ($_POST['action'] === 'DECLINE')
 {
-    if ($user->DeclineFriendRequest(GetIdFromUsername($_POST['username'])))
+    if ($user->DeclineFriendRequest((int)$_POST['requesterId']))
         die("SUCCESS");
 }
 echo "FAILED";

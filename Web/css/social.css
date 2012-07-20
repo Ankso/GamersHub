@@ -77,8 +77,29 @@
     cursor:pointer;
 }
 
-.socialFriendsError {
+.socialError {
     color:#FF0000;
+}
+
+.socialFriendRequestContainer {
+    min-height:62px;
+}
+
+.socialManageFriendRequest {
+    float:left;
+    font:16px Calibri;
+    margin-top:-2px;
+    text-decoration:none;
+}
+
+.socialAcceptFriendRequest {
+    color:#00FF00;
+    cursor:pointer;
+}
+
+.socialDeclineFriendRequest {
+    color:#FF0000;
+    cursor:pointer;
 }
 
 .socialSubmit {
@@ -105,7 +126,7 @@
 
 .socialSubTabItem {
     margin-left:30px;
-    margin-bottom:5px;
+    margin-bottom:8px;
     font:18px Calibri;
 }
 

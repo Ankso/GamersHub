@@ -48,12 +48,37 @@ function RemoveFriend(friendId)
         return;
     
     $.post("core/friends/removefriend.php", { friendId: friendId }, function(data) {
-        if(data == "SUCCESS")
+        if (data == "SUCCESS")
         {
-            $("div.socialFriendsError").text("");
+            $("div#socialFriendsError").text("");
             $("div#socialFriend" + friendId).parent().fadeOut(500);
         }
         else
-            $("div.socialFriendsError").text("An error occurred, please try again in a few seconds.");
+            $("div#socialFriendsError").text("An error has occurred, please try again in a few seconds.");
+    });
+}
+
+function HandleFriendRequest(requesterId, action)
+{
+    if (!requesterId || !action)
+        return;
+    
+    $.post("core/friends/addfriend.php", { requesterId: requesterId, action: action }, function(data) {
+        if (data == "SUCCESS")
+        {
+            $("div#socialFriendRequestsError").text("");
+            if (action == "ACCEPT")
+                $("div#socialManageRequest" + requesterId).html('<span class="socialAcceptFriendRequest">Request accepted!</span>');
+            else
+                $("div#socialManageRequest" + requesterId).html('<span class="socialDeclineFriendRequest">Request declined :(</span>');
+            setTimeout(function() {
+                $("div#socialFriendRequest" + requesterId).parent().parent().fadeOut(1500);
+            }, 5000);
+            // TODO: Here we must send a packet to the RTS with the new friend, for latest news section, etc,
+            // and add the new friend to the friends panel in the user main window. By the way, the page must be reloaded.
+        }
+        else
+            $("div#socialFriendRequestsError").text("An error has occurred, please try again in a few seconds.")
+            
     });
 }

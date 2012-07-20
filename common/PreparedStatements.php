@@ -51,7 +51,7 @@ class Statements
     const SELECT_USER_FRIEND_REQUEST_ID       = "SELECT user_id FROM user_friend_requests WHERE user_id = ? AND requester_id = ?";
     const SELECT_USER_FRIEND_REQUESTS_COUNT   = "SELECT count(*) AS total FROM user_friend_requests WHERE user_id = ?";
     const INSERT_USER_FRIEND_REQUEST          = "INSERT INTO user_friend_requests (user_id, requester_id, message) VALUES (?, ?, ?)";
-    const SELECT_USER_FRIEND_REQUEST          = "SELECT b.user_id, a.username, b.message FROM user_data AS a, user_friend_requests AS b WHERE b.user_id = ? AND a.id = b.requester_id";
+    const SELECT_USER_FRIEND_REQUEST          = "SELECT b.requester_id, a.username, b.message, c.avatar_path FROM user_data AS a, user_friend_requests AS b, user_detailed_data AS c WHERE b.user_id = ? AND a.id = b.requester_id AND c.user_id = b.requester_id";
     const SELECT_USER_DATA_SEARCH             = "SELECT username FROM user_data WHERE username LIKE ? ORDER BY username LIMIT 10";
     const INSERT_USER_PRIVATE_MESSAGE         = "INSERT INTO user_private_messages (sender_id, receiver_id, message, date, readed) VALUES (?, ?, ?, ?, ?)";
     const SELECT_USER_PRIVATE_MESSAGE         = "SELECT message, date, readed FROM user_private_messages WHERE sender_id = ? AND receiver_id = ? ORDER BY date DESC";
