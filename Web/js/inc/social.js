@@ -41,3 +41,19 @@ function SocialMenuOptionClick(event)
             break;
     }
 }
+
+function RemoveFriend(friendId)
+{
+    if (!friendId)
+        return;
+    
+    $.post("core/friends/removefriend.php", { friendId: friendId }, function(data) {
+        if(data == "SUCCESS")
+        {
+            $("div.socialFriendsError").text("");
+            $("div#socialFriend" + friendId).parent().fadeOut(500);
+        }
+        else
+            $("div.socialFriendsError").text("An error occurred, please try again in a few seconds.");
+    });
+}

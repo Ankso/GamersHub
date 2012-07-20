@@ -16,13 +16,14 @@ register_shutdown_function("session_write_close");
 session_start();
 if (!isset($_SESSION['userId']))
     die("FAILED");
-if (!isset($_POST['friendName']))
+if (!isset($_POST['friendId']))
     die("FAILED");
 
 // Create the user object
 $user = new User($_SESSION['userId']);
-if ($user->RemoveFriend(GetIdFromUsername($_POST['friendName'])))
-    echo 'SUCCESS';
-else
-    echo 'FAILED';
+$friendId = (int)$_POST['friendId'];
+if ($user->IsFriendOf($friendId))
+    if ($user->RemoveFriend($friendId))
+        exit("SUCCESS");
+die("FAILED");
 ?>

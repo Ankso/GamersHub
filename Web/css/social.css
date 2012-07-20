@@ -59,13 +59,26 @@
 
 .socialFriendItemName {
     float:left;
-    margin-top:13px;
+    margin-top:10px;
     margin-left:5px;
 }
 
 .socialPlainLink {
     color:#FFFFFF;
     text-decoration:none;
+}
+
+.socialRemoveFriend {
+	float:left;
+	font:16px Calibri;
+    color:#FF0000;
+    margin-top:-2px;
+    text-decoration:none;
+    cursor:pointer;
+}
+
+.socialFriendsError {
+    color:#FF0000;
 }
 
 .socialSubmit {

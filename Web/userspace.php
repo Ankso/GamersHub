@@ -102,7 +102,6 @@ $(document).ready(function() {
     });
     // FancyBox(es)
     $("a#friendRequests").fancybox();
-    $("a#removeFriend").fancybox();
     $("a#sendPrivateMessage").fancybox();
     <?php
     if ($isOwner)
@@ -269,7 +268,6 @@ $(document).ready(function() {
 			<div class="friendOption" onclick="chatManager.CreateChatConversation(<?php echo $friendsList[$i]['id'], ", '", $friendsList[$i]['username'], "'"; ?>, false)">Invite to chat</div>
 			<div class="friendOption">Invite to LiveStream</div>
 			<div class="friendOption"><a id="sendPrivateMessage" href="core/ajax/privatemessage.php?friendName=<?php echo $friendsList[$i]['username']; ?>" style="text-decoration:none; color:#FFFFFF;">Send private message</a></div>
-			<div class="friendOptionRemove"><a id="removeFriend" href="core/ajax/removefriendconfirmation.php?friendName=<?php echo $friendsList[$i]['username']; ?>" style="text-decoration:none; color:#FFFFFF;">Remove friend</a></div>
 		</div>
 	</div>
 	<?php

@@ -558,7 +558,9 @@ Socket.prototype.ConnectToRealTimeServer = function() {
     });
     // Called when a friend of this user logs off. Used to display the log off notification, etc.
     self.socket.on("friendLogoff", function(data) {
-        $("div#realTimeNotification").html('<img src="' + data.friendAvatarPath + '" alt="Avatar" style="width:35px; height:35px; border:2px #FF0000 solid; border-radius:0.3em; float:left; margin-left:10px;" /> <span style="float:left; margin-top:10px; margin-left:7px;"><b>' + data.friendName + '</b> has logged off.');
+        $("div#realTimeNotification").html('<img src="' + data.friendAvatarPath + '" alt="Avatar" '
+                + 'style="width:35px; height:35px; border:2px #FF0000 solid; border-radius:0.3em; float:left; margin-left:10px;" /> '
+                + '<span style="float:left; margin-top:10px; margin-left:7px;"><b>' + data.friendName + '</b> has logged off.');
         $("div#realTimeNotification").stop().fadeIn(1500);
         $("img#friendOnlineImg" + data.friendId).attr("src", "images/friend_offline.png");
         setTimeout(function() {

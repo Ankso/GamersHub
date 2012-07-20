@@ -22,10 +22,36 @@ $user = new User($_SESSION['userId']);
 $friends = $user->GetAllFriends();
 ?>
 <script type="text/javascript">
-$("div.socialMenuOption").click(function(event) {
-	SocialMenuOptionClick(event);
+$(document).ready(function() {
+    $("div.socialMenuOption").click(function(event) {
+    	SocialMenuOptionClick(event);
+    });
+    $("div#socialOptionFriends").trigger("click");
+    var dialogObject = {
+        dialogItem: $("div#socialRemoveFriendDialog").dialog({
+        	resizable: false,
+        	width: 350,
+        	modal: true,
+        	autoOpen: false,
+        	zIndex: 500,
+        	title: "Confirm friend removal",
+        	buttons: {
+        		"Yes, I'm sure": function() {
+            		RemoveFriend(dialogObject.friendId);
+        			dialogObject.dialogItem.dialog("close");
+        		},
+        		"Cancel": function() {
+        			dialogObject.dialogItem.dialog("close");
+        		},
+        	},
+        }),
+        friendId: "",
+    };
+    $("div#socialRemoveFriend").click(function(event) {
+        dialogObject.friendId = $(event.target).attr("data-id");
+        dialogObject.dialogItem.dialog("open");
+    });
 });
-$("div#socialOptionFriends").trigger("click");
 </script>
 <div class="socialMenu">
 	<div class="socialMenuTop" style="background-color:rgba(255, 122, 0, 0.3);"><strong>People</strong></div>
@@ -43,11 +69,16 @@ foreach ($friends as $i => $value)
 ?>
 	<div class="socialTabItem">
 		<div id="socialFriend<?php echo $friends[$i]['id']; ?>" class="socialFriendItem" style="border:2px <?php echo $friends[$i]['isOnline'] ? "#00FF00" : "#FF0000"; ?> solid; background:transparent url('<?php echo $friends[$i]['avatarPath']; ?>') no-repeat center center;"></div>
-		<div class="socialFriendItemName"><a class="socialPlainLink" href="<?php echo "/", $friends[$i]['username']; ?>"><?php echo $friends[$i]['username']; ?></a></div>
+		<div class="socialFriendItemName">
+			<a class="socialPlainLink" href="<?php echo "/", $friends[$i]['username']; ?>"><?php echo $friends[$i]['username']; ?></a>
+			<div id="socialRemoveFriend" class="socialRemoveFriend" data-id="<?php echo $friends[$i]['id']; ?>" data-username="<?php echo $friends[$i]['username']; ?>">Remove</div>
+		</div>
 	</div>
 <?php
 }
 ?>
+	<div class="socialFriendsError"></div>
+	<div id="socialRemoveFriendDialog">Are you really sure?</div>
 </div>
 <div id="socialFriendRequests" class="socialTab">
 	Friend requests management - Not yet implemented here.
