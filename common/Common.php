@@ -85,7 +85,7 @@ function PrintTopBar($user)
     {
         // Note that the order of the buttons is inverted
         echo '            <div id="myGamesButton" class="topbarButton" style="float:right;">My games</div>', "\n";
-        if ($friendRequestsCount === 0)
+        if ($friendRequestsCount === 0 && $user->GetUnreadPrivateMessagesCount() === 0)
             echo '            <div id="mySocialButton" class="topbarButton" style="float:right;">Social</div>', "\n";
         else
             echo '            <div id="mySocialButton" class="topbarButton" style="float:right;">Social<span id="socialNewsAdvert" style="font: color:#FF0000"><b>!</b></span></div>', "\n";

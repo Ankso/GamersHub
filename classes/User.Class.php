@@ -611,9 +611,9 @@ Class User
     /**
      * Gets all the messages sended by the specified friend to this user. Note that the function doesn't check if the users are friends, nor if the $receiver is valid (if it is an ID)
      * @param long/string $sender [Optional] A long integer representing a valid user ID or a string representing a valid username.<br />If this param is not provided, the function returns all the unreaded private messages for this user.
-     * @return mixed Returns a bidimensional array with each message, the date it was sended, and the sernder ID or false if something fails.
+     * @return mixed Returns a bidimensional array with each message, the date it was sended, and the sernder ID and username or false if something fails.
      */
-    public function GetPrivateMessages($sender = NULL)
+    public function GetPrivateMessages($sender = NULL, $unreadedOnly = false)
     {
         if (!is_null($sender))
         {
@@ -649,13 +649,19 @@ Class User
                 $messages = array();
                 while (($row = $result->fetch_assoc()))
                 {
+                    if ($unreadedOnly && $row['readed'] == 1)
+                        continue;
+                    
                     $messages[] = array(
-                        'sender'  => $row['sender_id'],
-                        'message' => $row['message'],
-                        'date'    => $row['date'],
-                        'readed'  => $row['readed'],
+                        'sender'         => $row['sender_id'],
+                        'senderUsername' => $row['username'],
+                        'message'        => $row['message'],
+                        'date'           => $row['date'],
+                        'readed'         => $row['readed'],
                     );
                 }
+                if (count($messages) === 0)
+                    return USER_HAS_NO_MESSAGES;
                 return $messages;
             }
         }
@@ -693,6 +699,11 @@ Class User
             return $messages;
         }
         return false;
+    }
+    
+    public function GetAllPrivateConversations()
+    {
+        
     }
     
     /**

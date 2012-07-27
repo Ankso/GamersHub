@@ -1,4 +1,8 @@
 <?php
+/**
+ * This needs a _complete_ rewrite with tons of checks (if the user is already a friend, if he is in the (to implement) black list...
+ * And it must return a JSON encoded string with the names instead the direct HTML. Is hacky as hell.
+ */
 require_once($_SERVER['DOCUMENT_ROOT'] . "/../common/SharedDefines.php");
 require_once($_SERVER['DOCUMENT_ROOT'] . "/../classes/Database.Class.php");
 

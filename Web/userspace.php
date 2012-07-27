@@ -61,7 +61,7 @@ else
     exit();
 }
 // Get private messages(if any) for later use.
-$privateMessages = $user->GetPrivateMessages();
+$privateMessages = $user->GetPrivateMessages(NULL, true);
 $userAvatarPath = $user->GetAvatarHostPath();
 $customOptions = $spaceOwner->GetCustomOptions();
 ?>
@@ -258,7 +258,7 @@ $(document).ready(function() {
     		    if (in_array($friendsList[$i]['id'], $privateMessagesSenders))
     		    {
     		?>
-			<div id="newPrivateMessage" class="newPrivateMessage"><a id="sendPrivateMessage" href="core/ajax/privatemessage.php?friendName=<?php echo $friendsList[$i][1]; ?>"><img src="images/new_message.png" /></a></div>
+			<div id="newPrivateMessage<?php echo $friendsList[$i]['username']; ?>" class="newPrivateMessage"><a id="sendPrivateMessage" href="core/ajax/privatemessage.php?friendName=<?php echo $friendsList[$i]['username']; ?>"><img src="images/new_message.png" /></a></div>
     		<?php 
     		    }
     		}

@@ -55,7 +55,7 @@ class Statements
     const SELECT_USER_DATA_SEARCH             = "SELECT username FROM user_data WHERE username LIKE ? ORDER BY username LIMIT 10";
     const INSERT_USER_PRIVATE_MESSAGE         = "INSERT INTO user_private_messages (sender_id, receiver_id, message, date, readed) VALUES (?, ?, ?, ?, ?)";
     const SELECT_USER_PRIVATE_MESSAGE         = "SELECT message, date, readed FROM user_private_messages WHERE sender_id = ? AND receiver_id = ? ORDER BY date DESC";
-    const SELECT_USER_PRIVATE_MESSAGES        = "SELECT sender_id, message, date, readed FROM user_private_messages WHERE receiver_id = ? AND readed = 0";
+    const SELECT_USER_PRIVATE_MESSAGES        = "SELECT a.sender_id, a.message, a.date, a.readed, b.username FROM user_private_messages AS a, user_data AS b WHERE a.receiver_id = ? AND a.sender_id = b.id ORDER BY a.date DESC";
     const SELECT_USER_PRIVATE_MESSAGES_COUNT  = "SELECT count(*) FROM user_private_messages WHERE receiver_id = ? AND readed = 0";
     const SELECT_USER_PRIVATE_CONVERSATION    = "SELECT sender_id, message, date, readed FROM user_private_messages WHERE sender_id IN (?, ?) AND receiver_id IN (?, ?) ORDER BY date DESC";
     const UPDATE_USER_PRIVATE_MESSAGES_READED = "UPDATE user_private_messages SET readed = ? WHERE receiver_id = ? AND sender_id = ?";

@@ -133,3 +133,83 @@
 .socialRadio {
     font: 12px Calibri;
 }
+
+.socialPrivateMessage {
+    text-decoration:none;
+    color:#FFFFFF;
+}
+
+.socialPrivateMessage:hover {
+    background-color: rgba(255, 122, 0, 0.6);
+    cursor:pointer;
+}
+
+.socialPrivateMessageUnreaded {
+	font:22px Calibri;
+    text-decoration:none;
+    color:#FFFFFF;
+}
+
+.socialPrivateMessageUnreaded:hover {
+    background-color: rgba(255, 122, 0, 0.6);
+    cursor:pointer;
+}
+
+/*
+.socialSuggestionsBox {
+    font-family: Calibri;
+    font-size: 15px;
+    position: relative;
+    margin-left:20%;
+    margin-right:20%;
+    text-align:center;
+    background-color:transparent;
+    border-radius:0.4em;
+    border:2px solid #FFFFFF;
+    color:#FFFFFF;
+}
+
+.socialSuggestionsList {
+    margin: 0px;
+    padding: 0px;
+}
+
+.socialListItem {
+    cursor: pointer;
+}
+
+.socialListItem:hover {
+    background-color: #424242;
+}
+
+.socialSent {
+    font:15px Calibri;
+    padding:3px;
+    margin-left:10%;
+    margin-right:10%;
+    color:#000000;
+    text-align:center;
+    border-radius:0.5em;
+}
+
+.socialButton {
+    font:16px Calibri;
+    padding:3px;
+    margin-left:20%;
+    margin-right:20%;
+    color:#FFFFFF;
+    text-align:center;
+    border:2px solid #FFFFFF;
+    border-radius:0.5em;
+}
+
+.socialButton:hover {
+    background-color:#660099;
+    cursor:pointer;
+}
+
+.socialInput {
+    text-align:center;
+    border-radius:0.5em;
+}
+*/
