@@ -7,8 +7,8 @@
 class Statements
 {
     // Basic load/save user data queries
-    const SELECT_USER_DATA_BY_ID              = "SELECT id, username, password_sha1, random_session_id, email, ip_v4, ip_v6, last_login FROM user_data WHERE id = ?";
-    const SELECT_USER_DATA_BY_USERNAME        = "SELECT id, username, password_sha1, random_session_id, email, ip_v4, ip_v6, last_login FROM user_data WHERE username = ?";
+    const SELECT_USER_DATA_BY_ID              = "SELECT id, username, password_sha1, random_session_id, email, ip_v4, ip_v6, is_online, last_login FROM user_data WHERE id = ?";
+    const SELECT_USER_DATA_BY_USERNAME        = "SELECT id, username, password_sha1, random_session_id, email, ip_v4, ip_v6, is_online, last_login FROM user_data WHERE username = ?";
     const REPLACE_USER_DATA                   = "REPLACE INTO user_data VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     const SELECT_USER_DATA_ID                 = "SELECT id FROM user_data WHERE username = ?";
     const SELECT_USER_DATA_USERNAME           = "SELECT username FROM user_data WHERE id = ?";

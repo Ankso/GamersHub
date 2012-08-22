@@ -106,7 +106,7 @@ if ($friends != USER_HAS_NO_FRIENDS)
 else
 {
 ?>
-    <div class="socialTabItem">You have now friends. Add new friends using the friends panel, in the top right corner!</div>
+    <div class="socialTabItem">You have no friends. Add new friends using the friends panel, in the top left corner!</div>
 <?php
 }
 ?>
@@ -143,7 +143,7 @@ else
 }
 ?>
 	<!--
-		We should implement this here, but the code is very bad writed and the friends finder needs a complete rewrite
+		We should implement this here, but the code is very poor and the friends finder needs a complete rewrite
 		Take a look to the comments in core/friends/friendsfinder.php
     -->
     <!--

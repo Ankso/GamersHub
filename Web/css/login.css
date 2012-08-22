@@ -1,0 +1,39 @@
+@CHARSET "ISO-8859-1";
+
+.login {
+    text-align:center;
+    color:#FFFFFF;
+    position:absolute;
+    margin-left:50%;
+    margin-right:50%;
+    width:360px;
+    border:2px solid #444444;
+    border-radius:1em;
+    box-shadow:3px 0 5px #000000;
+}
+
+.lblInput {
+    color:#FFFFFF;
+}
+
+.inputUser, .inputPass {
+    text-align:center;
+    border-radius:1em;
+}
+
+.loginButton {
+    border:2px #333333 solid;
+    background-color:#000000;
+    border-radius:1em;
+    width:80px;
+    margin-left:140px;
+}
+
+.loginButton:hover {
+    background-color:#222222;
+    cursor:pointer;
+}
+
+#loginError {
+    color:#FF0000;
+}

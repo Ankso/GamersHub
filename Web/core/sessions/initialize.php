@@ -44,13 +44,25 @@ else
     	        {
     	            // Create the user object
     	            $user = new User($username);
-    	            $user->SetOnline(true);
-    	            $user->GenerateRandomSessionId();
-    	            $loginResult['sessionId'] = $user->GetRandomSessionId();
-    	            $_SESSION['userId'] = $user->GetId();
-    	            $loginResult['userId'] = $user->GetId();
-    	            $loginResult['status'] = "SUCCESS";
-    	            echo json_encode($loginResult);
+        	        // If the user is already logged in, we must return a "semi-failed" response
+        	        // in order to log the user off and try to log in again. This should be done
+        	        // after check that the login information is correct.
+        	        $loginResult['userId'] = $user->GetId();
+        	        if ($user->IsOnline())
+        	        {
+        	            $loginResult['sessionId'] = $user->GetRandomSessionId();
+        	            $loginResult['status'] = "ALREADY_LOGGED_IN";
+        	            echo json_encode($loginResult);
+        	        }
+        	        else
+        	        {
+        	            $user->SetOnline(true);
+        	            $user->GenerateRandomSessionId();
+        	            $loginResult['sessionId'] = $user->GetRandomSessionId();
+        	            $_SESSION['userId'] = $user->GetId();
+        	            $loginResult['status'] = "SUCCESS";
+        	            echo json_encode($loginResult);
+        	        }
     	        }
     	        else
     	        {

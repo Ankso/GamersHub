@@ -57,6 +57,7 @@ Class User
                 $this->_ip = $userData['ip_v4'];
             else
                 $this->_ip = $userData['ip_v6'];
+            $this->_isOnline = $userData['is_online'];
             $this->_lastLogin = $userData['last_login'];
             return true;
         }
