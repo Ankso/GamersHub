@@ -370,7 +370,7 @@ Class User
             return false;
         $bio = strip_tags($bio, "<font><br>");
         
-        if ($this->_db->ExecuteStmt(Statements::REPLACE_USER_DETAILED_DATA, $this->_db->BuildStmtArray("issss", $this->GetId(), $bio, $birthday, $country, $city)))
+        if ($this->_db->ExecuteStmt(Statements::REPLACE_USER_DETAILED_DATA, $this->_db->BuildStmtArray("isssss", $this->GetId(), $bio, $birthday, $country, $city, $this->GetAvatarHostPath())))
             return true;
         return false;
     }

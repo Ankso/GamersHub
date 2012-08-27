@@ -132,6 +132,8 @@ Space.prototype.CancelEditProfileDetails = function () {
  * Submits the changes done to the space owner profile details.
  */
 Space.prototype.SubmitEditedProfileDetails = function () {
+    var self = this;
+    
     var bio = $("#bioInput").val();
     var birthday = $("#birthdayInput").val();
     var country = $("#countryInput").val();
@@ -141,11 +143,11 @@ Space.prototype.SubmitEditedProfileDetails = function () {
         {
             if (data == "SUCCESS")
             {
-                this.previousBio = bio;
-                this.previousBirthday = birthday;
-                this.previousCountry = country;
-                this.previousCity = city;
-                this.CancelEditProfileDetails();
+                self.previousBio = bio;
+                self.previousBirthday = birthday;
+                self.previousCountry = country;
+                self.previousCity = city;
+                self.CancelEditProfileDetails();
             }
             else
             {
