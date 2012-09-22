@@ -88,31 +88,29 @@ if (isset($_POST['username']) && isset($_POST['email']) && isset($_POST['passwor
         else                                    // else insert the data in the DB
         {
             $ip = $_SERVER['REMOTE_ADDR'];
-            $data;
+            // Simple control var to ensure that no errors are triggered while the user is being created.
+            $allOk = true;
+            $data = NULL;
             if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6))
-                $data = $DB->BuildStmtArray("sssssis", $username, CreateSha1Pass($username, $password), NULL, $email, NULL, $ip, 0, "1000-01-01 00:00:00");
+                $data = $DB->BuildStmtArray("ssssssis", $username, CreateSha1Pass($username, $password), NULL, $email, NULL, $ip, 0, "1000-01-01 00:00:00");
             else
-                $data = $DB->BuildStmtArray("sssssis", $username, CreateSha1Pass($username, $password), NULL, $email, $ip, NULL, 0, "1000-01-01 00:00:00");
+                $data = $DB->BuildStmtArray("ssssssis", $username, CreateSha1Pass($username, $password), NULL, $email, $ip, NULL, 0, "1000-01-01 00:00:00");
+            
+            // Here we start the DB operations
             if ($DB->ExecuteStmt(Statements::INSERT_USER_DATA, $data))
             {
                 // Now we can initialize the User object. Note that this is for obtain the user ID to create the rows in user_detailed_data and user_privacy tables.
                 $user = new User($username);
-                $allOk = true;
                 // Begin the transaction and insert the data. This is to create all the rows in the related tables of the users Database.
                 $DB->BeginTransaction();
-                if ($DB->ExecuteStmt(Statements::INSERT_USER_DETAILED_DATA, $DB->BuildStmtArray("issss", $user->GetId(), NULL, NULL, NULL, NULL)))
+                if ($DB->ExecuteStmt(Statements::INSERT_USER_DETAILED_DATA, $DB->BuildStmtArray("isssss", $user->GetId(), NULL, NULL, NULL, NULL, "/images/default_avatar.png")))
                 {
                     if ($DB->ExecuteStmt(Statements::INSERT_USER_PRIVACY, $DB->BuildStmtArray("iiii", $user->GetId(), 1, 1, 1)))
                     {
-                        if ($DB->ExecuteStmt(Statements::INSERT_USER_AVATARS_PATH, $DB->BuildStmtArray("is", $user->GetId(), "/images/default_avatar.png")))
+                        if ($DB->ExecuteStmt(Statements::INSERT_USER_CUSTOM_OPTIONS, $DB->BuildStmtArray("iiii", $user->GetId(), 0, 0, 1)))
                         {
-                            if ($DB->ExecuteStmt(Statements::INSERT_USER_CUSTOM_OPTIONS, $DB->BuildStmtArray("iiii", $user->GetId(), 0, 0, 1)))
-                            {
-                                $DB->CommitTransaction();
-                                echo "\nUser created successfully! You can now <a href=\"login.php\">log in</a>";
-                            }
-                            else
-                                $allOk = false;
+                            $DB->CommitTransaction();
+                            echo "\nUser created successfully! You can now <a href=\"login.php\">log in</a>";
                         }
                         else
                             $allOk = false;
@@ -123,6 +121,9 @@ if (isset($_POST['username']) && isset($_POST['email']) && isset($_POST['passwor
                 else
                     $allOk = false;
             }
+            else
+                $allOk = false;
+            // If an error(s) has happen, we must rollback the DB transactions
             if (!$allOk)
             {
                 $DB->RollbackTransaction();
