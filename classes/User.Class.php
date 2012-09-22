@@ -495,6 +495,26 @@ Class User
     }
     
     /**
+     * Obtains the total number of friends of the user.
+     * @param boolean $onlineOnly Determines if only online friends must be counted.
+     * @return integer Returns the number of friends of the user.
+     */
+    public function GetFriendsCount($onlineOnly = false)
+    {
+        if ($onlineOnly)
+            $result = $this->_db->ExecuteStmt(Statements::SELECT_USER_FRIENDS_COUNT_ONLINE, $this->_db->BuildStmtArray("i", $this->GetId()));
+        else
+            $result = $this->_db->ExecuteStmt(Statements::SELECT_USER_FRIENDS_COUNT, $this->_db->BuildStmtArray("i", $this->GetId()));
+        
+        if ($result)
+        {
+            $row = $result->fetch_assoc();
+            return $row['total_friends'];
+        }
+        return false;
+    }
+    
+    /**
      * Determines if a user is friend of another user
      * @param long/string $identifier The other user's unique ID or username
      * @return bool Returns true if users are friends, else false.

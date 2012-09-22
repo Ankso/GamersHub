@@ -93,6 +93,7 @@ $(document).ready(function() {
     spaceOwner.id = <?php echo $spaceOwner->GetId(); ?>;
     user.avatarPath = "<?php echo $userAvatarPath; ?>";
     user.randomSessionId = "<?php echo $user->GetRandomSessionId(); ?>";
+    friendsManager.totalFriends = <?php echo $user->GetFriendsCount(); ?>;
 	// Top bar functions:
     $("div#myAccountButton").click(TriggerOpenControlPanel);
     $("div#mySocialButton").click(TriggerOpenControlPanel);
@@ -102,7 +103,6 @@ $(document).ready(function() {
     });
     // FancyBox(es)
     $("a#friendRequests").fancybox();
-    $("a#sendPrivateMessage").fancybox();
     <?php
     if ($isOwner)
     {
@@ -158,9 +158,6 @@ $(document).ready(function() {
         catch(e) {
             $('img#moreOptionsImg').hide();
         }
-    });
-    $('div#newPrivateMessage').click(function(event) {
-        $(event.target).remove();
     });
     $('#addNewFriend').load('core/ajax/friendsfinder.html');
     space.LoadBoardComments(1, 5, true);
@@ -230,6 +227,7 @@ $(document).ready(function() {
 		<div id="addNewFriend" class="friendPanelOptions" style="margin-bottom:5px;"></div>
 	</div>
 	<?php
+	/*
 	$friendsList = $user->GetAllFriends();
     if ($friendsList === USER_HAS_NO_FRIENDS)
         echo '    <div id="friendWrapper" class="friendWrapper" style="text-align:center;">You have no friends</div>', "\n";
@@ -245,8 +243,12 @@ $(document).ready(function() {
             foreach ($privateMessages as $i => $value)
                 $privateMessagesSenders[] = $privateMessages[$i]['sender'];
         }
+        $onlineFriendsCount = 0;
         foreach ($friendsList as $i => $value)
         {
+            if (!$friendsList[$i]['isOnline'])
+                continue;
+            
     ?>
     <div id="friendWrapper<?php echo $friendsList[$i]['id']; ?>" class="friendWrapper">
 		<div id="friendHeader" class="friendHeader" <?php if ($i === $totalFriends - 1) echo 'style="border-bottom-left-radius:0.5em;"';?>>
@@ -271,8 +273,19 @@ $(document).ready(function() {
 		</div>
 	</div>
 	<?php
+	        ++$onlineFriendsCount;
         }
-    } 
+        if ($onlineFriendsCount === 0)
+        {
+    ?>
+    <div id="friendWrapperNoOnlineFriends" class="friendWrapper">
+		<div id="friendHeader" class="friendHeader" style="border-bottom-left-radius:0.5em;">
+    		<div class="friendName"><a class="friendSpaceLink">You have no online friends.</a></div>
+    	</div>
+	</div>
+	<?php
+        }
+    }*/
     ?>
     <div id="closeMyFriendsPanel" class="closeMyFriendsPanel">
     	<b>Hide</b><!-- We must put an image here, like a minus sign or a minimize icon, may be a left arrow, something like that -->

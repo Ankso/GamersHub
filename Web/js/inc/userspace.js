@@ -21,14 +21,15 @@ var MAX_USER_IDLE_TIME = 20;
 var IDLE_TIMER_STEP = 60000;
 // (CONST) Opcodes used by the client
 var ClientOpcodes = {
-    OPCODE_NULL               : 0, // Null opcode, used for testing/debug.
-    OPCODE_LOGOFF             : 1, // Received when the client loggs off.
-    OPCODE_PING               : 2, // Received each time that the client pings the server.
-    OPCODE_ENABLE_AFK         : 3, // Received when AFK mode is enabled client-side.
-    OPCODE_DISABLE_AFK        : 4, // Received when the client tries to disable AFK mode with his or her password.
-    OPCODE_CHAT_INVITATION    : 5, // Received when a client invites other client to a chat conversation.
-    OPCODE_CHAT_MESSAGE       : 6, // Received with each chat message between clients.
-    TOTAL_CLIENT_OPCODES_COUNT: 7, // Total opcodes count (Not used by the way).
+    OPCODE_NULL                : 0, // Null opcode, used for testing/debug.
+    OPCODE_LOGOFF              : 1, // Sended when the client loggs off.
+    OPCODE_PING                : 2, // Sended each time that the client pings the server.
+    OPCODE_ENABLE_AFK          : 3, // Sended when AFK mode is enabled client-side.
+    OPCODE_DISABLE_AFK         : 4, // Sended when the client tries to disable AFK mode with his or her password.
+    OPCODE_CHAT_INVITATION     : 5, // Sended when a client invites other client to a chat conversation.
+    OPCODE_CHAT_MESSAGE        : 6, // Sended with each chat message between clients.
+    OPCODE_ONLINE_FRIENDS_LIST : 7, // Sended to request an online friends list for this user.
+    TOTAL_CLIENT_OPCODES_COUNT : 8, // Total opcodes count (Not used by the way).
 };
 // (CONST) Opcodes used server-side
 var ServerOpcodes = {
@@ -64,6 +65,7 @@ function Space() {
     this.isMyAccountPanelLoaded = false;
     this.isSocialPanelLoaded = false;
     this.isMyGamesPanelLoaded = false;
+    this.totalOnlineFriends = 0;
 };
 
 /**
@@ -514,7 +516,8 @@ Socket.prototype.ConnectToRealTimeServer = function() {
     self.socket.on("logged", function(data) {
         if (data.status == "SUCCESS")
         {
-            $("div#nodeServerStatus").text("Websocket connection status: CONNECTED.");
+            $("div#nodeServerStatus").text("RTS connection status: CONNECTED.");
+            friendsManager.AskForList();
             self.status = STATUS.CONNECTED;
             self.pingTimeout = setTimeout(function() {
                 socket.Ping();
@@ -522,12 +525,12 @@ Socket.prototype.ConnectToRealTimeServer = function() {
         }
         else if (data.status == "INCORRECT")
         {
-            $("div#nodeServerStatus").text("Websocket connection status: INCORRECT.");
+            $("div#nodeServerStatus").text("RTS connection status: INCORRECT.");
             self.status = STATUS.DISCONNECTED;
         }
         else
         {
-            $("div#nodeServerStatus").text("Websocket connection status: FAILED.");
+            $("div#nodeServerStatus").text("RTS connection status: FAILED.");
             self.status = STATUS.DISCONNECTED;
         }
     });
@@ -539,13 +542,13 @@ Socket.prototype.ConnectToRealTimeServer = function() {
     });
     // Called when the connection to the Real Time Server is lost. It has no handler server-side.
     self.socket.on("disconnect", function(data) {
-        $("div#nodeServerStatus").text("Websocket connection status: CONNECTION LOST.");
+        $("div#nodeServerStatus").text("RTS connection status: CONNECTION LOST.");
         clearTimeout(self.pingTimeout);
         self.status = STATUS.CONNECTION_LOST;
     });
     // Called when the socket client-side can't connect to the Real Time Server. It has no handler server-side.
     self.socket.on("error", function() {
-        $("div#nodeServerStatus").text("Websocket connection status: SERVER OFFLINE.")
+        $("div#nodeServerStatus").text("RTS connection status: SERVER OFFLINE.")
         clearTimeout(self.pingTimeout);
         self.status = STATUS.SERVER_OFFLINE;
     });
@@ -555,7 +558,7 @@ Socket.prototype.ConnectToRealTimeServer = function() {
                 + 'style="width:35px; height:35px; border:2px #00FF00 solid; border-radius:0.3em; float:left; margin-left:10px;" /> '
                 + '<span style="float:left; margin-top:10px; margin-left:7px;"><b>' + data.friendName + '</b> has logged in.</span>');
         $("div#realTimeNotification").stop().fadeIn(1500);
-        $("img#friendOnlineImg" + data.friendId).attr("src", "images/friend_online.png");
+        friendsManager.AddToList(data.friendId, data.friendName);
         setTimeout(function() {
             $("div#realTimeNotification").stop().fadeOut(1500);
         }, 6500);
@@ -567,7 +570,7 @@ Socket.prototype.ConnectToRealTimeServer = function() {
                 + 'style="width:35px; height:35px; border:2px #FF0000 solid; border-radius:0.3em; float:left; margin-left:10px;" /> '
                 + '<span style="float:left; margin-top:10px; margin-left:7px;"><b>' + data.friendName + '</b> has logged off.');
         $("div#realTimeNotification").stop().fadeIn(1500);
-        $("img#friendOnlineImg" + data.friendId).attr("src", "images/friend_offline.png");
+        friendsManager.RemoveFromList(data.friendId);
         setTimeout(function() {
             $("div#realTimeNotification").stop().fadeOut(1500);
         }, 6500);
@@ -607,6 +610,9 @@ Socket.prototype.ConnectToRealTimeServer = function() {
     });
     self.socket.on("receiveNew", function(data) {
         // Not implemented
+    });
+    self.socket.on("onlineFriendsList", function(data) {
+        friendsManager.CreateList(data.friendsList);
     });
 };
 
@@ -731,7 +737,7 @@ ChatManager.prototype.ReceiveChatMessage = function(friendId, friendName, messag
 };
 
 /**
- * Friend object constructor. The Friend object is used to manage the friends panel on the left.
+ * Friend object constructor.
  * @returns {Friend}
  */
 function Friend() {
@@ -740,19 +746,212 @@ function Friend() {
     this.isOnline = null;
 };
 
-Friend.prototype.AddToList = function() {
-    // Not yet implemented.
-    return false;
+/**
+ * Friends Manager object constructor. The friends manager is used to administrate the friends panel on the left.ç
+ * Basically, it's a technical and visual simple list implementation.
+ * TODO: Use the Friend object to store the data in the list.
+ * @returns {FriendsManager}
+ */
+function FriendsManager() {
+    this.totalFriends = 0;          // Total user friends (not used by the moment)
+    this.totalOnlineFriends = 0;    // Total online user friends.
+    this.isListInitialized = false; // Control variable, this will ensure that the plain list is asked to the RTS only once.
+    this.list = new Array();        // The array that stores all online friends.
 };
 
-Friend.prototype.RemoveFromList = function() {
-    // Not yet implemented.
-    return false;
+/**
+ * Asks the RTS for a plain list already ordered with all the user online friends.
+ * @returns boolean True on success, else false.
+ */
+FriendsManager.prototype.AskForList = function() {
+    if (this.isListInitialized)
+        return false;
+    
+    $("div#closeMyFriendsPanel").before(
+            '<div id="friendWrapperLoading" class="friendWrapper">' +
+            '    <div id="friendHeader" class="friendHeader" style="border-bottom-left-radius:0.5em;">' +
+            '        <div class="friendName"><a class="friendSpaceLink">Loading...</a></div>' +
+            '     </div>' +
+            '</div>'
+    );
+    socket.Emit(ClientOpcodes.OPCODE_ONLINE_FRIENDS_LIST, { userId: user.id });
+    this.isListInitialized = true;
+    return true;
 };
 
-Friend.prototype.SwitchOnline = function() {
-    // Not yet implemented.
-    return false;
+/**
+ * Initializes the list with the data gathered from the RTS. This will happen only once.
+ * @param friendsList array An array with the data returned by the RTS
+ * @returns boolean True on succes, else false.
+ */
+FriendsManager.prototype.CreateList = function(friendsList) {
+    var self = this;
+    
+    if (!friendsList)
+        return false;
+    
+    $("div#friendWrapperLoading").remove();
+    
+    if (friendsList[0] === "NO_ONLINE_FRIENDS")
+    {
+        $("div#closeMyFriendsPanel").before(
+                '<div id="friendWrapperNoOnlineFriends" class="friendWrapper">' +
+                '    <div id="friendHeader" class="friendHeader" style="border-bottom-left-radius:0.5em;">' +
+                '        <div class="friendName"><a class="friendSpaceLink">You have no online friends.</a></div>' +
+                '     </div>' +
+                '</div>'
+        );
+        return true;
+    }
+    
+    for (var i in friendsList)
+        self.AddToList(friendsList[i].id, friendsList[i].userName, true);
+    return true;
+};
+
+/**
+ * Adds a friend to the list, internally and visually, and sorts if necessary.
+ * @param friendId integer The friend's unique ID.
+ * @param friendName string The friend's username.
+ * @param skipChecks boolean Optional. If sets to true, the friend will be added to the list at the bottom, without sorting.
+ * @returns boolean True on success, else false.
+ */
+FriendsManager.prototype.AddToList = function(friendId, friendName, skipChecks) {
+    var self = this;
+    var htmlCode = '<div id="friendWrapper' + friendId + '" class="friendWrapper" style="display:none">' +
+            '    <div id="friendHeader" class="friendHeader"' + ''/*' style="border-bottom-left-radius:0.5em;"'*/ + '>' +
+            '        <div class="friendName"><a class="friendSpaceLink" href="/' + friendName + '">' + friendName + '</a></div>' +
+            '        <div class="plusImg"><img id="moreOptionsImg" src="images/more_info_large.png" style="height:25px; width:25px;" /></div>' +
+            '    </div>' +
+            '    <div class="friendPanelOptions">' +
+            '        <div id="friendOptionChat' + friendId + '" class="friendOption">Invite to chat</div>' +
+            '        <div id="friendOptionLiveStream' + friendId + '" class="friendOption">Invite to LiveStream</div>' +
+            '        <div id="friendOptionPrivateMessage' + friendId + '" class="friendOption"><a id="sendPrivateMessage" href="core/ajax/privatemessage.php?friendName=' + friendName + '" style="text-decoration:none; color:#FFFFFF;">Send private message</a></div>' +
+            '    </div>' +
+            '</div>';
+    
+    if (skipChecks === undefined)
+        skipChecks = false;
+    
+    $("div#friendWrapperNoOnlineFriends").remove();
+    
+    // The skipChecks feature is only used when the list is being initialized, because the
+    // usernames are already ordered, or when the list is empty (you can't sort only one name)
+    if (skipChecks || self.totalOnlineFriends == 0)
+    {
+        $("div#closeMyFriendsPanel").before(htmlCode);
+        $("div#friendWrapper" + friendId).fadeIn(500);
+        self.list[parseInt(self.totalOnlineFriends)] = {
+            id: friendId,
+            userName: friendName,
+        };
+    }
+    else
+    {
+        // This is the normal case. We must find the correct position for the new friend in the
+        // list, in alphabetic order.
+        for (var i = 0; i < self.totalOnlineFriends; ++i)
+        {
+            if (self.list[i].userName.toLowerCase() > friendName.toLowerCase())
+            {
+                // Once we find the position, we must move all the following elements forward.
+                for (var j = self.totalOnlineFriends - 1; j >= i; --j)
+                    self.list[j + 1] = {
+                        id: self.list[j].id,
+                        userName: self.list[j].userName,
+                    };
+                $("div#friendWrapper" + (self.list[i + 1].id)).before(htmlCode);
+                break;
+            }
+        }
+        // This will happen when all the elements have been checked
+        // we should insert the new friend at the bottom of the list.
+        if (i >= self.totalOnlineFriends)
+            $("div#closeMyFriendsPanel").before(htmlCode);
+        self.list[i] = {
+            id: friendId,
+            userName: friendName,
+        };
+        $("div#friendWrapper" + friendId).fadeIn(500);
+    }
+    $(".friendPanelOptions").hide();
+    $("img#moreOptionsImg").unbind("click");
+    $("img#moreOptionsImg").click(function(event) {
+        SwitchFriendOptionsMenu(event);
+    });
+    $("img#moreOptionsImg").hide();
+    $(".friendHeader").unbind("mouseenter");
+    $(".friendHeader").mouseenter(function(event) {
+        try {
+            $(event.target.children[1].children[0]).stop().fadeIn(100);
+        }
+        catch(e) {
+            $('img#moreOptionsImg').hide();
+        }
+    });
+    $(".friendHeader").unbind("mouseleave");
+    $(".friendHeader").mouseleave(function(event) {
+        try {
+            $(event.target.children[1].children[0]).stop.fadeOut(100);
+        }
+        catch(e) {
+            $("img#moreOptionsImg").hide();
+        }
+    });
+    $("div#friendOptionChat" + friendId).click(function() {
+        chatManager.CreateChatConversation(friendId, friendName, false);
+    });
+    $("div#friendOptionLiveStream" + friendId).click(function() {
+        // Not used
+    });
+    $("a#sendPrivateMessage").fancybox();
+    ++self.totalOnlineFriends;
+    return true;
+};
+
+/**
+ * Removes a friend from the list.
+ * @param friendId integer The friend's unique ID.
+ * @returns boolean True.
+ */
+FriendsManager.prototype.RemoveFromList = function(friendId) {
+    var self = this;
+    
+    // If there's more than one friend in the list, we must reorder it.
+    if (self.totalOnlineFriends > 1)
+    {
+        for (var i = 0; i < self.totalOnlineFriends; ++i)
+        {
+            if (self.list[i].id == friendId)
+            {
+                for (var j = i; j <= self.totalOnlineFriends - 2; ++j)
+                {
+                    self.list[j] = {
+                        id: self.list[j + 1].id,
+                        userName: self.list[j + 1].userName,
+                    };
+                }
+                break;
+            }
+        }
+    }
+    delete self.list[self.totalOnlineFriends - 1];
+    --self.totalOnlineFriends;
+    $("div#friendWrapper" + friendId).fadeOut(500, function() {
+        $("div#friendWrapper" + friendId).remove();
+        // If there aren't any more online friends.
+        if (self.totalOnlineFriends == 0)
+        {
+            $("div#closeMyFriendsPanel").before(
+                    '<div id="friendWrapperNoOnlineFriends" class="friendWrapper">' +
+                    '    <div id="friendHeader" class="friendHeader" style="border-bottom-left-radius:0.5em;">' +
+                    '        <div class="friendName"><a class="friendSpaceLink">You have no online friends.</a></div>' +
+                    '     </div>' +
+                    '</div>'
+            );
+        }
+    });
+    return true;
 };
 
 /**
@@ -763,7 +962,7 @@ function CommandsManager() {
 };
 
 /**
- * Welcome to GamersHub's Command Parser â„¢. This will be the main function to parse commands written by the users.
+ * Welcome to GamersHub's Command Parser (TM). This will be the main function to parse commands written by the users.
  * Commands must start with the character "/", the same character used in World of Warcraft chat system.
  * Almost all things in the web are going to be able to be done with commands. From start a window chat to delete a message board or remove a friend from the friends list.
  * @param string command A text string representing the command that must be executed.
@@ -822,6 +1021,7 @@ var user = new User();
 var spaceOwner = new User();
 var space = new Space();
 var socket = new Socket();
+var friendsManager = new FriendsManager();
 var chatManager = new ChatManager();
 var commandsManager = new CommandsManager();
 

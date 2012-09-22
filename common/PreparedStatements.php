@@ -44,6 +44,8 @@ class Statements
     const INSERT_USER_FRIEND                  = "INSERT INTO user_friends VALUES (?, ?)";
     const DELETE_USER_FRIEND                  = "DELETE FROM user_friends WHERE user_id = ? AND friend_id = ?";
     const SELECT_USER_FRIENDS                 = "SELECT a.id, a.username, a.is_online, c.avatar_path FROM user_data AS a, user_friends AS b, user_detailed_data AS c WHERE b.user_id = ? AND b.friend_id = a.id AND b.friend_id = c.user_id ORDER BY a.username";
+    const SELECT_USER_FRIENDS_COUNT           = "SELECT count(friend_id) AS total_friends FROM user_friends WHERE user_id = ?";
+    const SELECT_USER_FRIENDS_COUNT_ONLINE    = "SELECT count(a.friend_id)  AS total_friends FROM user_friends AS a, user_data AS b WHERE a.user_id = ? AND a.friend_id = b.id AND b.is_online = 1";
     const SELECT_USER_FRIENDS_BY_ID           = "SELECT friend_id FROM user_friends WHERE user_id = ?";
     const SELECT_USER_FRIENDS_BY_USERNAME     = "SELECT a.username, a.is_online FROM user_data AS a, user_friends AS b WHERE b.friend_id = a.id AND b.user_id = ? ORDER BY a.username";
     const SELECT_USER_FRIENDS_IS_FRIEND       = "SELECT user_id FROM user_friends AS a, user_data AS b WHERE b.username = ? AND a.user_id = ? AND b.id = a.friend_id";
