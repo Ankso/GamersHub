@@ -36,8 +36,8 @@ elseif (isset($_POST['messageId']) && isset($_POST['reply']))
     // TODO: Check messageId, it must be a valid message ID (the writer of the message with the given ID must be the sender of the reply or a friend of him)
     $reply = strip_tags($_POST['reply']);
     // TODO: Here we must parse much more things, like photos or links to profiles etc.
-    // Parse all links. TODO: HTTPS protocol is not yet supported.
-    $reply = preg_replace("#(http://)([a-z0-9_\-\?\/.=&~]*)#i", '<a href="http://$2" target="_blank">http://$2</a>', $reply);
+    // Parse all links.
+    $reply = preg_replace("#(http(s)?://)([a-z0-9_\-\?\/.=&~]*)#i", '<a href="http$2://$3" target="_blank">http$2://$3</a>', $reply);
     // Parse youtube links and embed the video instead of the simple link. The code is similar to the one in boardmessages.php, but the video window is smaller.
     $reply = preg_replace("#(<a href=\"http://(www.)?youtube.com)?/(v/|watch\?v=)([a-z0-9\-_~]+)([^<]+)(</a>)#i", '<div style="text-align:center;"><iframe width="480" height="360" src="http://www.youtube.com/embed/$4?wmode=transparent" frameborder="0" allowfullscreen></iframe></div><br />', $reply);
     if ($user->SendBoardMessageReply((int)$_POST['messageId'], $reply))
