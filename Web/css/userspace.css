@@ -401,3 +401,18 @@
     background-color:rgba(0, 0, 0, 0.9);
     z-index:101;
 }
+
+/* When the users are not friends */
+
+.usersAreNotFriends {
+	font:22px Calibri;
+    width:80%;
+    margin-left:10%;
+    margin-top:30px;
+    background-color:rgba(0, 0, 0, 0.5);
+    border:2px solid #343434;
+    border-radius:0.4em;
+    text-align:center;
+    padding-top:15px;
+    padding-bottom:15px;
+}

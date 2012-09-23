@@ -180,22 +180,6 @@ img {
     background-color:#A80000
 }
 
-.friendOptionRemove {
-    font:16px Calibri;
-    height:35px;
-    padding-left:10px;
-    padding-top:10px;
-    background-color:#800000;
-    border-bottom:2px #434343 solid;
-    border-left:2px #434343 solid;
-    border-right:2px #434343 solid;
-}
-
-.friendOptionRemove:hover {
-    cursor:pointer;
-    background-color:#A80000;
-}
-
 .newPrivateMessage {
     float:right;
     margin-right:7px;

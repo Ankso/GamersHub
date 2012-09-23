@@ -826,7 +826,7 @@ FriendsManager.prototype.AddToList = function(friendId, friendName, skipChecks) 
             '    <div class="friendPanelOptions">' +
             '        <div id="friendOptionChat' + friendId + '" class="friendOption">Invite to chat</div>' +
             '        <div id="friendOptionLiveStream' + friendId + '" class="friendOption">Invite to LiveStream</div>' +
-            '        <div id="friendOptionPrivateMessage' + friendId + '" class="friendOption"><a id="sendPrivateMessage" href="core/ajax/privatemessage.php?friendName=' + friendName + '" style="text-decoration:none; color:#FFFFFF;">Send private message</a></div>' +
+            '        <div id="friendOptionPrivateMessage' + friendId + '" class="friendOption" style="border-bottom:2px #434343 solid;"><a id="sendPrivateMessage" href="core/ajax/privatemessage.php?friendName=' + friendName + '" style="text-decoration:none; color:#FFFFFF;">Send private message</a></div>' +
             '    </div>' +
             '</div>';
     
@@ -840,7 +840,7 @@ FriendsManager.prototype.AddToList = function(friendId, friendName, skipChecks) 
     if (skipChecks || self.totalOnlineFriends == 0)
     {
         $("div#closeMyFriendsPanel").before(htmlCode);
-        $("div#friendWrapper" + friendId).fadeIn(500);
+        $("div#friendWrapper" + friendId).show();
         self.list[parseInt(self.totalOnlineFriends)] = {
             id: friendId,
             userName: friendName,

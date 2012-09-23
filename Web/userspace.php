@@ -46,24 +46,24 @@ if ($user->GetUsername() === $_GET['username'])
 {
     $spaceOwner = $user;
     $isOwner = true;
+    $usersAreNotFriends = false;
 }
 // We must check if the users are friends...
 elseif ($user->IsFriendOf($_GET['username']))
 {
     $spaceOwner = new User($_GET['username']);
     $isOwner = false;
+    $usersAreNotFriends = false;
 }
 // ...if they aren't, we should show a special space here, just saying that the user isn't allowed to see the specified profile
 else
 {
-    // TODO: show a special space here.
-    header("location:index.php");
-    exit();
+    $spaceOwner = new User($_GET['username']);
+    $isOwner = false;
+    $usersAreNotFriends = true;
 }
-// Get private messages(if any) for later use.
-$privateMessages = $user->GetPrivateMessages(NULL, true);
-$userAvatarPath = $user->GetAvatarHostPath();
 $customOptions = $spaceOwner->GetCustomOptions();
+$privacySettings = $spaceOwner->GetPrivacySettings();
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -91,7 +91,7 @@ $(document).ready(function() {
     space.totalMessages = <?php echo $spaceOwner->GetBoardMessagesCount(); ?>;
     user.id = <?php echo $user->GetId(); ?>;
     spaceOwner.id = <?php echo $spaceOwner->GetId(); ?>;
-    user.avatarPath = "<?php echo $userAvatarPath; ?>";
+    user.avatarPath = "<?php echo $user->GetAvatarHostPath(); ?>";
     user.randomSessionId = "<?php echo $user->GetRandomSessionId(); ?>";
     friendsManager.totalFriends = <?php echo $user->GetFriendsCount(); ?>;
 	// Top bar functions:
@@ -224,69 +224,8 @@ $(document).ready(function() {
     		<div class="friendName"><span style="font:20px Calibri; margin-left:5px;"><b>Add New Friend</b></span></div>
     		<div class="plusImg"><img id="moreOptionsImg" src="images/more_info_large.png" style="height:25px; width:25px;" /></div>
 		</div>
-		<div id="addNewFriend" class="friendPanelOptions" style="margin-bottom:5px;"></div>
+		<div id="addNewFriend" class="friendPanelOptions"></div>
 	</div>
-	<?php
-	/*
-	$friendsList = $user->GetAllFriends();
-    if ($friendsList === USER_HAS_NO_FRIENDS)
-        echo '    <div id="friendWrapper" class="friendWrapper" style="text-align:center;">You have no friends</div>', "\n";
-    elseif ($friendsList === false)
-        echo '    <div id="friendWrapper" class="friendWrapper" style="text-align:center;">An error occurred. Please try again in a few moments.</div>', "\n";
-    else
-    {
-        $totalFriends = count($friendsList);
-        $privateMessagesSenders = false;
-        if ($privateMessages !== USER_HAS_NO_MESSAGES && $privateMessages !== false)
-        {
-            $privateMessagesSenders = array();
-            foreach ($privateMessages as $i => $value)
-                $privateMessagesSenders[] = $privateMessages[$i]['sender'];
-        }
-        $onlineFriendsCount = 0;
-        foreach ($friendsList as $i => $value)
-        {
-            if (!$friendsList[$i]['isOnline'])
-                continue;
-            
-    ?>
-    <div id="friendWrapper<?php echo $friendsList[$i]['id']; ?>" class="friendWrapper">
-		<div id="friendHeader" class="friendHeader" <?php if ($i === $totalFriends - 1) echo 'style="border-bottom-left-radius:0.5em;"';?>>
-    		<div class="friendName"><img id="friendOnlineImg<?php echo $friendsList[$i]['id']; ?>" src="images/<?php echo ($friendsList[$i]['isOnline'] ? "friend_online" : "friend_offline"); ?>.png" /><a class="friendSpaceLink" href="/<?php echo $friendsList[$i]['username']; ?>"><?php echo $friendsList[$i]['username']; ?></a></div>
-    		<div class="plusImg"><img id="moreOptionsImg" src="images/more_info_large.png" style="height:25px; width:25px;" /></div>
-    		<?php
-    		if ($privateMessagesSenders !== false)
-    		{
-    		    if (in_array($friendsList[$i]['id'], $privateMessagesSenders))
-    		    {
-    		?>
-			<div id="newPrivateMessage<?php echo $friendsList[$i]['username']; ?>" class="newPrivateMessage"><a id="sendPrivateMessage" href="core/ajax/privatemessage.php?friendName=<?php echo $friendsList[$i]['username']; ?>"><img src="images/new_message.png" /></a></div>
-    		<?php 
-    		    }
-    		}
-    		?>
-		</div>
-		<div class="friendPanelOptions">
-			<div class="friendOption" onclick="chatManager.CreateChatConversation(<?php echo $friendsList[$i]['id'], ", '", $friendsList[$i]['username'], "'"; ?>, false)">Invite to chat</div>
-			<div class="friendOption">Invite to LiveStream</div>
-			<div class="friendOption"><a id="sendPrivateMessage" href="core/ajax/privatemessage.php?friendName=<?php echo $friendsList[$i]['username']; ?>" style="text-decoration:none; color:#FFFFFF;">Send private message</a></div>
-		</div>
-	</div>
-	<?php
-	        ++$onlineFriendsCount;
-        }
-        if ($onlineFriendsCount === 0)
-        {
-    ?>
-    <div id="friendWrapperNoOnlineFriends" class="friendWrapper">
-		<div id="friendHeader" class="friendHeader" style="border-bottom-left-radius:0.5em;">
-    		<div class="friendName"><a class="friendSpaceLink">You have no online friends.</a></div>
-    	</div>
-	</div>
-	<?php
-        }
-    }*/
-    ?>
     <div id="closeMyFriendsPanel" class="closeMyFriendsPanel">
     	<b>Hide</b><!-- We must put an image here, like a minus sign or a minimize icon, may be a left arrow, something like that -->
     </div>
@@ -294,69 +233,102 @@ $(document).ready(function() {
 <div class="mainContent">
 	<div class="mainBoard">
         <?php
-		if ($customOptions[CUSTOM_OPTION_LIVESTREAM])
-		{
+        if ($usersAreNotFriends)
+        {
         ?>
-		<div class="mainLivestream">
-			<div class="videoWindow">
-				<br/><br/><br/><br/><br/><br/><br/>-- Here is your live streaming video (640x360) --
-			</div>
-            <?php
-			if ($customOptions[CUSTOM_OPTION_LIVESTREAM_COMMENTS])
-			{
+        <div class="usersAreNotFriends">
+        	<b><?php echo $spaceOwner->GetUserName();?></b> is not your friend!
+        	<div style="font:16px Calibri;">You can send him a friend request using the left panel.</div>
+        </div>
+        <?php
+        }
+        else
+        {
+    		if ($customOptions[CUSTOM_OPTION_LIVESTREAM])
+    		{
             ?>
-			<div class="videoComments">
-				<br/><br/>-- Live comments about the livestream here --<br/><br/><br/>
-			</div>
-            <?php
-			}
-            ?>
-		</div>
-		<?php 
-		}
-		?>
-		<div id="commentsBoard" class="commentsBoard">
-		<?php
-	    if ($isOwner)
-		{
-		?>
-			<div id="commentsBoardInput" class="commentsBoardInput">
-				<input class="commentInputTextBox" type="text" value="Something interesting to say?" />
-				<div id="sendBoardMessage" class="sendBoardMessage"><img src="images/send_comment.png" /></div>
-			</div>
-        <?php 
-		}
-		?>
-			<div id="commentsHistory" class="commentsHistory">
-			</div>
-			<div id="moreCommentsHistory"><span id="moreCommentsHistoryButton" class="moreCommentsHistoryButton">More</span></div>
-		</div>
-		<div class="clansBoard">
-			<br/></br>-- Live comments written by your clan(s) here, independent from your comments --<br/><br/><br/>
-		</div>
+    		<div class="mainLivestream">
+    			<div class="videoWindow">
+    				<br/><br/><br/><br/><br/><br/><br/>-- Here is your live streaming video (640x360) --
+    			</div>
+                <?php
+    			if ($customOptions[CUSTOM_OPTION_LIVESTREAM_COMMENTS])
+    			{
+                ?>
+    			<div class="videoComments">
+    				<br/><br/>-- Live comments about the livestream here --<br/><br/><br/>
+    			</div>
+                <?php
+    			}
+                ?>
+    		</div>
+    		<?php 
+    		}
+    		?>
+    		<div id="commentsBoard" class="commentsBoard">
+    		<?php
+    	    if ($isOwner)
+    		{
+    		?>
+    			<div id="commentsBoardInput" class="commentsBoardInput">
+    				<input class="commentInputTextBox" type="text" value="Something interesting to say?" />
+    				<div id="sendBoardMessage" class="sendBoardMessage"><img src="images/send_comment.png" /></div>
+    			</div>
+            <?php 
+    		}
+    		?>
+    			<div id="commentsHistory" class="commentsHistory">
+    			</div>
+    			<div id="moreCommentsHistory"><span id="moreCommentsHistoryButton" class="moreCommentsHistoryButton">More</span></div>
+    		</div>
+    		<div class="clansBoard">
+    			<br/></br>-- Live comments written by your clan(s) here, independent from your comments --<br/><br/><br/>
+    		</div>
+    	<?php 
+        }
+    	?>
 	</div>
 	<div class="profileBoard">
 		<div class="profileInfo">
 			<div class="imgAvatar">
 				<div style="background:transparent url('<?php echo $spaceOwner->GetAvatarHostPath(); ?>') no-repeat center center; background-size:100%; height:200px; width:200px; border-radius:0.5em;">
-					<?php if ($isOwner) { ?>
+					<?php
+					if ($isOwner)
+					{
+					?>
 					<div class="editAvatar"><a id="changeAvatar" href="core/ajax/changeavatar.php"><img src="images/edit.png" alt="Edit" style="height:22px;width:22px;margin-top:3px;"/></a></div>
-					<?php } ?>
+					<?php
+					}
+					?>
 				</div>
 			</div>
 			<div id="profileDetails">
 				<?php
-				    $details = $spaceOwner->GetDetailedUserData();
+				    if ($usersAreNotFriends && $privacySettings[USER_PRIVACY_PROFILE] != PRIVACY_LEVEL_EVERYONE)
+				        echo "This profile is private";
+				    else
+				    {
+				        $details = $spaceOwner->GetDetailedUserData();
 				?>
             	<div id="bioDiv" class="profileText"><b>Bio: </b><span id="bioSpan"><?php echo $details[USER_DETAILS_BIO]; ?></span></div><br />
             	<div id="birthdayDiv" class="profileText"><b>Birthday: </b><span id="birthdaySpan"><?php echo $details[USER_DETAILS_BIRTHDAY]; ?></span></div><br />
             	<div id="countryDiv" class="profileText"><b>Country: </b><span id="countrySpan"><?php echo $details[USER_DETAILS_COUNTRY]; ?></span></div><br />
             	<div id="cityDiv" class="profileText"><b>City: </b><span id="citySpan"><?php echo $details[USER_DETAILS_CITY]; ?></span></div>
-            	<?php if ($isOwner) { ?>
+            	<?php
+            	        if ($isOwner)
+            	        {
+            	?>
             	<div class="editProfileText"><img src="images/edit.png" style="height:25px; width:25px; float:right;" /><br /></div>
-            	<?php } else { ?>
+            	<?php
+                    	}
+                    	else
+                    	{ 
+            	?>
             	<br />
-            	<?php } ?>
+            	<?php
+            	        }
+				    }
+            	?>
 			</div>
 			<div class="editProfileButton">View profile</div>
 		</div>
