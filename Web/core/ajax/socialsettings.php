@@ -94,7 +94,7 @@ if ($friends != USER_HAS_NO_FRIENDS)
     {
     ?>
 	<div class="socialTabItem">
-		<div id="socialFriend<?php echo $friends[$i]['id']; ?>" class="socialFriendItem" style="border:2px <?php echo $friends[$i]['isOnline'] ? "#00FF00" : "#FF0000"; ?> solid; background:transparent url('<?php echo $friends[$i]['avatarPath']; ?>') no-repeat center center;"></div>
+		<div id="socialFriend<?php echo $friends[$i]['id']; ?>" class="socialFriendItem" style="border:2px <?php echo $friends[$i]['isOnline'] ? "#00FF00" : "#FF0000"; ?> solid;"><img src="<?php echo $friends[$i]['avatarPath']; ?>" style="width:50px; height:50px; border-radius:0.5em;" /></div>
 		<div class="socialFriendItemName">
 			<a class="socialPlainLink" href="<?php echo "/", $friends[$i]['username']; ?>"><?php echo $friends[$i]['username']; ?></a>
 			<div id="socialRemoveFriend" class="socialRemoveFriend" data-id="<?php echo $friends[$i]['id']; ?>" data-username="<?php echo $friends[$i]['username']; ?>">Remove</div>
