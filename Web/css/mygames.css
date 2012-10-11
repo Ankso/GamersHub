@@ -1,0 +1,146 @@
+@CHARSET "ISO-8859-1";
+
+.myGamesMenu {
+    float:left;
+    width:15%;
+    height:100%;
+    background-color:rgba(200, 200, 200, 0.6);
+}
+
+.myGamesMenuTop {
+    min-height:26px;
+    font:26px Calibri;
+    padding:11px 12px 20px 12px;
+}
+
+.myGamesMenuOption {
+    font:20px Calibri;
+    height:30px;
+    text-align:right;
+    padding:7px 20px 7px 7px;
+    cursor:pointer;
+}
+
+.myGamesTab {
+    font:22px Calibri;
+    margin-left:15%;
+    text-align:left;
+    width:70%;
+    height:100%;
+    padding:50px 50px 50px 75px;
+    border-left:10px rgba(255, 51, 30, 1) solid;
+}
+
+.myGamesListedGame {
+	float:left;
+    width:170px;
+    height:250px;
+    margin-right:50px;
+    margin-top:50px;
+    background-color:#000000;
+    border:2px #CCCCCC solid;
+    border-radius:0.5em;
+    text-align:center;
+    opacity:0.5;
+}
+
+.myGamesListedGame:hover {
+    opacity:1;
+    cursor:pointer;
+}
+
+.myGamesGameName {
+    font:20px Calibri;
+}
+
+.myGamesTabItem {
+    margin-top:20px;
+    border-bottom:1px rgb(200, 200, 200) solid;
+    padding-bottom:7px;
+}
+
+.myGamesSearchInputContainer {
+    width:100%;
+    height:100%;
+}
+
+.myGamesSearchInput {
+	font:20px Calibri;
+    font-style:italic;
+    color:#444444;
+    height:30px;
+    width:320px;
+    padding:5px;
+    border-radius:0.5em;
+    box-shadow:3px 0 5px #000000;
+}
+
+.myGamesListItem {
+	width:320px;
+    padding:5px;
+    margin-top:5px;
+    background-color:rgba(255, 51, 30, 0.3);
+    border-radius:0.4em;
+}
+
+.myGamesListItem:hover {
+    background-color:rgba(255, 51, 30, 1);
+    cursor:pointer;
+}
+
+.myGamesGameView {
+	width:100%;
+	height:100%;
+}
+
+.myGamesGameViewBorderLeft {
+    position:fixed;
+    height:100%;
+    width:55px;
+    margin-left:-75px;
+    margin-top:-50px;
+    padding-top:400px;
+    padding-left:20px;
+    cursor:pointer;
+    font:50px Calibri;
+}
+
+.myGamesGameViewBorderLeft:hover {
+    background-color:rgba(33, 33, 33, 0.65);
+}
+
+.myGamesGameViewCoverImg {
+    float:left;
+    margin-left:50px;
+    width:340px;
+    height:500px;
+    border-radius:0.5em;
+}
+
+.myGamesGameViewInfo {
+    width:520px;
+    float:left;
+    margin-left:40px;
+}
+
+.myGamesAddGameButton {
+    padding:5px;
+    border-radius:0.4em;
+    background-color:rgba(0, 255, 50, 0.6);
+}
+
+.myGamesAddGameButton:hover {
+    cursor:pointer;
+    background-color:rgba(0, 200, 50, 1);
+}
+
+.myGamesRemoveGameButton {
+    padding:5px;
+    border-radius:0.4em;
+    background-color:rgba(200, 0, 30, 0.6);
+}
+
+.myGamesRemoveGameButton:hover {
+    cursor:pointer;
+    background-color:rgba(200, 0, 30, 1);
+}

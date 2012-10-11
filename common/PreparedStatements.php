@@ -76,5 +76,18 @@ class Statements
     const INSERT_USER_CUSTOM_OPTIONS          = "INSERT INTO user_custom_options (user_id, option_livestream, option_livestream_livecomments, option_latest_news) VALUES (?, ?, ?, ?)";
     const UPDATE_USER_CUSTOM_OPTIONS          = "UPDATE user_custom_options SET option_livestream = ?, option_livestream_livecomments = ?, option_latest_news = ? WHERE user_id = ?";
     const SELECT_USER_CUSTOM_OPTIONS          = "SELECT option_livestream, option_livestream_livecomments, option_latest_news FROM user_custom_options WHERE user_id = ?";
+    // Games system
+    const SELECT_GAME_DATA                    = "SELECT a.title, a.webpage, a.description, a.image_path, b.id AS developer_id, b.name AS developer_name, b.webpage AS developer_webpage, b.description AS developer_description, c.id AS publisher_id, c.name AS publisher_name, c.webpage AS publisher_webpage, c.description AS publisher_description FROM game_data AS a, game_developers AS b, game_publishers AS c WHERE a.id = ? AND a.developer_id = b.id AND a.publisher_id = c.id";
+    const INSERT_GAME_DATA                    = "INSERT INTO game_data (id, title, webpage, description, developer_id, publisher_id, image_path) VALUES (?, ?, ?, ?, ?, ?)";
+    const DELETE_GAME_DATA                    = "DELETE FROM game_data WHERE id = ?";
+    const SELECT_GAME_GENRES                  = "SELECT a.name FROM game_genres AS a, game_genres_relation AS b WHERE b.game_id = ? AND b.genre_id = a.id";
+    const SELECT_GAME_DEVELOPER_DATA          = "SELECT name, webpage, description FROM game_developers WHERE id = ?";
+    const SELECT_GAME_PUBLISHER_DATA          = "SELECT name, webpage, description FROM game_publishers WHERE id = ?";
+    const SELECT_GAME_PLAYERS_COUNT           = "SELECT COUNT(*) AS total_players FROM user_games_relation WHERE game_id = ?";
+    const SELECT_GAMES_BY_NAME                = "SELECT id, title FROM game_data WHERE title LIKE ? ORDER BY title LIMIT 10";
+    const SELECT_USER_GAMES                   = "SELECT game_id FROM user_games_relation WHERE user_id = ?";
+    const SELECT_USER_GAMES_BASIC_DATA        = "SELECT a.id, a.title, a.webpage, a.description, a.image_path, a.exe_name FROM games.game_data AS a, users.user_games_relation AS b WHERE a.id = b.game_id AND b.user_id = ? ORDER BY a.title";
+    const INSERT_USER_GAMES                   = "INSERT INTO user_games_relation VALUES (?, ?)";
+    const DELETE_USER_GAMES                   = "DELETE FROM user_games_relation WHERE user_id = ? AND game_id = ?";
 }
 ?>

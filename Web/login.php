@@ -28,7 +28,6 @@ else
 <link href="css/main.css" media="all" rel="stylesheet" type="text/css">
 <link href="css/login.css" media="all" rel="stylesheet" type="text/css">
 <script type="text/javascript" src="js/inc/jquery.latest.js"></script>
-<script type="text/javascript" src="js/inc/jquery-ui-1.8.20.custom.min.js"></script>
 <script type="text/javascript" src="js/inc/login.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {

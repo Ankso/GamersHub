@@ -35,7 +35,7 @@ if (!isset($_GET['username']))
     exit();
 }
 // Check if the username is a valid one
-if (GetIdFromUsername($_GET['username']) === false)
+if (GetIdFromUsername($_GET['username']) === USER_DOESNT_EXISTS)
 {
     // here we must redirect the user to a page of type "The user that you are looking for doesn't exists!"
     header("location:index.php");
@@ -69,20 +69,23 @@ $privacySettings = $spaceOwner->GetPrivacySettings();
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title><?php echo $spaceOwner->GetUsername(); ?>'s profile - GamersHub</title>
+<title><?php echo $isOwner ? "Your " : ($spaceOwner->GetUsername() . "'s"); ?> profile - GamersHub</title>
 <link href="css/main.css" media="all" rel="stylesheet" type="text/css" />
 <link href="css/userspace.css" media="all" rel="stylesheet" type="text/css" />
 <link href="css/myaccount.css" media="all" rel="stylesheet" type="text/css" />
 <link href="css/social.css" media="all" rel="stylesheet" type="text/css" />
+<link href="css/mygames.css" media="all" rel="stylesheet" type="text/css" />
 <link href="css/fancyboxjQuery.css" rel="stylesheet" type="text/css" media="screen" />
 <link href="css/dark-hive/jquery-ui-1.8.20.custom.css" rel="stylesheet" type="text/css" media="screen" />
-<script type="text/javascript" src="js/inc/jquery-1.7.2.min.js"></script>
-<script type="text/javascript" src="js/inc/jquery-ui-1.8.20.custom.min.js"></script>
+<link href="css/jScrollbar.jquery.css" rel="stylesheet" type="text/css" media="screen" />
+<script type="text/javascript" src="js/inc/jquery-1.8.2.min.js"></script>
+<script type="text/javascript" src="js/inc/jquery-ui-1.8.24.custom.min.js"></script>
 <script type="text/javascript" src="js/inc/jquery.cookie.js"></script>
 <script type="text/javascript" src="js/inc/jquery.fancybox-1.3.4.js"></script>
 <script type="text/javascript" src="js/inc/socket.io.js"></script>
 <script type="text/javascript" src="js/inc/myAccount.js"></script>
 <script type="text/javascript" src="js/inc/social.js"></script>
+<script type="text/javascript" src="js/inc/myGames.js"></script>
 <script type="text/javascript" src="js/inc/privateMessages.js"></script>
 <script type="text/javascript" src="js/inc/userspace.js"></script>
 <script type="text/javascript">
@@ -192,7 +195,7 @@ $(document).ready(function() {
         if (event.keyCode == 13)
             chatManager.SendChatMessage(event);
     });
-    // For idle time and more:
+    // For idle timer and more:
     setInterval(function() {
         space.IncrementIdleTimer();
     }, IDLE_TIMER_STEP);
@@ -207,11 +210,16 @@ $(document).ready(function() {
             space.DisableAfkMode();
     });
     FadeIn();
+    space.LoadPlugin();
+    gamesManager.GetGamesList();
+    gamesManager.CheckClientProcessList();
     socket.ConnectToRealTimeServer();
 });
 </script>
 </head>
 <body style="display:none">
+<object id="gamershubPlugin" type="application/x-gamershubtools" width="0px" height="0px">
+</object>
 <?php PrintTopBar($user); ?>
 <div id="myFriendsPanelFlapClosed" class="myFriendsPanelFlapClosed">
 	<b>Friends</b><div class="imgMyFriendsPanelFlap"><img src="images/more_info_large.png" style="height:25px; width:25px;" /></div>
@@ -229,6 +237,8 @@ $(document).ready(function() {
     <div id="closeMyFriendsPanel" class="closeMyFriendsPanel">
     	<b>Hide</b><!-- We must put an image here, like a minus sign or a minimize icon, may be a left arrow, something like that -->
     </div>
+</div>
+<div id="advertMessagePopUp" class="advertMessagePopUp" style="display:none;">
 </div>
 <div class="mainContent">
 	<div class="mainBoard">
@@ -318,7 +328,7 @@ $(document).ready(function() {
             	        if ($isOwner)
             	        {
             	?>
-            	<div class="editProfileText"><img src="images/edit.png" style="height:25px; width:25px; float:right;" /><br /></div>
+            	<div class="editProfileText"><img src="images/edit.png" style="height:25px; width:25px; float:right; " /><br /></div>
             	<?php
                     	}
                     	else
@@ -347,9 +357,6 @@ $(document).ready(function() {
 		</div>
 	</div>
 </div>
-<!--
-<div id="myGamesTab" class="a {title: 'My games'}"></div>
--->
 <div id="myAccount" class="controlPanel"></div>
 <div id="mySocial" class="controlPanel"></div>
 <div id="myGames" class="controlPanel"></div>
@@ -365,12 +372,14 @@ $(document).ready(function() {
     </div>
 </div>
 <div id="realTimeNotification" class="realTimeNotification" style="display:none"></div>
-<div id="nodeServerStatus" style="position:fixed; text-align:center; bottom:0; left:0; font:12px Calibri; margin-bottom:20px;">Unknown</div>
+<div id="gameNotification" class="gameNotification" style="display:none"></div>
+<div id="pluginStatus" style="position:fixed; bottom:0; left:0; font:12px Calibri; margin-bottom:40px;">Plugin status: Unknown</div>
+<div id="nodeServerStatus" style="position:fixed; bottom:0; left:0; font:12px Calibri; margin-bottom:20px;">RTS connection status: Unknown</div>
 <div style="position:fixed; text-align:center; bottom:0; left:0; font:12px Calibri;">Page generated in <?php echo microtime(true) - $loadTime; ?> seconds.</div>
 <div class="afkWindow" style="display:none;">
 	<div class="afkWindowContainer">
-		You have been too much time AFK. Please enter your password to restore your session:<br />
-		<input id="afkPassword" type="password" style="border-radius:0.3em; text-align:center; margin-top:20px;" />
+		You have been too much time AFK. Please enter your password to restore your session:<br/>
+		<input id="afkPassword" type="password" style="border-radius:0.3em; text-align:center; margin-top:20px;" /><br/>
 	</div>
 </div>
 </body>

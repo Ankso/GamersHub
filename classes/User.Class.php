@@ -2,6 +2,7 @@
 require_once ($_SERVER['DOCUMENT_ROOT'] . "/../common/SharedDefines.php");
 require_once ($_SERVER['DOCUMENT_ROOT'] . "/../classes/Database.Class.php");
 require_once ($_SERVER['DOCUMENT_ROOT'] . "/../common/PreparedStatements.php");
+require_once ($_SERVER['DOCUMENT_ROOT'] . "/../classes/Game.Class.php");
 
 /**
  * Main User class. Can be initilized with a valid username or a valid user ID.<br />It stores data about an user, and has all the methods to access that data.<br />It also has methods representing user actions, like sending a private message to another user.<br />
@@ -16,7 +17,7 @@ Class User
      */
     function __construct($source)
     {
-        global $DATABASES, $SERVER_INFO;
+        global $DATABASES;
         if (is_int($source))
             $this->_id = $source;
         elseif (is_string($source))
@@ -975,6 +976,51 @@ Class User
         if ($liveStream === 0)
             $liveStreamComments = 0;
         if ($this->_db->ExecuteStmt(Statements::UPDATE_USER_CUSTOM_OPTIONS, $this->_db->BuildStmtArray("iiii", $liveStream, $liveStreamComments, $latestNews, $this->GetId())))
+            return true;
+        return false;
+    }
+    
+    /***********************************************************\
+    *  	                     GAMES SYSTEM                       *
+    \***********************************************************/
+    
+    public function GetAllGames()
+    {
+        global $DATABASES;
+        $gamesDB = new Database($DATABASES['GAMES']);
+        
+        if ($result = $this->_db->ExecuteStmt(Statements::SELECT_USER_GAMES_BASIC_DATA, $this->_db->BuildStmtArray("i", $this->GetId())))
+        {
+            if ($result->num_rows == 0)
+                return USER_HAS_NO_GAMES;
+            
+            $games = array();
+            while ($row = $result->fetch_assoc())
+            {
+                $games[] = array(
+                    'id'          => $row['id'],
+                    'title'       => $row['title'],
+                    'webpage'     => $row['webpage'],
+                    'description' => $row['description'],
+                    'imagePath'   => $row['image_path'],
+                    'exeName'     => $row['exe_name'],
+                );
+            }
+            return $games;
+        }
+        return false;
+    }
+    
+    public function AddGame($gameId)
+    {
+        if ($this->_db->ExecuteStmt(Statements::INSERT_USER_GAMES, $this->_db->BuildStmtArray("ii", $this->GetId(), $gameId)))
+            return true;
+        return false;
+    }
+    
+    public function RemoveGame($gameId)
+    {
+        if ($this->_db->ExecuteStmt(Statements::DELETE_USER_GAMES, $this->_db->BuildStmtArray("ii", $this->GetId(), $gameId)))
             return true;
         return false;
     }

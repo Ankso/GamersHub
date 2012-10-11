@@ -23,10 +23,12 @@ $privacySettings = $user->GetPrivacySettings();
 $customOptions = $user->GetCustomOptions();
 ?>
 <script type="text/javascript">
-$("div.myAccountMenuOption").click(function(event) {
-	MyAccountMenuOptionClick(event);
+$(document).ready(function () {
+    $("div.myAccountMenuOption").click(function(event) {
+    	MyAccountMenuOptionClick(event);
+    });
+	$("div#myAccountOptionBasic").trigger("click");
 });
-$("div#myAccountOptionBasic").trigger("click");
 </script>
 <div class="myAccountMenu">
 	<div class="myAccountMenuTop"><strong>Account configuration</strong></div>

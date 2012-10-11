@@ -21,15 +21,17 @@ var MAX_USER_IDLE_TIME = 20;
 var IDLE_TIMER_STEP = 60000;
 // (CONST) Opcodes used by the client
 var ClientOpcodes = {
-    OPCODE_NULL                : 0, // Null opcode, used for testing/debug.
-    OPCODE_LOGOFF              : 1, // Sended when the client loggs off.
-    OPCODE_PING                : 2, // Sended each time that the client pings the server.
-    OPCODE_ENABLE_AFK          : 3, // Sended when AFK mode is enabled client-side.
-    OPCODE_DISABLE_AFK         : 4, // Sended when the client tries to disable AFK mode with his or her password.
-    OPCODE_CHAT_INVITATION     : 5, // Sended when a client invites other client to a chat conversation.
-    OPCODE_CHAT_MESSAGE        : 6, // Sended with each chat message between clients.
-    OPCODE_ONLINE_FRIENDS_LIST : 7, // Sended to request an online friends list for this user.
-    TOTAL_CLIENT_OPCODES_COUNT : 8, // Total opcodes count (Not used by the way).
+    OPCODE_NULL                : 0,  // Null opcode, used for testing/debug.
+    OPCODE_LOGOFF              : 1,  // Sended when the client loggs off.
+    OPCODE_PING                : 2,  // Sended each time that the client pings the server.
+    OPCODE_ENABLE_AFK          : 3,  // Sended when AFK mode is enabled client-side.
+    OPCODE_DISABLE_AFK         : 4,  // Sended when the client tries to disable AFK mode with his or her password.
+    OPCODE_CHAT_INVITATION     : 5,  // Sended when a client invites other client to a chat conversation.
+    OPCODE_CHAT_MESSAGE        : 6,  // Sended with each chat message between clients.
+    OPCODE_ONLINE_FRIENDS_LIST : 7,  // Sended to request an online friends list for this user.
+    OPCODE_START_PLAYING       : 8,  // Sended when the user starts a game that is on his games list.
+    OPCODE_STOP_PLAYING        : 9,  // Sended when the user stops playing a game.
+    TOTAL_CLIENT_OPCODES_COUNT : 10, // Total opcodes count (Not used by the way).
 };
 // (CONST) Opcodes used server-side
 var ServerOpcodes = {
@@ -46,6 +48,7 @@ function User() {
     this.randomSessionId = null;
     this.avatarPath = null;
     this.isAfk = false;
+    this.isPlaying = false;
 };
 
 /**
@@ -66,6 +69,8 @@ function Space() {
     this.isSocialPanelLoaded = false;
     this.isMyGamesPanelLoaded = false;
     this.totalOnlineFriends = 0;
+    this.plugin = null;
+    this.checkProcessTimeout = null;
 };
 
 /**
@@ -451,7 +456,7 @@ Space.prototype.CloseControlPanel = function() {
  *  Increments the idle timer by the amout specified in IDLE_TIMER_STEP. If necessary, enables AFK mode.
  */
 Space.prototype.IncrementIdleTimer = function() {
-    if (user.isAfk)
+    if (user.isAfk || user.isPlaying)
         return;
     
     this.idleTime = this.idleTime + (IDLE_TIMER_STEP / 60000);
@@ -466,8 +471,10 @@ Space.prototype.IncrementIdleTimer = function() {
  * Enables AFK mode for this user.
  */
 Space.prototype.EnableAfkMode = function() {
+    if (user.isPlaying)
+        return;
+    
     $("div.afkWindow").fadeIn(750);
-    $("body").css("overflow-y", "hidden");
     socket.Emit(ClientOpcodes.OPCODE_ENABLE_AFK, { userId : user.id });
     user.isAfk = true;
 };
@@ -482,6 +489,40 @@ Space.prototype.DisableAfkMode = function() {
         socket.Emit(ClientOpcodes.OPCODE_DISABLE_AFK, { userId : user.id, password : password });
     $("input#afkPassword").val("");
 };
+
+/**
+ * Loads the GamershubTools plugin.
+ */
+Space.prototype.LoadPlugin = function() {
+    this.plugin = document.getElementById("gamershubPlugin");
+    if (this.plugin.valid)
+    {
+        // Nothing else to do here
+        $("div#pluginStatus").text("Plugin status: Loaded");
+    }
+    else
+    {
+        // We are here probably because the user hasn't installed the plugin.
+        $("div#pluginStatus").text("Plugin status: Error. Plugin not loaded.");
+        $("div#advertMessagePopUp").html('<span>You need the GamersHub tools plugin to access all web features. <a id="pluginDownloadLink" href="plugin/GamersHubtools.msi">Download it now!</a></span>');
+        // This timeouts are only for visual purposes.
+        setTimeout(function() {
+            $("div#advertMessagePopUp").slideDown(500);
+            setTimeout(function() {
+                $("div.mainContent").css("margin-top", "100px");
+            }, 200);
+        }, 3000);
+        $("a#pluginDownloadLink").click(function() {
+            // Create temp link to spawn fancybox:
+            $("body").append('<a id="tempFancyboxLink" href="plugin/plugin.html" style="display:none"></a>');
+            $("a#tempFancyboxLink").fancybox();
+            setTimeout(function() {
+                $("a#tempFancyboxLink").trigger("click");
+                $("a#tempFancyBoxLink").remove();
+            }, 100);
+        });
+    }
+}
 
 /**
  * Socket object constructor
@@ -558,10 +599,10 @@ Socket.prototype.ConnectToRealTimeServer = function() {
                 + 'style="width:35px; height:35px; border:2px #00FF00 solid; border-radius:0.3em; float:left; margin-left:10px;" /> '
                 + '<span style="float:left; margin-top:10px; margin-left:7px;"><b>' + data.friendName + '</b> has logged in.</span>');
         $("div#realTimeNotification").stop().fadeIn(1500);
-        friendsManager.AddToList(data.friendId, data.friendName);
+        friendsManager.AddToList(data.friendId, data.friendName, data.friendAvatarPath, false, null, false);
         setTimeout(function() {
             $("div#realTimeNotification").stop().fadeOut(1500);
-        }, 6500);
+        }, 5000);
         $("div#socialFriend" + data.friendId).css("border-color", "#00FF00");
     });
     // Called when a friend of this user logs off. Used to display the log off notification, etc.
@@ -573,7 +614,7 @@ Socket.prototype.ConnectToRealTimeServer = function() {
         friendsManager.RemoveFromList(data.friendId);
         setTimeout(function() {
             $("div#realTimeNotification").stop().fadeOut(1500);
-        }, 6500);
+        }, 5000);
         $("div#socialFriend" + data.friendId).css("border-color", "#FF0000");
     });
     // Called when a friend opens a chat window with this user.
@@ -590,29 +631,40 @@ Socket.prototype.ConnectToRealTimeServer = function() {
         if (data.success)
         {
             $("div.afkWindow").fadeOut(750);
-            $("body").css("overflow-y", "auto");
             user.isAfk = false;
         }
         else
-        {
             $("div.afkWindowContainer").append('<span id="span#errorAfkPassword" style="color:#FF0000;">Incorrect password</span>')
-        }
     });
     self.socket.on("receivePrivateMessage", function(data) {
-        if (data.senderId)
-        {
-            $("div#friendWrapper" + data.senderId)
-        }
-        else
-        {
-            
-        }
+        // Not implemented
     });
     self.socket.on("receiveNew", function(data) {
         // Not implemented
     });
     self.socket.on("onlineFriendsList", function(data) {
         friendsManager.CreateList(data.friendsList);
+    });
+    self.socket.on("friendStartsPlaying", function(data) {
+        var friend = friendsManager.GetFriend(data.friendId);
+        
+        // If the user is already marked as "playing", then this is received because he has reloaded the page, so ignore the message.
+        if (friend && !friend.isPlaying)
+        {
+            $("div#realTimeNotification").html('<img src="' + friend.avatarPath + '" alt="Avatar" '
+                    + 'style="width:35px; height:35px; border:2px #222222 solid; border-radius:0.3em; float:left; margin-left:10px;" /> '
+                    + '<span style="float:left; margin-left:7px;"><b>' + friend.userName + '</b> is now playing:<br/><b>' + data.gameTitle + '</b></span>');
+            $("div#realTimeNotification").stop().fadeIn(1500);
+            setTimeout(function() {
+                $("div#realTimeNotification").stop().fadeOut(1500);
+            }, 6500);
+            //$("div#socialFriend" + friend.id).append('<span id="socialIsPlaying' + friend.id + '"> - <i>Playing <b>" + data.gameTitle + "</b></i></span>');
+            friendsManager.SetPlaying(friend.id, true, data.gameId, data.gameTitle, data.gameImagePath);
+        }
+    });
+    self.socket.on("friendStopsPlaying", function(data) {
+        $("div#socialIsPlaying" + data.friendId).remove();
+        friendsManager.SetPlaying(data.friendId, false, null, null, null);
     });
 };
 
@@ -805,7 +857,7 @@ FriendsManager.prototype.CreateList = function(friendsList) {
     }
     
     for (var i in friendsList)
-        self.AddToList(friendsList[i].id, friendsList[i].userName, true);
+        self.AddToList(friendsList[i].id, friendsList[i].userName, friendsList[i].avatarPath, friendsList[i].isPlaying, friendsList[i].gameInfo, true);
     return true;
 };
 
@@ -813,15 +865,24 @@ FriendsManager.prototype.CreateList = function(friendsList) {
  * Adds a friend to the list, internally and visually, and sorts if necessary.
  * @param friendId integer The friend's unique ID.
  * @param friendName string The friend's username.
+ * @param isPlaying boolean True if the friend is playing any game, else false.
+ * @param gameInfo object Basic information about the game the friend is playing. NOTE: only passed if the above param is true.
  * @param skipChecks boolean Optional. If sets to true, the friend will be added to the list at the bottom, without sorting.
  * @returns boolean True on success, else false.
  */
-FriendsManager.prototype.AddToList = function(friendId, friendName, skipChecks) {
+FriendsManager.prototype.AddToList = function(friendId, friendName, friendAvatarPath, isPlaying, gameInfo, skipChecks) {
+    if (!gameInfo)
+        gameInfo = null;
+    
     var self = this;
     var htmlCode = '<div id="friendWrapper' + friendId + '" class="friendWrapper" style="display:none">' +
             '    <div id="friendHeader" class="friendHeader"' + ''/*' style="border-bottom-left-radius:0.5em;"'*/ + '>' +
-            '        <div class="friendName"><a class="friendSpaceLink" href="/' + friendName + '">' + friendName + '</a></div>' +
-            '        <div class="plusImg"><img id="moreOptionsImg" src="images/more_info_large.png" style="height:25px; width:25px;" /></div>' +
+            '        <div class="friendName"><img src="images/friend_online.png" style="width:22px; height:22px; margin-bottom:-4px;" /><a class="friendSpaceLink" href="/' + friendName + '">' + friendName + '</a>';
+    if (isPlaying)
+        htmlCode = htmlCode + '<span style="font:12px Calibri;"> - Playing <i>' + gameInfo.title + '</i></span></div>';
+    else
+        htmlCode = htmlCode + '</div>';
+    htmlCode = htmlCode + '        <div class="plusImg"><img id="moreOptionsImg" src="images/more_info_large.png" style="height:25px; width:25px;" /></div>' +
             '    </div>' +
             '    <div class="friendPanelOptions">' +
             '        <div id="friendOptionChat' + friendId + '" class="friendOption">Invite to chat</div>' +
@@ -844,6 +905,9 @@ FriendsManager.prototype.AddToList = function(friendId, friendName, skipChecks) 
         self.list[parseInt(self.totalOnlineFriends)] = {
             id: friendId,
             userName: friendName,
+            avatarPath: friendAvatarPath,
+            isPlaying: isPlaying,
+            gameInfo: gameInfo,
         };
     }
     else
@@ -859,6 +923,9 @@ FriendsManager.prototype.AddToList = function(friendId, friendName, skipChecks) 
                     self.list[j + 1] = {
                         id: self.list[j].id,
                         userName: self.list[j].userName,
+                        avatarPath: friendAvatarPath,
+                        isPlaying: isPlaying,
+                        gameInfo: gameInfo,
                     };
                 $("div#friendWrapper" + (self.list[i + 1].id)).before(htmlCode);
                 break;
@@ -871,6 +938,9 @@ FriendsManager.prototype.AddToList = function(friendId, friendName, skipChecks) 
         self.list[i] = {
             id: friendId,
             userName: friendName,
+            avatarPath: friendAvatarPath,
+            isPlaying: isPlaying,
+            gameInfo: gameInfo,
         };
         $("div#friendWrapper" + friendId).fadeIn(500);
     }
@@ -902,7 +972,7 @@ FriendsManager.prototype.AddToList = function(friendId, friendName, skipChecks) 
         chatManager.CreateChatConversation(friendId, friendName, false);
     });
     $("div#friendOptionLiveStream" + friendId).click(function() {
-        // Not used
+        // Not implemented/used
     });
     $("a#sendPrivateMessage").fancybox();
     ++self.totalOnlineFriends;
@@ -929,6 +999,9 @@ FriendsManager.prototype.RemoveFromList = function(friendId) {
                     self.list[j] = {
                         id: self.list[j + 1].id,
                         userName: self.list[j + 1].userName,
+                        avatarPath: self.list[j + 1].avatarPath,
+                        isPlaying: self.list[j + 1].isPlaying,
+                        gameInfo: self.list[j + 1].gameInfo,
                     };
                 }
                 break;
@@ -955,6 +1028,179 @@ FriendsManager.prototype.RemoveFromList = function(friendId) {
 };
 
 /**
+ * Obtains the friend data stored in the list based on the given friend ID.
+ * @param friendId long The ID of the friend we are looking for.
+ * @return object Returns an object with the friend's data, or false if something fails.
+ */
+FriendsManager.prototype.GetFriend = function(friendId) {
+    if (this.totalOnlineFriends == 0)
+        return false;
+    
+    for (var i in this.list)
+    {
+        if (this.list[i].id == friendId)
+            return this.list[i];
+    }
+    return false;
+}
+
+/**
+ * Sets a friend as he is playing, stores the game data and prints the info in the screen.
+ * @param friendId long The ID of the friend that's going to be modified.
+ * @param isPlaying boolean True if the friend starts playing, false if he stops doing so.
+ * @param gameId long The game's unique ID.
+ * @param gameTitle string The game's title.
+ * @param gameImagePath string The path to where the image of the cover of the game is located.
+ * @return boolean True on success, else false.
+ */
+FriendsManager.prototype.SetPlaying = function(friendId, isPlaying, gameId, gameTitle, gameImagePath) {
+    for (var i in this.list)
+    {
+        if (this.list[i].id == friendId)
+        {
+            this.list[i].isPlaying = isPlaying;
+            if (isPlaying)
+            {
+                this.list[i].gameInfo = {
+                    id: gameId,
+                    title: gameTitle,
+                    imagePath: gameImagePath,
+                };
+                $("div#friendWrapper" + friendId).children().children("div.friendName").append('<span style="font:12px Calibri;"> - Playing <i>' + gameTitle + '</i></span></div>')
+            }
+            else
+            {
+                this.list[i].gameInfo = null;
+                $("div#friendWrapper" + friendId).children().children().children("span").remove();
+            }
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * GamesManager object constructor. Basically developed to monitor if
+ * the user is playing something, and if he is, what's the game.
+ * @returns {GamesManager}
+ */
+function GamesManager() {
+    this.gamesList = null;
+    this.checkProcessTimeout = null;
+    this.game = {
+        id: null,
+        title: null,
+        imagePath: null,
+        exeName: null,
+    }
+};
+
+GamesManager.prototype.GetGamesList = function() {
+    var self = this;
+    
+    $.post("core/ajax/games/gameslist.php", { userId: user.id }, function(data){
+        if (data.status == "SUCCESS")
+            self.gamesList = data.list;
+    }, "json");
+}
+
+GamesManager.prototype.CheckClientProcessList = function() {
+    // This is the first thing, we should program the next call whatever happens.
+    self.checkProcessTimeout = setTimeout(function() {
+        gamesManager.CheckClientProcessList();
+    }, 5000);
+    
+    if (!space.plugin.valid)
+    {
+        // If the plugin is not loaded, we can cancel the next function call, because, at least,
+        // the page should be reloaded after the plugin installation.
+        clearTimeout(this.checkProcessTimeout);
+        return;
+    }
+    
+    if (!this.gamesList)
+    {
+        // If the games list is not initialized for whatever the reason is, we can try to get the list again.
+        this.GetGamesList();
+        return;
+    }
+
+    var processesList = space.plugin.GetProcessList();
+    var processes = processesList.split(";");
+    processes.pop();
+
+    // If the user is not playing any game, we should check if that has changed
+    if (!user.isPlaying)
+    {
+        for (var i in processes)
+        {
+            for (var j in this.gamesList)
+            {
+                // Look up for a known process name.
+                // If we find one, we should:
+                if (this.gamesList[j].exeName.indexOf(processes[i]) != -1)
+                {
+                    // Set locally that the user is playing.
+                    this.game.id = this.gamesList[j].id;
+                    this.game.title = this.gamesList[j].title;
+                    this.game.imagePath = this.gamesList[j].imagePath;
+                    this.game.exeName = this.gamesList[j].exeName;
+                    // Send a packet to the RTS telling him that we are playing, and send him the game id and the game name.
+                    socket.Emit(ClientOpcodes.OPCODE_START_PLAYING, {
+                        userId: user.id,
+                        gameId: this.game.id,
+                        gameTitle: this.game.title,
+                        gameImagePath: this.game.imagePath
+                    });
+                    // This will block AFK mode
+                    user.isPlaying = true;
+                    // And finally show a message
+                    $("div#gameNotification").html('<img src="' + this.game.imagePath + '" alt="gameCover" '
+                            + 'style="width:40px; height:60px; border:2px #222222 solid; border-radius:0.3em; float:left; margin-left:15px;" /> '
+                            + '<span style="float:left; margin-left:30px; font:20px Calibri;">Now playing:<br/><b>' + this.game.title + '</b></span>');
+                    $("div#gameNotification").show("slide", { direction: "right" }, 750);
+                    // We found a match, so we can stop searching
+                    break;
+                }
+            }
+        }
+    }
+    else
+    {
+        // Else, we should check if the user stills playing that game.
+        var found = false;
+        for (var i in processes)
+        {
+            if (this.game.exeName.indexOf(processes[i]) != -1)
+            {
+                found = true;
+                break;
+            }
+        }
+        if (!found)
+        {
+            // The user is not playing anymore
+            // So do the same as above, but the other way around
+            this.game.id = null;
+            this.game.title = null;
+            this.game.imagePath = null;
+            this.game.exeName = null;
+            // Send a packet to the RTS telling him that we STOP playing.
+            socket.Emit(ClientOpcodes.OPCODE_STOP_PLAYING, {
+                userId: user.id,
+            });
+            // This will unlock AFK mode
+            user.isPlaying = false;
+            // And finally hide the message
+            $("div#gameNotification").fadeOut(1500, function() {
+                $("div#gameNotification").html("");
+            });
+        }
+            
+    }
+}
+
+/**
  * CommandsManager object constructor.
  * @returns {CommandsManager}
  */
@@ -963,7 +1209,7 @@ function CommandsManager() {
 
 /**
  * Welcome to GamersHub's Command Parser (TM). This will be the main function to parse commands written by the users.
- * Commands must start with the character "/", the same character used in World of Warcraft chat system.
+ * Commands must start with the character "/".
  * Almost all things in the web are going to be able to be done with commands. From start a window chat to delete a message board or remove a friend from the friends list.
  * @param string command A text string representing the command that must be executed.
  * @returns integer By the way, returns 0 if the command is executed successfully, or -1 if something fails. Later, we must add codes for each specific error (like syntax error, invalid params, etc...)
@@ -998,12 +1244,12 @@ CommandsManager.prototype.ParseCommand = function(command) {
             switch(cmdParams[1])
             {
                 case "add":
-                    // Do nothing by the way, the friend request system must be structured properly.
+                    // Do nothing by the way, the friend requests system must be structured properly.
                     return 0;
                 case "remove":
-                    // Remove a friend system must be structured also...
+                    // Remove a friend system must be restructured also...
                     // Create temp link to spawn fancybox:
-                    $("body").append('<a id="tempFancyboxLink" href="core/ajax/removefriendconfirmation.php?friendName=' + cmdParams[2] + '" style="display:none"></a>')
+                    $("body").append('<a id="tempFancyboxLink" href="core/ajax/removefriendconfirmation.php?friendName=' + cmdParams[2] + '" style="display:none"></a>');
                     $("a#tempFancyboxLink").fancybox();
                     $("a#tempFancyboxLink").trigger("click");
                     $(".commentInputTextBox").val("Something interesting to say?");
@@ -1022,6 +1268,7 @@ var spaceOwner = new User();
 var space = new Space();
 var socket = new Socket();
 var friendsManager = new FriendsManager();
+var gamesManager = new GamesManager();
 var chatManager = new ChatManager();
 var commandsManager = new CommandsManager();
 

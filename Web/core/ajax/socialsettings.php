@@ -81,7 +81,7 @@ $(document).ready(function() {
 	<div class="socialMenuTop" style="background-color:rgba(255, 122, 0, 0.3);"><strong>People</strong></div>
 	<div id="socialOptionFriends" class="socialMenuOption">My friends</div>
 	<div id="socialOptionFriendRequests" class="socialMenuOption">Friend requests</div>
-	<div id="socialOptionPrivateMessages" class="socialMenuOption"><span id="socialPrivateMessagesUnreaded" data-count="<?php echo $unreadedMessages; ?>"><?php echo $unreadedMessages === 0 ? "" : "(" . $unreadedMessages . ")"; ?></span> Private messages</div>
+	<div id="socialOptionPrivateMessages" class="socialMenuOption"><span id="socialPrivateMessagesUnreaded" data-count="<?php echo $unreadedMessages; ?>"><?php echo $unreadedMessages === 0 ? "" : "(" . $unreadedMessages . ")"; ?></span> Inbox</div>
 	<div id="socialOptionIgnoredList" class="socialMenuOption">Ignored list</div>
 	<div class="socialMenuTop" style="background-color:rgba(22, 22, 210, 0.3);"><strong>Clans</strong></div>
 	<div id="socialOptionClans" class="socialMenuOption">My Clans</div>
@@ -192,7 +192,7 @@ else
 		<span>Readed messages</span>
 		<div id="socialReadedMessagesContainer">
 <?php
-        if (count($privateMessages) === 0)
+        if ($privateMessages === USER_HAS_NO_MESSAGES)
         {
 ?>
             <div class="socialSubTabItem">

@@ -8,7 +8,7 @@ body {
 	font:17px Calibri;
 	color:#FFFFFF;
     margin:0px 0px 0px 0px;
-    /*overflow-x:hidden;*/
+    overflow-y:hidden;
 }
 
 img {
@@ -145,7 +145,7 @@ img {
     text-decoration:none;
     color:#FFFFFF;
     font:20px Calibri;
-    margin-left:5px;
+    margin-left:10px;
 }
 
 .plusImg {
@@ -283,15 +283,34 @@ img {
 .realTimeNotification {
     position:fixed;
     top:0;
-    right:1%;
-    width:18%;
-    margin-top:65px;
-    background-color:rgba(0, 0, 0, 0.8);
+    right:0;
+    width:300px;
+    text-align:center;
+    margin-top:70px;
+    margin-right:20px;
+    background-color:rgba(0, 0, 0, 0.9);
     border:2px #909090 solid;
     border-radius:0.5em;
     text-align:center;
     padding-top:10px;
     padding-bottom:10px;
+    z-index:102;
+}
+
+.gameNotification {
+    position:fixed;
+    bottom:0;
+    right:0;
+    width:300px;
+    height:60px;
+    text-align:center;
+    margin-bottom:20px;
+    margin-right:20px;
+    background-color:rgba(0, 0, 0, 0.9);
+    border:2px #909090 solid;
+    border-radius:0.5em;
+    text-align:center;
+    padding:7px;
     z-index:102;
 }
 

@@ -5,7 +5,7 @@
 
 .mainContent {
 	position:absolute;
-	font: 20px Calibri;
+	font:20px Calibri;
 	text-align:center;
 	width:60%;
 	min-width:950px;
@@ -15,6 +15,21 @@
 	border:2px #FFFFFF solid;
 	padding:4px 4px 4px 4px;
 	border-radius:0.5em;
+}
+
+.advertMessagePopUp {
+    position:absolute;
+    font:16px Calibri;
+    text-align:center;
+    width:60%;
+    min-width:950px;
+    margin-top:60px;
+    margin-left:20%;
+    margin-right:20%;
+    border:2px #3399FF solid;
+    padding:4px 4px 4px 4px;
+    background-color:rgba(55, 110, 255, 0.7);
+    z-index:102;
 }
 
 .mainBoard {
@@ -361,6 +376,7 @@
 */
 .editProfileText {
 	position:relative;
+    height:25px;
     opacity:0.5;
 }
 
@@ -398,7 +414,7 @@
 	margin-bottom:51px;
     text-align:center;
     color:#FFFFFF;
-    background-color:rgba(0, 0, 0, 0.9);
+    background-color:rgba(0, 0, 0, 0.94);
     z-index:101;
 }
 
