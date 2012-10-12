@@ -77,7 +77,6 @@ $privacySettings = $spaceOwner->GetPrivacySettings();
 <link href="css/mygames.css" media="all" rel="stylesheet" type="text/css" />
 <link href="css/fancyboxjQuery.css" rel="stylesheet" type="text/css" media="screen" />
 <link href="css/dark-hive/jquery-ui-1.8.20.custom.css" rel="stylesheet" type="text/css" media="screen" />
-<link href="css/jScrollbar.jquery.css" rel="stylesheet" type="text/css" media="screen" />
 <script type="text/javascript" src="js/inc/jquery-1.8.2.min.js"></script>
 <script type="text/javascript" src="js/inc/jquery-ui-1.8.24.custom.min.js"></script>
 <script type="text/javascript" src="js/inc/jquery.cookie.js"></script>
@@ -214,6 +213,12 @@ $(document).ready(function() {
     gamesManager.GetGamesList();
     gamesManager.CheckClientProcessList();
     socket.ConnectToRealTimeServer();
+    /* TODO: Delete this after the testing phase. */
+    setTimeout(function() {
+        $("div#pluginStatus").fadeOut(1000);
+        $("div#pageGenerationTime").fadeOut(1000);
+    }, 10000);
+    /* END TODO */
 });
 </script>
 </head>
@@ -373,14 +378,15 @@ $(document).ready(function() {
 </div>
 <div id="realTimeNotification" class="realTimeNotification" style="display:none"></div>
 <div id="gameNotification" class="gameNotification" style="display:none"></div>
-<div id="pluginStatus" style="position:fixed; bottom:0; left:0; font:12px Calibri; margin-bottom:40px;">Plugin status: Unknown</div>
-<div id="nodeServerStatus" style="position:fixed; bottom:0; left:0; font:12px Calibri; margin-bottom:20px;">RTS connection status: Unknown</div>
-<div style="position:fixed; text-align:center; bottom:0; left:0; font:12px Calibri;">Page generated in <?php echo microtime(true) - $loadTime; ?> seconds.</div>
 <div class="afkWindow" style="display:none;">
 	<div class="afkWindowContainer">
 		You have been too much time AFK. Please enter your password to restore your session:<br/>
 		<input id="afkPassword" type="password" style="border-radius:0.3em; text-align:center; margin-top:20px;" /><br/>
 	</div>
 </div>
+<!-- This is information usefull only during the testing phase -->
+<div id="pluginStatus" style="position:fixed; bottom:0; left:0; font:12px Calibri; margin-bottom:40px;">Plugin status: Unknown</div>
+<div id="nodeServerStatus" style="position:fixed; bottom:0; left:0; font:12px Calibri; margin-bottom:20px;">RTS connection status: Unknown</div>
+<div id="pageGenerationTime" style="position:fixed; text-align:center; bottom:0; left:0; font:12px Calibri;">Page generated in <?php echo microtime(true) - $loadTime; ?> seconds.</div>
 </body>
 </html>

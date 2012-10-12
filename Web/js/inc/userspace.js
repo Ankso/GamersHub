@@ -285,6 +285,14 @@ Space.prototype.LoadBoardComments = function(from, to, prepend) {
             else
                 $("#commentsHistory").append(data);
             
+            $("div.boardComment").unbind("mouseenter");
+            $("div.boardComment").mouseenter(function(event) {
+                $(event.target).children("div.deleteBoardComment").stop().fadeIn(200);
+            });
+            $("div.boardComment").unbind("mouseleave");
+            $("div.boardComment").mouseleave(function(event) {
+                $(event.target).children("div.deleteBoardComment").stop().fadeOut(200);
+            });
             $("div.deleteBoardComment").unbind("click");
             $("div.deleteBoardComment").click(function(event) {
                 space.DeleteBoardComment(event);
@@ -558,6 +566,9 @@ Socket.prototype.ConnectToRealTimeServer = function() {
         if (data.status == "SUCCESS")
         {
             $("div#nodeServerStatus").text("RTS connection status: CONNECTED.");
+            setTimeout(function() {
+                $("div#nodeServerStatus").fadeOut(1000);
+            }, 9700);
             friendsManager.AskForList();
             self.status = STATUS.CONNECTED;
             self.pingTimeout = setTimeout(function() {
@@ -580,18 +591,21 @@ Socket.prototype.ConnectToRealTimeServer = function() {
         $("a#topbarLogOffButton").trigger("click");
         clearTimeout(self.pingTimeout);
         self.status = STATUS.DISCONNECTED;
+        $("div#nodeServerStatus").show();
     });
     // Called when the connection to the Real Time Server is lost. It has no handler server-side.
     self.socket.on("disconnect", function(data) {
         $("div#nodeServerStatus").text("RTS connection status: CONNECTION LOST.");
         clearTimeout(self.pingTimeout);
         self.status = STATUS.CONNECTION_LOST;
+        $("div#nodeServerStatus").show();
     });
     // Called when the socket client-side can't connect to the Real Time Server. It has no handler server-side.
     self.socket.on("error", function() {
         $("div#nodeServerStatus").text("RTS connection status: SERVER OFFLINE.")
         clearTimeout(self.pingTimeout);
         self.status = STATUS.SERVER_OFFLINE;
+        $("div#nodeServerStatus").show();
     });
     // Called when a friend of this user logs in. Used to display the log in notification, etc.
     self.socket.on("friendLogin", function(data) {
@@ -1158,7 +1172,7 @@ GamesManager.prototype.CheckClientProcessList = function() {
                     $("div#gameNotification").html('<img src="' + this.game.imagePath + '" alt="gameCover" '
                             + 'style="width:40px; height:60px; border:2px #222222 solid; border-radius:0.3em; float:left; margin-left:15px;" /> '
                             + '<span style="float:left; margin-left:30px; font:20px Calibri;">Now playing:<br/><b>' + this.game.title + '</b></span>');
-                    $("div#gameNotification").show("slide", { direction: "right" }, 750);
+                    $("div#gameNotification").show("slide", { direction: "left" }, 750);
                     // We found a match, so we can stop searching
                     break;
                 }

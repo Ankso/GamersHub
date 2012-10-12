@@ -84,7 +84,7 @@ elseif (isset($_POST['spaceOwner']) && isset($_POST['from']) && isset($_POST['to
             {
 ?>
 <div class="boardComment" data-id="<?php echo $boardMessages[$i]['messageId']; ?>">
-	<?php if ($isOwner) { ?><div class="deleteBoardComment"><img src="images/delete_16.png" /></div> <?php } ?>
+	<?php if ($isOwner) { ?><div class="deleteBoardComment" style="display:none"><img src="images/delete_16.png" /></div> <?php } ?>
 	<div class="boardCommentBody"><?php echo $boardMessages[$i]['message']; ?></div>
 	<div class="boardCommentBottom"><?php echo "By ", ($spaceOwner->GetId() == $user->GetId() ? "You" : $spaceOwner->GetUsername()), " ", $boardMessages[$i]['date']; ?></div>
 	<div class="repliesCommentBoard" style="display:none">

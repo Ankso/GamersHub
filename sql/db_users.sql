@@ -3,7 +3,7 @@
 -- Server version:               5.5.18 - MySQL Community Server (GPL)
 -- Server OS:                    Win64
 -- HeidiSQL version:             7.0.0.4053
--- Date/time:                    2012-07-09 22:14:13
+-- Date/time:                    2012-10-12 15:02:58
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -13,32 +13,6 @@
 -- Dumping database structure for users
 CREATE DATABASE IF NOT EXISTS `users` /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci */;
 USE `users`;
-
-
--- Dumping structure for table users.user_avatars
-DROP TABLE IF EXISTS `user_avatars`;
-CREATE TABLE IF NOT EXISTS `user_avatars` (
-  `user_id` bigint(20) unsigned NOT NULL COMMENT 'The user''s unique ID',
-  `avatar_path` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '/images/default_avatar.png' COMMENT 'The avatar''s http path',
-  PRIMARY KEY (`user_id`),
-  CONSTRAINT `FK_USER_DATA` FOREIGN KEY (`user_id`) REFERENCES `user_data` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='The relation of the user with their avatar''s path in the filesystem';
-
--- Dumping data for table users.user_avatars: ~10 rows (approximately)
-DELETE FROM `user_avatars`;
-/*!40000 ALTER TABLE `user_avatars` DISABLE KEYS */;
-INSERT INTO `user_avatars` (`user_id`, `avatar_path`) VALUES
-	(1, 'http://www.gravatar.com/avatar/748b5b25d1b23de07adb3c5f4ebf5851?d=http://gamersnet.no-ip.org/images/default_avatar.png&s=200&r=pg'),
-	(2, 'http://www.gravatar.com/avatar/b5720d434269ad10f6fcf1be7772c363?d=http://gamersnet.no-ip.org/images/default_avatar.png&s=200&r=pg'),
-	(4, '/images/default_avatar.png'),
-	(5, '/images/default_avatar.png'),
-	(6, '/images/default_avatar.png'),
-	(7, '/images/default_avatar.png'),
-	(8, '/images/default_avatar.png'),
-	(9, 'http://gamersnet.no-ip.org/images/users/MrAnkso/avatar/MrAnksos_avatar.jpg'),
-	(10, '/images/default_avatar.png'),
-	(11, 'http://www.gravatar.com/avatar/e7c5b7a8d29a08fe1484003287a020e9?d=http://gamersnet.no-ip.org/images/default_avatar.png&s=200&r=pg');
-/*!40000 ALTER TABLE `user_avatars` ENABLE KEYS */;
 
 
 -- Dumping structure for table users.user_board
@@ -52,23 +26,26 @@ CREATE TABLE IF NOT EXISTS `user_board` (
   PRIMARY KEY (`message_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `FK_USER_BOARD_ID` FOREIGN KEY (`user_id`) REFERENCES `user_data` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Stores the messages written by the user''s in their board.';
+) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Stores the messages written by the user''s in their board.';
 
--- Dumping data for table users.user_board: ~11 rows (approximately)
+-- Dumping data for table users.user_board: ~14 rows (approximately)
 DELETE FROM `user_board`;
 /*!40000 ALTER TABLE `user_board` DISABLE KEYS */;
 INSERT INTO `user_board` (`message_id`, `user_id`, `message_number`, `message`, `date`) VALUES
 	(15, 9, 1, 'Another testing message from this user!!', '2012-05-29 21:51:17'),
-	(20, 1, 5, 'Let\'s go test the link parser and the youtube video parser <div align="center"><iframe width="640" height="480" src="http://www.youtube.com/embed/wqvgttQVt4s?wmode=transparent" frameborder="0" allowfullscreen></iframe></div><br />', '2012-06-01 20:35:57'),
-	(21, 1, 6, 'Esto es un link completamente normal, automáticamente parseado: <a href="http://php.net/manual/es/function.preg-replace.php" target="_blank">http://php.net/manual/es/function.preg-replace.php</a>', '2012-06-01 20:36:57'),
+	(20, 1, 1, 'Let\'s go test the link parser and the youtube video parser <div align="center"><iframe width="640" height="480" src="http://www.youtube.com/embed/wqvgttQVt4s?wmode=transparent" frameborder="0" allowfullscreen></iframe></div><br />', '2012-06-01 20:35:57'),
+	(21, 1, 2, 'Esto es un link completamente normal, automáticamente parseado: <a href="http://php.net/manual/es/function.preg-replace.php" target="_blank">http://php.net/manual/es/function.preg-replace.php</a>', '2012-06-01 20:36:57'),
 	(22, 9, 2, 'jQuery, una de las muchas librerías que uso para desarrollar todo esto: <a href="http://jquery.com/" target="_blank">http://jquery.com/</a>', '2012-06-01 21:08:45'),
 	(23, 2, 1, 'U.u ya puedo escribir aquí cosas que pro.', '2012-06-01 22:06:28'),
-	(37, 1, 7, 'Implementado el manejo de sesiones via MySQL <a href="http://github.com/Ankso/GamersNet/commit/99595ed0bb2274a845421d0469630ca4915e3465" target="_blank">http://github.com/Ankso/GamersNet/commit/99595ed0bb2274a845421d0469630ca4915e3465</a>', '2012-06-07 23:00:37'),
-	(39, 1, 8, 'Re-escribiendo toda la aplicación cliente para que sea un diseño orientado a objetos real. Va a llevar lo suyo.', '2012-06-15 22:03:35'),
-	(41, 1, 9, 'Probando los mensajes con la nueva API orientada a objetos.', '2012-06-16 18:11:45'),
-	(42, 1, 10, 'La conexión de iago VA EN LA LLAMA!', '2012-06-18 20:10:03'),
-	(44, 1, 11, 'Repositorio del RTS: <a href="https://github.com/Ankso/GamersHub-Real-Time-Server" target="_blank">https://github.com/Ankso/GamersHub-Real-Time-Server</a>', '2012-06-20 18:22:59'),
-	(45, 2, 2, 'Cosas', '2012-07-09 17:49:17');
+	(37, 1, 3, 'Implementado el manejo de sesiones via MySQL <a href="http://github.com/Ankso/GamersNet/commit/99595ed0bb2274a845421d0469630ca4915e3465" target="_blank">http://github.com/Ankso/GamersNet/commit/99595ed0bb2274a845421d0469630ca4915e3465</a>', '2012-06-07 23:00:37'),
+	(39, 1, 4, 'Re-escribiendo toda la aplicación cliente para que sea un diseño orientado a objetos real. Va a llevar lo suyo.', '2012-06-15 22:03:35'),
+	(41, 1, 5, 'Probando los mensajes con la nueva API orientada a objetos.', '2012-06-16 18:11:45'),
+	(44, 1, 6, 'Repositorio del RTS: <a href="https://github.com/Ankso/GamersHub-Real-Time-Server" target="_blank">https://github.com/Ankso/GamersHub-Real-Time-Server</a>', '2012-06-20 18:22:59'),
+	(45, 2, 2, 'Cosas', '2012-07-09 17:49:17'),
+	(46, 1, 7, 'Subidos los nuevos SQLs', '2012-07-09 22:53:56'),
+	(47, 1, 8, 'Buena canción: <div style="text-align:center;"><iframe width="640" height="480" src="http://www.youtube.com/embed/p0L_D7H0fGI?wmode=transparent" frameborder="0" allowfullscreen></iframe></div><br />', '2012-07-12 01:16:31'),
+	(48, 1, 9, 'Armored Kill FY', '2012-09-11 16:31:20'),
+	(50, 1, 10, 'Diseñando el sistema de juegos. El core está casi listo.', '2012-10-07 15:59:50');
 /*!40000 ALTER TABLE `user_board` ENABLE KEYS */;
 
 
@@ -85,9 +62,9 @@ CREATE TABLE IF NOT EXISTS `user_board_replies` (
   KEY `FK_USER_DATA_IDS` (`sender_id`),
   CONSTRAINT `FK_USER_BOARD` FOREIGN KEY (`message_id`) REFERENCES `user_board` (`message_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `FK_USER_DATA_IDS` FOREIGN KEY (`sender_id`) REFERENCES `user_data` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Stores all the replies made to main comments on the user''s boards.';
+) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Stores all the replies made to main comments on the user''s boards.';
 
--- Dumping data for table users.user_board_replies: ~7 rows (approximately)
+-- Dumping data for table users.user_board_replies: ~9 rows (approximately)
 DELETE FROM `user_board_replies`;
 /*!40000 ALTER TABLE `user_board_replies` DISABLE KEYS */;
 INSERT INTO `user_board_replies` (`reply_id`, `sender_id`, `message_id`, `message`, `date`) VALUES
@@ -97,7 +74,9 @@ INSERT INTO `user_board_replies` (`reply_id`, `sender_id`, `message_id`, `messag
 	(24, 2, 37, 'Pues que yupi', '2012-06-07 23:02:10'),
 	(25, 1, 37, 'Pos si', '2012-06-07 23:02:36'),
 	(39, 1, 41, 'yupi', '2012-06-18 20:01:21'),
-	(40, 1, 23, 'juas juas', '2012-06-18 20:51:45');
+	(40, 1, 23, 'juas juas', '2012-06-18 20:51:45'),
+	(41, 1, 21, '2 veces', '2012-07-10 15:45:17'),
+	(42, 1, 47, '<div style="text-align:center;"><iframe width="480" height="360" src="http://www.youtube.com/embed/HeY-2ovpF9c?wmode=transparent" frameborder="0" allowfullscreen></iframe></div><br />', '2012-09-13 18:49:56');
 /*!40000 ALTER TABLE `user_board_replies` ENABLE KEYS */;
 
 
@@ -117,7 +96,7 @@ DELETE FROM `user_custom_options`;
 /*!40000 ALTER TABLE `user_custom_options` DISABLE KEYS */;
 INSERT INTO `user_custom_options` (`user_id`, `option_livestream`, `option_livestream_livecomments`, `option_latest_news`) VALUES
 	(1, 0, 0, 1),
-	(2, 1, 1, 1),
+	(2, 0, 0, 1),
 	(4, 1, 1, 1),
 	(5, 1, 1, 1),
 	(6, 1, 1, 1),
@@ -146,22 +125,23 @@ CREATE TABLE IF NOT EXISTS `user_data` (
   UNIQUE KEY `email` (`email`),
   UNIQUE KEY `random_session_id` (`random_session_id`),
   KEY `id` (`id`,`username`,`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='General data about the users (name, mail, date of birth, etc...)';
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='General data about the users (name, mail, date of birth, etc...)';
 
--- Dumping data for table users.user_data: ~10 rows (approximately)
+-- Dumping data for table users.user_data: ~11 rows (approximately)
 DELETE FROM `user_data`;
 /*!40000 ALTER TABLE `user_data` DISABLE KEYS */;
 INSERT INTO `user_data` (`id`, `username`, `password_sha1`, `random_session_id`, `email`, `ip_v4`, `ip_v6`, `is_online`, `last_login`) VALUES
-	(1, 'Ankso', '69977bb50b14977d99b93f74d00499438ca466a5', '4c1b5f350e7337a48c215f2b02d78201181c0d1a929cad2847106e18975d30764d792d0dbf0385e1beb9ec091490baf4d5fc3092d0f5849b32dd4e11568b4b60', 'misterankso@gmail.com', '127.0.0.1', NULL, 1, '2012-06-20 18:26:55'),
-	(2, 'Seldon', '8b04c7cea0aca3497f4315cecb6dd67536acdc5d', NULL, 'seldon_we@hotmail.com', '127.0.0.1', NULL, 0, '2012-06-20 19:59:19'),
+	(1, 'Ankso', '69977bb50b14977d99b93f74d00499438ca466a5', 'e1aed1b43b57e208faea8893a06e8b59c176e0ba4ccaf5cc0206e16fcd5d097c2db1e39cf4af68d059545fd834f5457b24e5a39134a309ba0cc5f0933e65a0a2', 'misterankso@gmail.com', '127.0.0.1', NULL, 1, '2012-10-10 16:36:05'),
+	(2, 'Seldon', '8b04c7cea0aca3497f4315cecb6dd67536acdc5d', NULL, 'seldon_we@hotmail.com', '127.0.0.1', NULL, 0, '2012-09-21 17:52:03'),
 	(4, 'xItsy', '76794e37a3be9e8c40a2d4347a195dd0b87fb14c', NULL, 'javier.rf92@gmail.com', '192.168.1.137', NULL, 0, '1000-01-01 00:00:00'),
 	(5, 'Perico', '964bd26ba2aaa08c7d66e19934b651b2116a3d91', NULL, 'delospalotes@hotmail.com', '127.0.0.1', NULL, 0, '1000-01-01 00:00:00'),
 	(6, 'pericodelospalotes', 'd8048855620502ed73b20a1dbb993f536545ac4a', NULL, 'io@hotmail.com', '192.168.1.137', NULL, 0, '2012-06-15 18:57:49'),
 	(7, 'mrperico', '287b652dd3f61c7695d0234daa694b9dd07d81ff', NULL, 'el@hotmail.com', '192.168.1.137', NULL, 0, '2012-06-15 18:56:30'),
-	(8, 'pericoxd', '76790e667d055c8f3bb5a25a064af7bb6c23cab0', NULL, 'tres@hotmail.com', '192.168.1.137', NULL, 0, '1000-01-01 00:00:00'),
+	(8, 'pericoxd', '76790e667d055c8f3bb5a25a064af7bb6c23cab0', NULL, 'tres@hotmail.com', '192.168.1.137', NULL, 0, '2012-09-21 18:15:56'),
 	(9, 'MrAnkso', '339cf109b9cef8bbeb718d538fe8e471eb00c196', NULL, 'mrankso@hotmail.com', '192.168.1.137', NULL, 0, '2012-06-14 20:08:33'),
 	(10, 'hache', '77d9d0d6d90d6f0388bc626f6f3db845c85263df', NULL, 'hachegamer@gmail.com', '192.168.1.137', NULL, 0, '1000-01-01 00:00:00'),
-	(11, 'Muphasa', '59ab773b040ffb8d7710386fb8cc1f3bc0e81984', NULL, 'iagedopr@hotmail.com', '192.168.1.137', NULL, 0, '2012-06-01 23:41:03');
+	(11, 'Muphasa', '59ab773b040ffb8d7710386fb8cc1f3bc0e81984', NULL, 'iagedopr@hotmail.com', '192.168.1.137', NULL, 0, '2012-06-01 23:41:03'),
+	(12, 'Prueba', 'd09b5895b334ac7894bd4bef337ace7f6ce8ae59', NULL, 'prueba@prueba.com', '127.0.0.1', NULL, 0, '1000-01-01 00:00:00');
 /*!40000 ALTER TABLE `user_data` ENABLE KEYS */;
 
 
@@ -173,6 +153,7 @@ CREATE TABLE IF NOT EXISTS `user_detailed_data` (
   `birthday` date DEFAULT NULL COMMENT 'The user''s birthday date',
   `country` text COLLATE utf8_unicode_ci COMMENT 'The user''s country',
   `city` text COLLATE utf8_unicode_ci COMMENT 'The user''s city',
+  `avatar_path` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '/images/default_avatar.png' COMMENT 'The path to the user''s avatar',
   PRIMARY KEY (`user_id`),
   CONSTRAINT `FK_USER_DETAILED_DATA` FOREIGN KEY (`user_id`) REFERENCES `user_data` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Detailed data about the user';
@@ -180,17 +161,17 @@ CREATE TABLE IF NOT EXISTS `user_detailed_data` (
 -- Dumping data for table users.user_detailed_data: ~10 rows (approximately)
 DELETE FROM `user_detailed_data`;
 /*!40000 ALTER TABLE `user_detailed_data` DISABLE KEYS */;
-INSERT INTO `user_detailed_data` (`user_id`, `bio`, `birthday`, `country`, `city`) VALUES
-	(1, '<br><font color="#FF0000">if</font> ($this->IsSuccess())<br>\n{<br>\n    we->CastToRich();<br>\n    me->Buy(<font color="#5522FF">TYPE_CAR</font>, <font color="#5522FF">BRAND_ROLLSROYCE</font>);<br>\n}', '1991-11-24', 'Galicia', 'Montrove Capital City'),
-	(2, 'Pwned.', '1800-12-12', 'Antarctica', 'Antarctica Capital City'),
-	(4, NULL, NULL, NULL, NULL),
-	(5, NULL, NULL, NULL, NULL),
-	(6, NULL, NULL, NULL, NULL),
-	(7, NULL, NULL, NULL, NULL),
-	(8, NULL, NULL, NULL, NULL),
-	(9, NULL, NULL, NULL, NULL),
-	(10, NULL, NULL, NULL, NULL),
-	(11, 'Gamer', '0000-00-00', 'Montrove', 'Montro city');
+INSERT INTO `user_detailed_data` (`user_id`, `bio`, `birthday`, `country`, `city`, `avatar_path`) VALUES
+	(1, '<br><font color="#FF0000">if</font> ($this->IsSuccess())<br>\n{<br>\n    we->CastToRich();<br>\n    me->Buy(<font color="#5522FF">TYPE_CAR</font>, <font color="#5522FF">BRAND_ROLLSROYCE</font>);<br>\n}', '1991-11-24', 'Islas Guachu Pinas', 'Montrove Capital City', 'http://www.gravatar.com/avatar/748b5b25d1b23de07adb3c5f4ebf5851?d=http://gamersnet.no-ip.org/images/default_avatar.png&s=200&r=pg'),
+	(2, 'Pwned.', '1800-12-12', 'Antarctica', 'Antarctica Capital City', 'http://www.gravatar.com/avatar/b5720d434269ad10f6fcf1be7772c363?d=http://gamersnet.no-ip.org/images/default_avatar.png&s=200&r=pg'),
+	(4, NULL, NULL, NULL, NULL, '/images/default_avatar.png'),
+	(5, NULL, NULL, NULL, NULL, '/images/default_avatar.png'),
+	(6, NULL, NULL, NULL, NULL, '/images/default_avatar.png'),
+	(7, NULL, NULL, NULL, NULL, '/images/default_avatar.png'),
+	(8, NULL, NULL, NULL, NULL, '/images/default_avatar.png'),
+	(9, NULL, NULL, NULL, NULL, 'http://gamersnet.no-ip.org/images/users/MrAnkso/avatar/MrAnksos_avatar.jpg'),
+	(10, NULL, NULL, NULL, NULL, '/images/default_avatar.png'),
+	(11, 'Gamer', '0000-00-00', 'Montrove', 'Montro city', 'http://www.gravatar.com/avatar/e7c5b7a8d29a08fe1484003287a020e9?d=http://gamersnet.no-ip.org/images/default_avatar.png&s=200&r=pg');
 /*!40000 ALTER TABLE `user_detailed_data` ENABLE KEYS */;
 
 
@@ -205,26 +186,32 @@ CREATE TABLE IF NOT EXISTS `user_friends` (
   CONSTRAINT `user_friends_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user_data` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Stores the user''s friends ids';
 
--- Dumping data for table users.user_friends: ~16 rows (approximately)
+-- Dumping data for table users.user_friends: ~22 rows (approximately)
 DELETE FROM `user_friends`;
 /*!40000 ALTER TABLE `user_friends` DISABLE KEYS */;
 INSERT INTO `user_friends` (`user_id`, `friend_id`) VALUES
 	(5, 2),
 	(2, 5),
-	(1, 5),
-	(5, 1),
 	(7, 6),
 	(6, 7),
 	(2, 1),
 	(1, 2),
-	(6, 1),
-	(1, 6),
 	(9, 1),
 	(1, 9),
 	(11, 1),
 	(1, 11),
 	(11, 2),
-	(2, 11);
+	(2, 11),
+	(1, 6),
+	(6, 1),
+	(5, 1),
+	(1, 5),
+	(1, 8),
+	(8, 1),
+	(8, 9),
+	(9, 8),
+	(7, 1),
+	(1, 7);
 /*!40000 ALTER TABLE `user_friends` ENABLE KEYS */;
 
 
@@ -244,10 +231,41 @@ CREATE TABLE IF NOT EXISTS `user_friend_requests` (
 DELETE FROM `user_friend_requests`;
 /*!40000 ALTER TABLE `user_friend_requests` DISABLE KEYS */;
 INSERT INTO `user_friend_requests` (`user_id`, `requester_id`, `message`) VALUES
-	(8, 1, 'Ankso wants to be your friend!'),
 	(10, 1, 'Ankso wants to be your friend!'),
-	(4, 1, 'Ankso wants to be your friend!');
+	(4, 1, 'Ankso wants to be your friend!'),
+	(6, 8, 'pericoxd wants to be your friend!');
 /*!40000 ALTER TABLE `user_friend_requests` ENABLE KEYS */;
+
+
+-- Dumping structure for table users.user_games_relation
+DROP TABLE IF EXISTS `user_games_relation`;
+CREATE TABLE IF NOT EXISTS `user_games_relation` (
+  `user_id` bigint(20) unsigned NOT NULL COMMENT 'The user''s unique ID',
+  `game_id` bigint(20) unsigned NOT NULL COMMENT 'The game''s unique ID',
+  KEY `FK_USERS_DATA` (`user_id`),
+  CONSTRAINT `FK_USERS_DATA` FOREIGN KEY (`user_id`) REFERENCES `user_data` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Stores all the games that the different users have.';
+
+-- Dumping data for table users.user_games_relation: ~15 rows (approximately)
+DELETE FROM `user_games_relation`;
+/*!40000 ALTER TABLE `user_games_relation` DISABLE KEYS */;
+INSERT INTO `user_games_relation` (`user_id`, `game_id`) VALUES
+	(1, 3),
+	(1, 1),
+	(1, 4),
+	(1, 5),
+	(1, 6),
+	(1, 7),
+	(2, 3),
+	(2, 4),
+	(2, 1),
+	(7, 5),
+	(7, 6),
+	(7, 7),
+	(7, 4),
+	(9, 3),
+	(9, 1);
+/*!40000 ALTER TABLE `user_games_relation` ENABLE KEYS */;
 
 
 -- Dumping structure for table users.user_privacy
@@ -270,7 +288,7 @@ INSERT INTO `user_privacy` (`user_id`, `view_email`, `view_profile`, `view_lives
 	(4, 1, 1, 1),
 	(5, 1, 1, 1),
 	(6, 1, 1, 1),
-	(7, 1, 1, 1),
+	(7, 1, 3, 1),
 	(8, 1, 1, 1),
 	(9, 1, 1, 1),
 	(10, 1, 1, 1),
@@ -292,20 +310,22 @@ CREATE TABLE IF NOT EXISTS `user_private_messages` (
   CONSTRAINT `FK_USER_DATA_ID2` FOREIGN KEY (`receiver_id`) REFERENCES `user_data` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table that contains the user''s private messages';
 
--- Dumping data for table users.user_private_messages: ~8 rows (approximately)
+-- Dumping data for table users.user_private_messages: ~12 rows (approximately)
 DELETE FROM `user_private_messages`;
 /*!40000 ALTER TABLE `user_private_messages` DISABLE KEYS */;
 INSERT INTO `user_private_messages` (`sender_id`, `receiver_id`, `message`, `date`, `readed`) VALUES
 	(1, 2, 'This is a testing message fuck yeah ¡!', '2012-05-24 22:10:35', 1),
 	(1, 2, 'And this is another one', '2012-05-24 22:11:09', 1),
-	(9, 1, 'Hello m8! This is a test message.', '2012-05-28 17:30:27', 1),
+	(9, 1, 'Hola wey! Esto es un mensaje de prueba.', '2012-05-28 17:30:27', 1),
 	(1, 9, 'Yupi, que coñas que esté hablando conmigo mismo.\n\nxD', '2012-05-28 17:55:03', 1),
 	(9, 1, 'Pues vaya', '2012-05-28 17:55:38', 1),
 	(1, 11, 'Iaguitooooooooooooooooooooooooooooooooo!!!!!!!!!', '2012-06-01 22:01:11', 1),
 	(11, 1, 'no veo el cursor de escrbir en este texto tan gris D:\n', '2012-06-02 18:13:19', 1),
 	(1, 11, 'Eres un julai\n\npedo', '2012-06-02 20:21:06', 0),
 	(1, 2, 'julai', '2012-07-09 18:11:54', 1),
-	(2, 1, 'chumacho', '2012-07-09 18:12:17', 1);
+	(2, 1, 'chumacho', '2012-07-09 18:12:17', 1),
+	(9, 1, 'Esto es un mensaje privado de prueba. Debe tener más de 20 caracteres para ver que tal se ve en la lista de mensajes privados.', '2012-07-25 17:57:10', 1),
+	(1, 2, 'Mensaje de prueba a ver si sigue funcionando todo.', '2012-09-23 16:25:31', 1);
 /*!40000 ALTER TABLE `user_private_messages` ENABLE KEYS */;
 /*!40014 SET FOREIGN_KEY_CHECKS=1 */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
