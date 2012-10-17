@@ -8,7 +8,7 @@ body {
 	font:17px Calibri;
 	color:#FFFFFF;
     margin:0px 0px 0px 0px;
-    overflow-y:hidden;
+    overflow:hidden;
 }
 
 img {
@@ -87,7 +87,7 @@ img {
     width:100px;
     height:40px;
     left:0px;
-    margin-top:100px;
+    margin-top:50px;
     background-color:#000000;
     border-top:2px #434343 solid;
     border-bottom:2px #434343 solid;
@@ -115,14 +115,14 @@ img {
     height:33px;
     background-color:#333333;
     width:15px;
-    margin-top:100px;
+    margin-top:50px;
     border-bottom:1px #FFFFFF solid;
 }
 
 /* Main Panel */
 .myFriendsPanel {
     position:fixed;
-    margin-top:100px;
+    margin-top:50px;
     margin-left:15px;
     border-radius:0.5em;
 }
@@ -212,6 +212,7 @@ img {
 	position:fixed;
     width:100%;
     bottom:0px;
+    margin-right:20px;
     z-index:100;
 }
 
@@ -225,11 +226,11 @@ img {
 
 .chatBox {
 	margin-bottom:50px;
-    height:300px;
+    height:330px;
     width:250px;
     border:1px #FFFFFF solid;
     float:right;
-    margin-right:15px;
+    margin-right:25px;
     padding:10px;
     border-radius:0.5em;
     background-color:#222222;
@@ -263,6 +264,7 @@ img {
 .chatTabsWrapper {
 	float:right;
 	height:40px;
+	padding-right:20px;
 }
 
 .chatTab {
@@ -272,10 +274,22 @@ img {
     margin-right:5px;
     float:left;
     border-radius:0.3em;
+    cursor:pointer;
 }
 
 .chatTab:hover {
     cursor:pointer;
+}
+
+.closeChatBox {
+    padding:5px;
+    padding-top:0px;
+    margin-left:200px;
+}
+
+.closeChatBox:hover {
+    cursor:pointer;
+    text-decoration:underline;
 }
 
 /* Real Time Notification System */

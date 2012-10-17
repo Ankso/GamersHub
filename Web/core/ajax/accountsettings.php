@@ -28,6 +28,9 @@ $(document).ready(function () {
     	MyAccountMenuOptionClick(event);
     });
 	$("div#myAccountOptionBasic").trigger("click");
+	$("#radioEmail").buttonset();
+    $("#radioProfile").buttonset();
+    $("#radioLiveStream").buttonset();
 });
 </script>
 <div class="myAccountMenu">
@@ -99,5 +102,6 @@ $(document).ready(function () {
 <div id="myAccountSecurity" class="myAccountTab">
 	<div class="myAccountTabItem">Your last login: <?php echo ($user->GetLastLogin() != "1000-01-01 00:00:00") ? $user->GetLastLogin() : "This is your first login"; ?></div>
 	<div class="myAccountTabItem">Last login from: <?php echo $user->GetLastIp(); ?></div>
+	<div class="myAccountTabItem">Your live stream ID: <?php echo $user->GetLiveStreamId(); ?></div>
 	<div style="margin-top:20px; font:15px Calibri;"><i>Do you think that something is wrong? Then, change your password ASAP and, if you think that's necessary, contact us!</i></div>
 </div>

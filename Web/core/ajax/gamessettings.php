@@ -73,6 +73,22 @@ $(document).ready(function() {
     $("div#myGamesListedGameAddNew").click(function() {
 		$("div#myGamesOptionDatabase").trigger("click");
     });
+    // This will do any pre-programmed action, for example, you can have a link to a game in the main user space,
+    // with this, that link can open the My Games control panel and load automatically the game data.
+    if (space.onControlPanelOpenAction)
+    {
+        if (space.onControlPanelOpenAction.action && space.onControlPanelOpenAction.data)
+        {
+            switch (space.onControlPanelOpenAction.action)
+            {
+                case "loadGame":
+                    myGames.LoadGame(space.onControlPanelOpenAction.data);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
 });
 </script>
 <div class="myGamesMenu">
@@ -89,7 +105,7 @@ $(document).ready(function() {
     	</div>
     </div>
 	<div id="myGamesGameView" class="myGamesGameView" style="display:none">
-		<div class="myGamesGameViewBorderLeft" onclick="RandomF();">
+		<div class="myGamesGameViewBorderLeft">
         	&lt;
     	</div>
     	<div id ="myGamesGameViewInfoContainer">
@@ -120,5 +136,5 @@ $(document).ready(function() {
 	?>
 </div>
 <div id="myGamesRecommendations" class="myGamesTab">
-	Recommended games.
+	Recommended games - Not yet implemented.
 </div>

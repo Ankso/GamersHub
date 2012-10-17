@@ -3,27 +3,32 @@
 .global {
 }
 
+.mainWrapper {
+	margin-top:51px;
+    overflow:auto;
+}
+
 .mainContent {
-	position:absolute;
+	position:relative;
 	font:20px Calibri;
 	text-align:center;
 	width:60%;
 	min-width:950px;
-	margin-top:65px;
+	margin-top:14px;
 	margin-left:20%;
 	margin-right:20%;
 	border:2px #FFFFFF solid;
-	padding:4px 4px 4px 4px;
 	border-radius:0.5em;
+	overflow:hidden;
 }
 
 .advertMessagePopUp {
-    position:absolute;
+    position:relative;
     font:16px Calibri;
     text-align:center;
     width:60%;
     min-width:950px;
-    margin-top:60px;
+    margin-top:10px;
     margin-left:20%;
     margin-right:20%;
     border:2px #3399FF solid;
@@ -43,28 +48,22 @@
     height:100%;
     width:29%;
     float:right;
-    border:2px #00FF00 solid;
-    border-radius:0.5em;
-    padding-bottom:7px;
+    border-left:2px #FFFFFF solid;
+    border-bottom:2px #FFFFFF solid;
+    border-bottom-left-radius:0.5em;
+    padding-bottom:10px;
 }
 
 .mainLivestream {
-    width:98%;
     margin-left:1%;
     margin-right:1%;
     margin-top:5px;
-    border:2px #FF0000 solid;
     border-radius:0.5em;
 }
 
-.videoWindow {
-    height:360px;
-    width:640px;
-    border:2px #0000FF solid;
-    margin-top:5px;
-    margin-left:7px;
-    margin-bottom:5px;
+#videoContainer_wrapper{
     border-radius:0.5em;
+    margin-top:10px;
 }
 
 .videoComments {
@@ -138,6 +137,7 @@
     border-radius:0.5em;
     background-color:rgba(0, 0, 0, 0.5);
     margin-top:30px;
+    margin-left:5px;
 }
 
 .boardCommentBody {
@@ -385,23 +385,61 @@
     opacity:1;
 }
 
-.latestNews {
-    width:96%;
-    min-height:400px;
+.latestNewsContainer {
+    height:400px;
     margin-left:2%;
     margin-right:2%;
     margin-top:5px;
-    border:2px #FF0000 solid;
+    border:2px #757575 solid;
     border-radius:0.5em;
 }
 
+.latestNewsHeader {
+    padding:7px;
+    text-decoration:italic;
+    border-bottom:2px #757575 solid;
+}
+
+.latestNews {
+	height:356px;
+	width:100%;
+    overflow:auto;
+}
+
+.latestNew {
+	font:18px Calibri;
+	text-align:left;
+    padding:3px;
+    padding-left:10px;
+    margin-top:7px;
+    margin-left:7px;
+    margin-right:7px;
+    border-radius:0.25em;
+    background-color:rgba(40, 40, 40, 0.8);
+}
+
+.latestNew:hover {
+    background-color:rgba(90, 90, 90, 0.8);
+}
+
 .customAdvert {
-    width:96%;
     margin-left:2%;
     margin-right:2%;
     margin-top:5px;
-    border:2px #FF0000 solid;
+    border:2px #757575 solid;
+    padding:10px;
     border-radius:0.5em;
+}
+
+.recommendedGameImg {
+    width:250px;
+    height:350px;
+    border-radius:0.5em;
+    margin-top:7px;
+}
+
+.recommendedGameImg:hover {
+	cursor:pointer;
 }
 
 /* Account settings and management */
@@ -411,7 +449,6 @@
 	width:100%;
 	height:100%;
 	margin-top:51px;
-	margin-bottom:51px;
     text-align:center;
     color:#FFFFFF;
     background-color:rgba(0, 0, 0, 0.94);

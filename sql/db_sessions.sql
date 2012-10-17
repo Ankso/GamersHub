@@ -3,7 +3,7 @@
 -- Server version:               5.5.18 - MySQL Community Server (GPL)
 -- Server OS:                    Win64
 -- HeidiSQL version:             7.0.0.4053
--- Date/time:                    2012-07-09 22:14:41
+-- Date/time:                    2012-10-18 00:10:25
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS `sessions` (
   KEY `data` (`data`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Stores the ID and data of a PHP session';
 
--- Dumping data for table sessions.sessions: ~2 rows (approximately)
+-- Dumping data for table sessions.sessions: ~1 rows (approximately)
 DELETE FROM `sessions`;
 /*!40000 ALTER TABLE `sessions` DISABLE KEYS */;
 /*!40000 ALTER TABLE `sessions` ENABLE KEYS */;

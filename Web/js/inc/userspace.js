@@ -19,6 +19,8 @@ var TIME_BETWEEN_PINGS = 10000;
 var MAX_USER_IDLE_TIME = 20;
 // (CONST) Time between idle timer increments (and step size) (in ms)
 var IDLE_TIMER_STEP = 60000;
+// (CONST) Time between checks of processes for the games system (in ms)
+var TIME_BETWEEN_PROCESSES_CHECKS = 5000;
 // (CONST) Opcodes used by the client
 var ClientOpcodes = {
     OPCODE_NULL                : 0,  // Null opcode, used for testing/debug.
@@ -31,12 +33,19 @@ var ClientOpcodes = {
     OPCODE_ONLINE_FRIENDS_LIST : 7,  // Sended to request an online friends list for this user.
     OPCODE_START_PLAYING       : 8,  // Sended when the user starts a game that is on his games list.
     OPCODE_STOP_PLAYING        : 9,  // Sended when the user stops playing a game.
-    TOTAL_CLIENT_OPCODES_COUNT : 10, // Total opcodes count (Not used by the way).
+    OPCODE_REAL_TIME_NEW       : 10, // Sended with each real time new.
+    TOTAL_CLIENT_OPCODES_COUNT : 11, // Total opcodes count (Not used by the way).
 };
 // (CONST) Opcodes used server-side
 var ServerOpcodes = {
     // Not used by the way
 };
+// (CONST) Types of real time news that the client may receive from the RTS
+var RealTimeNewTypes = {
+    NEW_TYPE_NEW_BOARD_MESSAGE : 1,
+    NEW_TYPE_NEW_FRIEND        : 2,
+    NEW_TYPE_NEW_GAME          : 3,
+}
 
 /**
  * User object constructor
@@ -61,6 +70,10 @@ function Space() {
     this.previousCountry = null;
     this.previousCity = null;
     this.openedControlPanel = "#none";
+    this.onControlPanelOpenAction = {
+        action: null,
+        data: null,
+    };
     this.totalMessages = null;
     this.lastLoadedComment = null;
     this.idleTime = 0;
@@ -71,6 +84,7 @@ function Space() {
     this.totalOnlineFriends = 0;
     this.plugin = null;
     this.checkProcessTimeout = null;
+    this.updateTimestampsTimeout = null;
 };
 
 /**
@@ -224,6 +238,15 @@ Space.prototype.SendBoardComment = function(message) {
                 ++space.totalMessages;
                 self.LoadBoardComments(1, 1, true)
                 $(".commentInputTextBox").val("Something interesting to say?");
+                // Send packet to RTS with the news
+                socket.Emit(ClientOpcodes.OPCODE_REAL_TIME_NEW, {
+                    userId: user.id,
+                    newType: RealTimeNewTypes.NEW_TYPE_NEW_BOARD_MESSAGE,
+                    extraInfo: {
+                        friendName: user.username,
+                        timestamp: Math.round((new Date().getTime() / 1000)),
+                    },
+                });
             }
             else
                 $("#commentsHistory").prepend("An error occurred, please try again in a few moments.");
@@ -326,6 +349,7 @@ Space.prototype.LoadBoardComments = function(from, to, prepend) {
         }
         else
             $("#commentsHistory").text("An error occurred while connecting to the server. Please try again in a few moments.");
+        space.UpdateTimestamps();
     });
 };
 
@@ -533,6 +557,63 @@ Space.prototype.LoadPlugin = function() {
 }
 
 /**
+ * Updates all page timestamps, like the ones in the latest news section.
+ */
+Space.prototype.UpdateTimestamps = function() {
+    $(".timestamp").each(function() {
+        var timestamp = $(this).attr("data-timestamp");
+        
+        if (!timestamp)
+            return;
+        
+        var timePassed = Math.round(new Date().getTime() / 1000) - timestamp;
+        // just now or XX minutes ago
+        if (timePassed < 3600)
+        {
+            timePassed = Math.round(timePassed / 60);
+            if (timePassed < 1)
+                $(this).text("just now");
+            else if (timePassed == 1)
+                $(this).text("1 minute ago");
+            else
+                $(this).text(timePassed + " minutes ago");
+        }
+        // More than XX hours ago
+        else if (timePassed < 86400)
+        {
+            timePassed = Math.round(timePassed / 3600);
+            if (timePassed == 1)
+                $(this).text("more than 1 hour ago");
+            else
+                $(this).text("more than " + timePassed + " hours ago");
+        }
+        // XX days ago
+        else if (timePassed < 2592000)
+        {
+            timePassed = Math.round(timePassed / 86400);
+            if (timePassed == 1)
+                $(this).text("1 day ago");
+            else
+                $(this).text(timePassed + " days ago");
+        }
+        // XX months ago
+        else
+        {
+            timePassed = Math.round(timePassed / 2592000);
+            if (timePassed == 1)
+                $(this).text("1 month ago");
+            else
+                $(this).text("more than " + timePassed + " months ago");
+        }
+    });
+    // This is because the function can be called in any moment by various scripts, so we can clear the old timeout.
+    clearTimeout(this.updateTimestampsTimeout);
+    this.updateTimestampsTimeout = setTimeout(function() {
+        space.UpdateTimestamps();
+    }, 30000);
+}
+
+/**
  * Socket object constructor
  * @returns {Socket}
  */
@@ -618,6 +699,8 @@ Socket.prototype.ConnectToRealTimeServer = function() {
             $("div#realTimeNotification").stop().fadeOut(1500);
         }, 5000);
         $("div#socialFriend" + data.friendId).css("border-color", "#00FF00");
+        $("div#chatBoxText" + data.friendId).append('<br />-- <b>' + data.friendName + '</b> is online --');
+        $("div#chatBoxText" + data.friendId).prop({ scrollTop: $("div#chatBoxText" + data.friendId).prop("scrollHeight") });
     });
     // Called when a friend of this user logs off. Used to display the log off notification, etc.
     self.socket.on("friendLogoff", function(data) {
@@ -630,6 +713,8 @@ Socket.prototype.ConnectToRealTimeServer = function() {
             $("div#realTimeNotification").stop().fadeOut(1500);
         }, 5000);
         $("div#socialFriend" + data.friendId).css("border-color", "#FF0000");
+        $("div#chatBoxText" + data.friendId).append('<br />-- <b>' + data.friendName + '</b> is offline --');
+        $("div#chatBoxText" + data.friendId).prop({ scrollTop: $("div#chatBoxText" + data.friendId).prop("scrollHeight") });
     });
     // Called when a friend opens a chat window with this user.
     self.socket.on("enterChat", function(data) {
@@ -653,12 +738,51 @@ Socket.prototype.ConnectToRealTimeServer = function() {
     self.socket.on("receivePrivateMessage", function(data) {
         // Not implemented
     });
-    self.socket.on("receiveNew", function(data) {
-        // Not implemented
+    // Called each time a new real time new is received.
+    self.socket.on("realTimeNew", function(data) {
+        if (!data.extraInfo.friendName || !data.newType)
+            return;
+        
+        $("div#noLatestNews").remove();
+        switch (data.newType)
+        {
+            case RealTimeNewTypes.NEW_TYPE_NEW_BOARD_MESSAGE:
+                $("div#latestNews").prepend('<div class="latestNew" style="display:none">\n'
+                        + '<div><a href="/' + data.extraInfo.friendName + '" style="text-decoration:none; color:#FFFFFF;"><b>' + data.extraInfo.friendName + '</b></a> has posted a new message!</div>\n'
+                        + '<div style="text-align:right; font:14px Calibri; color:#AAAAAA; text-style:italic; margin-top:3px;"><span class="timestamp" data-timestamp="' + data.extraInfo.timestamp + '"><i>Just now</i></span></div>\n'
+                        + '</div>');
+                break;
+            case RealTimeNewTypes.NEW_TYPE_NEW_FRIEND:
+                if (!data.extraInfo)
+                    return;
+                
+                $("div#latestNews").prepend('<div class="latestNew" style="display:none">\n'
+                        + '<a href="/' + data.extraInfo.friendName + '" style="text-decoration:none; color:#FFFFFF;"><b>' + data.extraInfo.friendName + '</b></a> is now friend of '
+                        + '<a href="/' + data.extraInfo.newFriendName + '" style="text-decoration:none; color:#FFFFFF;"><b>' + data.extraInfo.newFriendName + '</b></a>\n'
+                        + '<div style="text-align:right; font:14px Calibri; color:#AAAAAA; text-style:italic; margin-top:3px;"><span class="timestamp" data-timestamp="' + data.extraInfo.timestamp + '"><i>Just now</i></span></div>\n'
+                        + '</div>');
+                break;
+            case RealTimeNewTypes.NEW_TYPE_NEW_GAME:
+                if (!data.extraInfo)
+                    return;
+                
+                $("div#latestNews").prepend('<div class="latestNew" style="display:none">\n'
+                        + '<a href="/' + data.extraInfo.friendName + '" style="text-decoration:none; color:#FFFFFF;"><b>' + data.extraInfo.friendName + '</b></a> has a new game: <b>' + data.extraInfo.newGameTitle + '</b>\n'
+                        + '<div style="text-align:right; font:14px Calibri; color:#AAAAAA; text-style:italic; margin-top:3px;"><span class="timestamp" data-timestamp="' + data.extraInfo.timestamp + '"><i>Just now</i></span></div>\n'
+                        + '</div>');
+                break;
+            default:
+                break;
+        }
+        // This will affect only the new, hidden new.
+        $("div.latestNew").fadeIn(500);
+        space.UpdateTimestamps();
     });
+    // Called when the online friends list is received from the RTS.
     self.socket.on("onlineFriendsList", function(data) {
         friendsManager.CreateList(data.friendsList);
     });
+    // Called when a friend starts playing a game.
     self.socket.on("friendStartsPlaying", function(data) {
         var friend = friendsManager.GetFriend(data.friendId);
         
@@ -676,6 +800,7 @@ Socket.prototype.ConnectToRealTimeServer = function() {
             friendsManager.SetPlaying(friend.id, true, data.gameId, data.gameTitle, data.gameImagePath);
         }
     });
+    // Called when a friend stops playing a game.
     self.socket.on("friendStopsPlaying", function(data) {
         $("div#socialIsPlaying" + data.friendId).remove();
         friendsManager.SetPlaying(data.friendId, false, null, null, null);
@@ -725,28 +850,48 @@ function ChatManager() {
  * @param isInvitation boolean True if the user has been invited, else false.
  */
 ChatManager.prototype.CreateChatConversation = function(friendId, friendName, isInvitation) {
-    if (this.focusConversation.name)
+    // Cancel the operation if the window is already created.
+    if ($.inArray(parseInt(friendId), this.activeChats) != -1)
+        return;
+    
+    /*if (this.focusConversation.name)
     {
-        $("div#chatTab" + this.focusConversation.name).attr("style", "");
-        $("div#chatBoxText" + this.focusConversation.name).hide();
+        $("div#chatTab" + this.focusConversation.id).attr("style", "");
+        $("div#chatBoxText" + this.focusConversation.id).hide();
     }
-    $("div.chatTabsWrapper").prepend('<div class="chatTab" id="chatTab' + friendName + '" data-id="' + friendId + '" style="background-color:#222222; cursor:inherit;">' + friendName + '</div>')
-    $("div#chatTab" + friendName).click(function(event) {
+    */
+    $("div.chatTabsWrapper").prepend('<div class="chatTab" id="chatTab' + friendId + '" data-id="' + friendId + '" style="background-color:#' + ((this.GetTotalChatsCount() == 0) ? "222222" : "CC6633") + ';">' + friendName + '</div>')
+    $("div#chatTab" + friendId).unbind("click");
+    $("div#chatTab" + friendId).click(function(event) {
         chatManager.SwitchChatConversation(event);
     });
+    $("div.chatBox").show();
     if ($("div.chatBoxWrapper").is(":hidden"))
         $("div.chatBoxWrapper").show();
-    $("div.chatBoxTextWrapper").prepend('<div class="chatBoxText" id="chatBoxText' + friendName + '" data-id="' + friendId + '" style="display:inherit"></div>');
+    $("div.chatBoxTextWrapper").prepend('<div class="chatBoxText" id="chatBoxText' + friendId + '" data-id="' + friendId + '" style="display:' + ((this.GetTotalChatsCount() == 0) ? "inherit" : "none") + '"></div>');
     $("input.chatBoxInput").focus();
-    this.focusConversation.id = friendId;
-    this.focusConversation.name = friendName;
+    if (this.GetTotalChatsCount() == 0)
+    {
+        this.focusConversation.id = friendId;
+        this.focusConversation.name = friendName;
+    }
     this.activeChats.push(parseInt(friendId));
+    /*
     if (!isInvitation)
         socket.Emit(ClientOpcodes.OPCODE_CHAT_INVITATION, { userId: user.id, friendId: friendId });
+    */
 };
 
-ChatManager.prototype.CloseChatConversation = function(friendId, friendName) {
-    // Not yet implemented
+ChatManager.prototype.CloseChatConversation = function() {
+    for (var i in this.activeChats)
+        if (this.activeChats[i] == this.focusConversation.id)
+            delete this.activeChats[i];
+    
+    $("div#chatTab" + this.focusConversation.id).remove();
+    $("div#chatBoxText" + this.focusConversation.id).remove();
+    $("div.chatBox").hide();
+    if (this.GetTotalChatsCount() == 0)
+        $("div.chatBoxWrapper").hide();
 };
 
 /**
@@ -760,14 +905,14 @@ ChatManager.prototype.SwitchChatConversation = function(event) {
     var friendName = $(event.target).text();
     var friendId = $(event.target).attr("data-id");
 
-    $("div#chatTab" + this.focusConversation.name).attr("style", "");
+    $("div#chatTab" + this.focusConversation.id).attr("style", "");
     $(event.target).css("background-color", "#222222");
-    $(event.target).css("cursor", "inherit");
+    $("div.chatBox").show();
     if ($("div.chatBoxWrapper").is(":hidden"))
         $("div.chatBoxWrapper").show();
-    $("div#chatBoxText" + this.focusConversation.name).hide();
-    $("div#chatBoxText" + friendName).show();
-    $("div#chatBoxText" + friendName).prop({ scrollTop: $("div#chatBoxText" + friendName).prop("scrollHeight") });
+    $("div#chatBoxText" + this.focusConversation.id).hide();
+    $("div#chatBoxText" + friendId).show();
+    $("div#chatBoxText" + friendId).prop({ scrollTop: $("div#chatBoxText" + friendId).prop("scrollHeight") });
     this.focusConversation.id = friendId;
     this.focusConversation.name = friendName;
 };
@@ -781,8 +926,8 @@ ChatManager.prototype.SendChatMessage = function(event) {
     if (message == "")
         return;
     
-    $("div#chatBoxText" + this.focusConversation.name).append("<br /><b>You: </b>" + message)
-    $("div#chatBoxText" + this.focusConversation.name).prop({ scrollTop: $("div#chatBoxText" + this.focusConversation.name).prop("scrollHeight") });
+    $("div#chatBoxText" + this.focusConversation.id).append("<br /><b>You: </b>" + message)
+    $("div#chatBoxText" + this.focusConversation.id).prop({ scrollTop: $("div#chatBoxText" + this.focusConversation.Id).prop("scrollHeight") });
     $(event.target).val("");
     socket.Emit(ClientOpcodes.OPCODE_CHAT_MESSAGE, { userId: user.id, friendId: this.focusConversation.id , message: message });
 };
@@ -796,12 +941,19 @@ ChatManager.prototype.ReceiveChatMessage = function(friendId, friendName, messag
     // Create new chat window if none exists
     if ($.inArray(parseInt(friendId), this.activeChats) == -1)
         this.CreateChatConversation(friendId, friendName, true);
-    $("div#chatBoxText" + friendName).append('<br /><b>' + friendName + ': </b>' + message);
-    $("div#chatBoxText" + friendName).prop({ scrollTop: $("div#chatBoxText" + friendName).prop("scrollHeight") });
+    $("div#chatBoxText" + friendId).append('<br /><b>' + friendName + ': </b>' + message);
+    $("div#chatBoxText" + friendId).prop({ scrollTop: $("div#chatBoxText" + friendId).prop("scrollHeight") });
     if (friendName != this.focusConversation.name)
-        $("div#chatTab" + friendName).css("background-color", "#CC6633");
+        $("div#chatTab" + friendId).css("background-color", "#CC6633");
 };
 
+ChatManager.prototype.GetTotalChatsCount = function() {
+    var count = 0;
+    for (var i in this.activeChats)
+        if (this.activeChats[i])
+            ++count;
+    return count;
+};
 /**
  * Friend object constructor.
  * @returns {Friend}
@@ -1109,20 +1261,30 @@ function GamesManager() {
     }
 };
 
+/**
+ * Gets the games list from the DB using an ajax request.
+ */
 GamesManager.prototype.GetGamesList = function() {
     var self = this;
     
     $.post("core/ajax/games/gameslist.php", { userId: user.id }, function(data){
         if (data.status == "SUCCESS")
+        {
             self.gamesList = data.list;
+            // We can now start the check in process
+            self.CheckClientProcessList();
+        }
     }, "json");
 }
 
+/**
+ * Checks the runnging processes using the GamersHub Tools Plugin, and searchs for a game in the list.
+ */
 GamesManager.prototype.CheckClientProcessList = function() {
     // This is the first thing, we should program the next call whatever happens.
     self.checkProcessTimeout = setTimeout(function() {
         gamesManager.CheckClientProcessList();
-    }, 5000);
+    }, TIME_BETWEEN_PROCESSES_CHECKS);
     
     if (!space.plugin.valid)
     {
@@ -1346,4 +1508,12 @@ function SwitchFriendOptionsMenu(event)
         });
         $(node).slideUp();
     }
+}
+
+function SetMainWrapperHeight()
+{
+    $("div.mainWrapper").height($(window).height() - 51);
+    setTimeout(function() {
+        SetMainWrapperHeight();
+    }, 100);
 }

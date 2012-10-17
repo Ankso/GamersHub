@@ -33,12 +33,16 @@ if (isset($_SESSION['userId']))
 .register {
 	position:absolute;
 	width:350px;
+	padding:10px;
 	margin-left:40%;
 	margin-right:40%;
 	margin-top:200px;
 	text-align:center;
 	border:2px #FFFFFF solid;
 	border-radius:1em;
+}
+input {
+	border-radius:0.3em;
 }
 </style>
 </head>
@@ -48,42 +52,54 @@ if (isset($_SESSION['userId']))
 <?php
 function PrintForm()
 {
-    echo "<form action=\"register.php\" method=\"post\">";
-    echo "    <br/>Username: <input type=\"text\" name=\"username\"/>";
-    echo "    <br/>E-mail: <input type=\"text\" name=\"email\"/>";
-    echo "    <br/>Password: <input type=\"password\" name=\"password\"/>";
-    echo "    <br/>Retype password: <input type=\"password\" name=\"password_check\"/>";
-    echo "    <br/><input type=\"submit\" name=\"user_register\"/>";
-    echo "</form>";
+    echo "<div style=\"text-align:center;\"><form action=\"register.php\" method=\"post\">";
+    echo "    <br/>Username: <input type=\"text\" name=\"username\" style=\"margin-left:53px;\"/>";
+    echo "    <br/>E-mail: <input type=\"text\" name=\"email\" style=\"margin-left:81px;\"/>";
+    echo "    <br/>Password: <input type=\"password\" name=\"password\" style=\"margin-left:57px;\"/>";
+    echo "    <br/>Retype password: <input type=\"password\" name=\"password_check\" style=\"margin-left:5px;\"/>";
+    echo "    <br/>Private key*: <input type=\"text\" name=\"key\" style=\"margin-left:39px;\"/>";
+    echo "    <br/><input type=\"submit\" name=\"user_register\" style=\"margin-top:7px;\"/>";
+    echo "</form></div>";
+    echo "<br/>*The private key is a combination of 32 alphanumeric characters used to avoid unauthorized access to the webpage. You can obtain one contacting the site <a href=\"mailto:misterankso@gmail.com\">admin</a>.";
 }
 
-if (isset($_POST['username']) && isset($_POST['email']) && isset($_POST['password']) && isset($_POST['password_check']))
+if (isset($_POST['username']) && isset($_POST['email']) && isset($_POST['password']) && isset($_POST['password_check']) && isset($_POST['key']))
 {
     $username = $_POST['username'];
     $email = $_POST['email'];
     $password = $_POST['password'];
     $passwordCheck = $_POST['password_check'];
+    $privateKey = $_POST['key'];
 
     // Check if both passwords are similar
     if ($password != $passwordCheck)
-    {
-        PrintForm();
-        echo "\nThe passwords don't match!";
-        die();
-    }
+        die("The passwords don't match! <a href=\"/register.php\">Try again</a>.");
 
     $DB = New Database($DATABASES['USERS']);
-    $result = $DB->ExecuteStmt(Statements::SELECT_USER_DATA_REGISTER, $DB->BuildStmtArray("ss", $username, $email));
-    if ($result)
+    // Check that the private key is a valid one
+    if ($result = $DB->ExecuteStmt(Statements::SELECT_USER_DATA_PRIVATE_KEY, $DB->BuildStmtArray("s", $privateKey)))
     {
-        $row;
+        // If a coincidence is found, delete that private key from the DB
+        if ($result->num_rows > 0)
+            $DB->ExecuteStmt(Statements::DELETE_USER_DATA_PRIVATE_KEY, $DB->BuildStmtArray("s", $privateKey));
+        else
+            die("Invalid private key. If you want one, you must contact the site <a href=\"mailto:misterankso@gmail.com\">admin</a>. <a href=\"/register.php\">Try again</a>.");
+    }
+    else
+    {
+        // The private key is invalid
+        die("Invalid private key. If you want one, you must contact the site <a href=\"mailto:misterankso@gmail.com\">admin</a>. <a href=\"/register.php\">Try again</a>.");
+    }
+    // Check if the username or the email were already used
+    if ($result = $DB->ExecuteStmt(Statements::SELECT_USER_DATA_REGISTER, $DB->BuildStmtArray("ss", $username, $email)))
+    {
         if ($row = $result->fetch_assoc())      // If a coincidence was found in the DB, print the errors
         {
             PrintForm();
             if ($row["username"] == $username)
-                echo "\nThat username is already in use.";
+                echo "That username is already in use. <a href=\"/register.php\">Try again</a>.";
             else
-                echo "\nThat email is already in use.";
+                echo "That email is already in use. <a href=\"/register.php\">Try again</a>.";
         }
         else                                    // else insert the data in the DB
         {
@@ -92,9 +108,9 @@ if (isset($_POST['username']) && isset($_POST['email']) && isset($_POST['passwor
             $allOk = true;
             $data = NULL;
             if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6))
-                $data = $DB->BuildStmtArray("ssssssis", $username, CreateSha1Pass($username, $password), NULL, $email, NULL, $ip, 0, "1000-01-01 00:00:00");
+                $data = $DB->BuildStmtArray("ssssssis", $username, CreateSha1Pass($username, $password), NULL, NULL, $email, NULL, $ip, 0, "1000-01-01 00:00:00");
             else
-                $data = $DB->BuildStmtArray("ssssssis", $username, CreateSha1Pass($username, $password), NULL, $email, $ip, NULL, 0, "1000-01-01 00:00:00");
+                $data = $DB->BuildStmtArray("ssssssis", $username, CreateSha1Pass($username, $password), NULL, NULL, $email, $ip, NULL, 0, "1000-01-01 00:00:00");
             
             // Here we start the DB operations
             if ($DB->ExecuteStmt(Statements::INSERT_USER_DATA, $data))
@@ -110,7 +126,7 @@ if (isset($_POST['username']) && isset($_POST['email']) && isset($_POST['passwor
                         if ($DB->ExecuteStmt(Statements::INSERT_USER_CUSTOM_OPTIONS, $DB->BuildStmtArray("iiii", $user->GetId(), 0, 0, 1)))
                         {
                             $DB->CommitTransaction();
-                            echo "\nUser created successfully! You can now <a href=\"login.php\">log in</a>";
+                            echo "User created successfully! You can now <a href=\"login.php\">log in</a>";
                         }
                         else
                             $allOk = false;
@@ -128,12 +144,12 @@ if (isset($_POST['username']) && isset($_POST['email']) && isset($_POST['passwor
             {
                 $DB->RollbackTransaction();
                 $DB->ExecuteStmt(Statements::DELETE_USER_DATA, $DB->BuildStmtArray("i", $user->GetId()));
-                echo "\nAn error occurred. Please, try again in a few moments.";
+                echo "An error occurred. Please, try again in a few moments. <a href=\"/register.php\">Try again</a>.";
             }
         }
     }
     else
-        die("\nError connecting to the database");
+        die("Error connecting to the database. <a href=\"/register.php\">Try again</a>.");
 }
 else
     PrintForm();

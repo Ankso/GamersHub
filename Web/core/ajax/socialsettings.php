@@ -55,26 +55,15 @@ $(document).ready(function() {
         dialogObject.dialogItem.dialog("open");
     });
     $("span.socialAcceptFriendRequest").click(function(event) {
-		HandleFriendRequest($(event.target).parent().attr("data-id"), "ACCEPT");
+		HandleFriendRequest($(event.target).parent().attr("data-id"), "ACCEPT", $(event.target).parent().attr("data-username"), $(event.target).parent().attr("data-isOnline"));
     });
     $("span.socialDeclineFriendRequest").click(function(event) {
-        HandleFriendRequest($(event.target).parent().attr("data-id"), "DECLINE");
+        HandleFriendRequest($(event.target).parent().attr("data-id"), "DECLINE" /* No more params are needed. */);
     });
     $("a.socialPrivateMessageUnreaded").click(function(event) {
 		SocialMarkMessageAsReaded(event);
     });
     $("a#sendPrivateMessage").fancybox();
-	/*
-    $("input#friendName").keyup(function(event) {
-		SocialLookup($(event.target).val());
-    });
-    $("input#friendName").blur(function(event) {
-		SocialFill();
-    });
-    $("span#socialButton").click(function() {
-		SocialSendFriendRequest();
-    });
-	*/
 });
 </script>
 <div class="socialMenu">
@@ -94,7 +83,9 @@ if ($friends != USER_HAS_NO_FRIENDS)
     {
     ?>
 	<div class="socialTabItem">
-		<div id="socialFriend<?php echo $friends[$i]['id']; ?>" class="socialFriendItem" style="border:2px <?php echo $friends[$i]['isOnline'] ? "#00FF00" : "#FF0000"; ?> solid;"><img src="<?php echo $friends[$i]['avatarPath']; ?>" style="width:50px; height:50px; border-radius:0.5em;" /></div>
+		<div id="socialFriend<?php echo $friends[$i]['id']; ?>" class="socialFriendItem" style="border:2px <?php echo $friends[$i]['isOnline'] ? "#00FF00" : "#FF0000"; ?> solid;">
+			<img src="<?php echo $friends[$i]['avatarPath']; ?>" style="width:50px; height:50px; border-radius:0.5em;" />
+		</div>
 		<div class="socialFriendItemName">
 			<a class="socialPlainLink" href="<?php echo "/", $friends[$i]['username']; ?>"><?php echo $friends[$i]['username']; ?></a>
 			<div id="socialRemoveFriend" class="socialRemoveFriend" data-id="<?php echo $friends[$i]['id']; ?>" data-username="<?php echo $friends[$i]['username']; ?>">Remove</div>
@@ -122,10 +113,12 @@ if ($friendRequests !== USER_HAS_NO_FRIEND_REQUESTS)
 ?>
 	<div class="socialTabItem">
 		<div class="socialFriendRequestContainer">
-    		<div id="socialFriendRequest<?php echo $friendRequests[$i]['id']; ?>" class="socialFriendItem" style="border:2px rgb(255, 122, 0) solid; background:transparent url('<?php echo $friendRequests[$i]['avatarPath']; ?>') no-repeat center center;"></div>
+    		<div id="socialFriendRequest<?php echo $friendRequests[$i]['id']; ?>" class="socialFriendItem" style="border:2px <?php echo $friendRequests[$i]['isOnline'] ? "#00FF00" : "#FF0000"; ?> solid;">
+    			<img src="<?php echo $friendRequests[$i]['avatarPath']; ?>" style="width:50px; height:50px; border-radius:0.5em;" />
+    		</div>
     		<div class="socialFriendItemName">
     			<a class="socialPlainLink" href="<?php echo "/", $friendRequests[$i]['username']; ?>"><?php echo $friendRequests[$i]['username']; ?></a>
-    			<div id="socialManageRequest<?php echo $friendRequests[$i]['id']; ?>" class="socialManageFriendRequest" data-id="<?php echo $friendRequests[$i]['id']; ?>">
+    			<div class="socialManageFriendRequest" data-id="<?php echo $friendRequests[$i]['id']; ?>" data-username="<?php echo $friendRequests[$i]['username']; ?>" data-isOnline="<?php echo $friendRequests[$i]['isOnline']; ?>">
     				<span class="socialAcceptFriendRequest">Accept</span> - <span class="socialDeclineFriendRequest">Decline</span>
     			</div>
     		</div>
@@ -208,7 +201,7 @@ else
                     continue;
 ?>
     		<div class="socialSubTabItem">
-    			<a id="sendPrivateMessage" class="socialPrivateMessage" href="core/ajax/privatemessage.php?friendName=<?php echo $privateMessages[$i]['senderUsername']; ?>"><b><?php echo $privateMessages[$i]['senderUsername'] ?></b> on <?php echo $privateMessages[$i]['date']; ?>: <?php echo substr($privateMessages[$i]['message'], 0, 25) . "..."; ?></a>
+    			<a id="sendPrivateMessage" class="socialPrivateMessage" href="core/ajax/privatemessage.php?friendName=<?php echo $privateMessages[$i]['senderUsername']; ?>"><b><?php echo $privateMessages[$i]['senderUsername'] ?></b> on <?php echo $privateMessages[$i]['date']; ?>: <?php echo (strlen($privateMessages[$i]['message']) > 25 ) ? substr($privateMessages[$i]['message'], 0, 25) . "..." : $privateMessages[$i]['message']; ?></a>
     		</div>
 <?php
             }

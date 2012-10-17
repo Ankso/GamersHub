@@ -114,7 +114,7 @@ MyGames.prototype.LoadGame = function (gameId)
                     myGames.RemoveGame(gameId);
                 });
                 $("label.myGamesAddGameButton").click(function() {
-                    myGames.AddGame(gameId);
+                    myGames.AddGame(gameId, data.title);
                 });
                 if (!self.backToGamesList)
                 {
@@ -131,26 +131,52 @@ MyGames.prototype.LoadGame = function (gameId)
     return true;
 }
 
-MyGames.prototype.AddGame = function(gameId)
+MyGames.prototype.AddGame = function(gameId, gameTitle)
 {
+    var self = this;
+    
     $.post("core/ajax/games/addgame.php", { gameId: gameId }, function(data) {
         if (data && data == "SUCCESS")
         {
             $("label.myGamesAddGameButton").parent().html('<label class="myGamesRemoveGameButton">Remove game</label>\n');
-            $("div#myGamesMyGames").append('<div class="myGamesListedGame" data-id="gameId">\n'
+            $("div#myGamesMyGames").append('<div class="myGamesListedGame" data-id="' + gameId + '">\n'
                     + '    <div><img src="' + $("img.myGamesGameViewCoverImg").attr("src") + '" style="width:170px; height:250px; border-radius:0.5em;"/></div>\n'
                     + '    <div class="myGamesGameName">' + $("label#title").text() + '</div>\n'
                     + '</div>\n');
-        }
-        else
-        {
-            alert("An error happens");
+            // Broadcast the new addition to the RTS, if we are in an user's space
+            if (socket && user)
+            {
+                socket.Emit(ClientOpcodes.OPCODE_REAL_TIME_NEW, {
+                    userId: user.id,
+                    newType: RealTimeNewTypes.NEW_TYPE_NEW_GAME,
+                    extraInfo: {
+                        newGameTitle: gameTitle,
+                        friendName: user.username,
+                        timestamp: Math.round((new Date().getTime() / 1000)),
+                    },
+                });
+            }
+            // Add game to the added games list
+            self.addedGames[self.addedGames.length + 1] = gameId;
+            // And add the click event to the image in the games list
+            $("div.myGamesListedGame").unbind("click");
+            $("div.myGamesListedGame").click(function (event) {
+                myGames.backToGamesList = true;
+                $("#myGamesSearchInputContainer").hide();
+                myGames.LoadGame($(event.target.parentElement.parentElement).attr("data-id"));
+                // This timeout is only for visual purposes, it doesn't affect functionality.
+                setTimeout(function () {
+                    $("div#myGamesOptionDatabase").trigger("click");
+                }, 50);
+            });
         }
     });
 }
 
 MyGames.prototype.RemoveGame = function(gameId)
 {
+    var self = this;
+    
     $.post("core/ajax/games/removegame.php", { gameId: gameId }, function(data) {
         if (data && data == "SUCCESS")
         {
@@ -159,10 +185,15 @@ MyGames.prototype.RemoveGame = function(gameId)
                 if ($(this).attr("data-id") == gameId)
                     $(this).remove();
             });
-        }
-        else
-        {
-            alert("An error happens");
+            // Remove the game from the list of added games.
+            for (var i in self.addedGames)
+            {
+                if (self.addedGames[i] == gameId)
+                {
+                    delete self.addedGames[i];
+                    break;
+                }
+            }
         }
     });
 }

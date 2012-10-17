@@ -1,7 +1,18 @@
 <?php
 
+/**
+ * Simple storage class for a game publisher data.
+ * @author Ankso
+ */
 class Publisher
 {
+    /**
+     * Class constructor. Only the first parameter is needed in order to initilize the object. The other three are optional, to save access to the DB.
+     * @param long $id The publisher unique ID.
+     * @param string $name Optional. The publisher company name.
+     * @param string $webpage Optional. The publisher official website.
+     * @param string $description Optional. A brief description of the publisher.
+     */
     function __construct($id, $name, $webpage, $description)
     {
         global $DATABASES;
@@ -36,10 +47,17 @@ class Publisher
         }
     }
     
+    /**
+     * Class destructor.
+     */
     function __destruct()
     {
         // Nothing by the way
     }
+    
+    /****************************\
+    *       CLASS GETTERS        *
+    \****************************/
     
     public function GetId()
     {

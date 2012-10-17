@@ -86,7 +86,7 @@ elseif (isset($_POST['spaceOwner']) && isset($_POST['from']) && isset($_POST['to
 <div class="boardComment" data-id="<?php echo $boardMessages[$i]['messageId']; ?>">
 	<?php if ($isOwner) { ?><div class="deleteBoardComment" style="display:none"><img src="images/delete_16.png" /></div> <?php } ?>
 	<div class="boardCommentBody"><?php echo $boardMessages[$i]['message']; ?></div>
-	<div class="boardCommentBottom"><?php echo "By ", ($spaceOwner->GetId() == $user->GetId() ? "You" : $spaceOwner->GetUsername()), " ", $boardMessages[$i]['date']; ?></div>
+	<div class="boardCommentBottom"><?php echo "By ", ($spaceOwner->GetId() == $user->GetId() ? "you" : $spaceOwner->GetUsername()), " ";?><span class="timestamp" data-timestamp="<?php echo strtotime($boardMessages[$i]['date']); ?>">Unknown time ago</span></div>
 	<div class="repliesCommentBoard" style="display:none">
 		<div>
 	        <?php
@@ -101,7 +101,7 @@ elseif (isset($_POST['spaceOwner']) && isset($_POST['from']) && isset($_POST['to
     				<div class="boardCommentReplyAvatar"><img src="<?php echo $boardReplies[$i][$j]['avatarPath']; ?>" style="width:40px; height:40px; border-radius:0.3em;" alt="avatar" /></div>
     				<div class="boardCommentReplyContent"><?php echo $boardReplies[$i][$j]['message']; ?></div>
     			</div>
-    			<div class="boardCommentReplyBottom" <?php if ($boardReplies[$i][$j]['senderId'] == $spaceOwner->GetId()) echo 'style="background-color:rgba(204, 153, 51, 0.1);"'?>>By <?php echo ($boardReplies[$i][$j]['username'] == $user->Getusername() ? "You" : $boardReplies[$i][$j]['username']), " ", $boardReplies[$i][$j]['date']; ?></div>
+    			<div class="boardCommentReplyBottom" <?php if ($boardReplies[$i][$j]['senderId'] == $spaceOwner->GetId()) echo 'style="background-color:rgba(204, 153, 51, 0.1);"'?>>By <?php echo ($boardReplies[$i][$j]['username'] == $user->Getusername() ? "you" : $boardReplies[$i][$j]['username']), " ";?><span class="timestamp" data-timestamp="<?php echo strtotime($boardReplies[$i][$j]['date']); ?>">Unknown time ago</span></div>
     		</div>
 		    <?php
 	                }

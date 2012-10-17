@@ -3,7 +3,7 @@
 -- Server version:               5.5.18 - MySQL Community Server (GPL)
 -- Server OS:                    Win64
 -- HeidiSQL version:             7.0.0.4053
--- Date/time:                    2012-10-12 15:02:58
+-- Date/time:                    2012-10-18 00:10:05
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -26,9 +26,9 @@ CREATE TABLE IF NOT EXISTS `user_board` (
   PRIMARY KEY (`message_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `FK_USER_BOARD_ID` FOREIGN KEY (`user_id`) REFERENCES `user_data` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Stores the messages written by the user''s in their board.';
+) ENGINE=InnoDB AUTO_INCREMENT=108 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Stores the messages written by the user''s in their board.';
 
--- Dumping data for table users.user_board: ~14 rows (approximately)
+-- Dumping data for table users.user_board: ~23 rows (approximately)
 DELETE FROM `user_board`;
 /*!40000 ALTER TABLE `user_board` DISABLE KEYS */;
 INSERT INTO `user_board` (`message_id`, `user_id`, `message_number`, `message`, `date`) VALUES
@@ -41,11 +41,20 @@ INSERT INTO `user_board` (`message_id`, `user_id`, `message_number`, `message`, 
 	(39, 1, 4, 'Re-escribiendo toda la aplicación cliente para que sea un diseño orientado a objetos real. Va a llevar lo suyo.', '2012-06-15 22:03:35'),
 	(41, 1, 5, 'Probando los mensajes con la nueva API orientada a objetos.', '2012-06-16 18:11:45'),
 	(44, 1, 6, 'Repositorio del RTS: <a href="https://github.com/Ankso/GamersHub-Real-Time-Server" target="_blank">https://github.com/Ankso/GamersHub-Real-Time-Server</a>', '2012-06-20 18:22:59'),
-	(45, 2, 2, 'Cosas', '2012-07-09 17:49:17'),
 	(46, 1, 7, 'Subidos los nuevos SQLs', '2012-07-09 22:53:56'),
 	(47, 1, 8, 'Buena canción: <div style="text-align:center;"><iframe width="640" height="480" src="http://www.youtube.com/embed/p0L_D7H0fGI?wmode=transparent" frameborder="0" allowfullscreen></iframe></div><br />', '2012-07-12 01:16:31'),
 	(48, 1, 9, 'Armored Kill FY', '2012-09-11 16:31:20'),
-	(50, 1, 10, 'Diseñando el sistema de juegos. El core está casi listo.', '2012-10-07 15:59:50');
+	(50, 1, 10, 'Diseñando el sistema de juegos. El core está casi listo.', '2012-10-07 15:59:50'),
+	(95, 2, 2, 'prueba dasgad', '2012-10-15 22:45:35'),
+	(96, 2, 3, 'prueasdbfasd dfg', '2012-10-15 22:45:43'),
+	(97, 1, 11, 'Parece que el sistema de últimas noticias va funcionando!', '2012-10-15 22:47:53'),
+	(98, 2, 4, 'pues si que funciona más o menos, al fin!', '2012-10-15 22:49:36'),
+	(100, 2, 5, 'nuevo mensaje', '2012-10-16 13:26:36'),
+	(103, 2, 6, 'Bien bien bien, ahora todo va como la seda.', '2012-10-16 14:09:36'),
+	(104, 2, 7, 'post', '2012-10-16 17:11:29'),
+	(105, 2, 8, 'y otro ma', '2012-10-16 17:11:34'),
+	(106, 2, 9, 'a ver que pasa', '2012-10-16 17:11:41'),
+	(107, 2, 10, 'si se llena eso', '2012-10-16 17:11:46');
 /*!40000 ALTER TABLE `user_board` ENABLE KEYS */;
 
 
@@ -95,7 +104,7 @@ CREATE TABLE IF NOT EXISTS `user_custom_options` (
 DELETE FROM `user_custom_options`;
 /*!40000 ALTER TABLE `user_custom_options` DISABLE KEYS */;
 INSERT INTO `user_custom_options` (`user_id`, `option_livestream`, `option_livestream_livecomments`, `option_latest_news`) VALUES
-	(1, 0, 0, 1),
+	(1, 1, 0, 1),
 	(2, 0, 0, 1),
 	(4, 1, 1, 1),
 	(5, 1, 1, 1),
@@ -115,6 +124,7 @@ CREATE TABLE IF NOT EXISTS `user_data` (
   `username` varchar(25) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Username (not real name)',
   `password_sha1` text COLLATE utf8_unicode_ci NOT NULL COMMENT 'User password in SHA1',
   `random_session_id` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Random unique session identifier generated on each user login. It''s used to identify the user when connecting to a real time server app',
+  `live_stream_id` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Unique identifier used by the Red5 server to identify an user''s live stream.',
   `email` varchar(60) COLLATE utf8_unicode_ci NOT NULL COMMENT 'User e-mail',
   `ip_v4` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Last used IPv4',
   `ip_v6` varchar(39) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Last used IPv6',
@@ -124,24 +134,25 @@ CREATE TABLE IF NOT EXISTS `user_data` (
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `email` (`email`),
   UNIQUE KEY `random_session_id` (`random_session_id`),
+  UNIQUE KEY `live_stream_id` (`live_stream_id`),
   KEY `id` (`id`,`username`,`email`)
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='General data about the users (name, mail, date of birth, etc...)';
 
 -- Dumping data for table users.user_data: ~11 rows (approximately)
 DELETE FROM `user_data`;
 /*!40000 ALTER TABLE `user_data` DISABLE KEYS */;
-INSERT INTO `user_data` (`id`, `username`, `password_sha1`, `random_session_id`, `email`, `ip_v4`, `ip_v6`, `is_online`, `last_login`) VALUES
-	(1, 'Ankso', '69977bb50b14977d99b93f74d00499438ca466a5', 'e1aed1b43b57e208faea8893a06e8b59c176e0ba4ccaf5cc0206e16fcd5d097c2db1e39cf4af68d059545fd834f5457b24e5a39134a309ba0cc5f0933e65a0a2', 'misterankso@gmail.com', '127.0.0.1', NULL, 1, '2012-10-10 16:36:05'),
-	(2, 'Seldon', '8b04c7cea0aca3497f4315cecb6dd67536acdc5d', NULL, 'seldon_we@hotmail.com', '127.0.0.1', NULL, 0, '2012-09-21 17:52:03'),
-	(4, 'xItsy', '76794e37a3be9e8c40a2d4347a195dd0b87fb14c', NULL, 'javier.rf92@gmail.com', '192.168.1.137', NULL, 0, '1000-01-01 00:00:00'),
-	(5, 'Perico', '964bd26ba2aaa08c7d66e19934b651b2116a3d91', NULL, 'delospalotes@hotmail.com', '127.0.0.1', NULL, 0, '1000-01-01 00:00:00'),
-	(6, 'pericodelospalotes', 'd8048855620502ed73b20a1dbb993f536545ac4a', NULL, 'io@hotmail.com', '192.168.1.137', NULL, 0, '2012-06-15 18:57:49'),
-	(7, 'mrperico', '287b652dd3f61c7695d0234daa694b9dd07d81ff', NULL, 'el@hotmail.com', '192.168.1.137', NULL, 0, '2012-06-15 18:56:30'),
-	(8, 'pericoxd', '76790e667d055c8f3bb5a25a064af7bb6c23cab0', NULL, 'tres@hotmail.com', '192.168.1.137', NULL, 0, '2012-09-21 18:15:56'),
-	(9, 'MrAnkso', '339cf109b9cef8bbeb718d538fe8e471eb00c196', NULL, 'mrankso@hotmail.com', '192.168.1.137', NULL, 0, '2012-06-14 20:08:33'),
-	(10, 'hache', '77d9d0d6d90d6f0388bc626f6f3db845c85263df', NULL, 'hachegamer@gmail.com', '192.168.1.137', NULL, 0, '1000-01-01 00:00:00'),
-	(11, 'Muphasa', '59ab773b040ffb8d7710386fb8cc1f3bc0e81984', NULL, 'iagedopr@hotmail.com', '192.168.1.137', NULL, 0, '2012-06-01 23:41:03'),
-	(12, 'Prueba', 'd09b5895b334ac7894bd4bef337ace7f6ce8ae59', NULL, 'prueba@prueba.com', '127.0.0.1', NULL, 0, '1000-01-01 00:00:00');
+INSERT INTO `user_data` (`id`, `username`, `password_sha1`, `random_session_id`, `live_stream_id`, `email`, `ip_v4`, `ip_v6`, `is_online`, `last_login`) VALUES
+	(1, 'Ankso', '69977bb50b14977d99b93f74d00499438ca466a5', NULL, 'live_stream_614112fdaa38c9d730e72cd126f86df837d496f99ace6df5296412fdddacb777', 'misterankso@gmail.com', '127.0.0.1', NULL, 0, '2012-10-10 16:36:05'),
+	(2, 'Seldon', '8b04c7cea0aca3497f4315cecb6dd67536acdc5d', NULL, 'live_stream_19f20838d74e5481aa7618e03724906a68de87a26bb8346e99058d0ebece91cf', 'seldon_we@hotmail.com', '127.0.0.1', NULL, 0, '2012-10-15 21:26:55'),
+	(4, 'xItsy', '76794e37a3be9e8c40a2d4347a195dd0b87fb14c', NULL, NULL, 'javier.rf92@gmail.com', '192.168.1.137', NULL, 0, '1000-01-01 00:00:00'),
+	(5, 'Perico', '964bd26ba2aaa08c7d66e19934b651b2116a3d91', NULL, NULL, 'delospalotes@hotmail.com', '127.0.0.1', NULL, 0, '1000-01-01 00:00:00'),
+	(6, 'pericodelospalotes', 'd8048855620502ed73b20a1dbb993f536545ac4a', NULL, NULL, 'io@hotmail.com', '192.168.1.137', NULL, 0, '2012-06-15 18:57:49'),
+	(7, 'mrperico', '287b652dd3f61c7695d0234daa694b9dd07d81ff', NULL, NULL, 'el@hotmail.com', '192.168.1.137', NULL, 0, '2012-06-15 18:56:30'),
+	(8, 'pericoxd', '76790e667d055c8f3bb5a25a064af7bb6c23cab0', NULL, 'live_stream_8c7993915b75b993bc4561327549bfb30db839e188e18657f9bf4ecc4727482e', 'tres@hotmail.com', '192.168.1.137', NULL, 0, '2012-09-21 18:15:56'),
+	(9, 'MrAnkso', '339cf109b9cef8bbeb718d538fe8e471eb00c196', NULL, 'live_stream_c42bdb930af5ab9e009a53f5c97410746d1d2e7a0a8693b1fa4082ba1efa877b', 'mrankso@hotmail.com', '192.168.1.137', NULL, 0, '2012-06-14 20:08:33'),
+	(10, 'hache', '77d9d0d6d90d6f0388bc626f6f3db845c85263df', NULL, NULL, 'hachegamer@gmail.com', '192.168.1.137', NULL, 0, '1000-01-01 00:00:00'),
+	(11, 'Muphasa', '59ab773b040ffb8d7710386fb8cc1f3bc0e81984', NULL, NULL, 'iagedopr@hotmail.com', '192.168.1.137', NULL, 0, '2012-06-01 23:41:03'),
+	(12, 'Prueba', 'd09b5895b334ac7894bd4bef337ace7f6ce8ae59', NULL, NULL, 'prueba@prueba.com', '127.0.0.1', NULL, 0, '1000-01-01 00:00:00');
 /*!40000 ALTER TABLE `user_data` ENABLE KEYS */;
 
 
@@ -186,7 +197,7 @@ CREATE TABLE IF NOT EXISTS `user_friends` (
   CONSTRAINT `user_friends_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user_data` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Stores the user''s friends ids';
 
--- Dumping data for table users.user_friends: ~22 rows (approximately)
+-- Dumping data for table users.user_friends: ~24 rows (approximately)
 DELETE FROM `user_friends`;
 /*!40000 ALTER TABLE `user_friends` DISABLE KEYS */;
 INSERT INTO `user_friends` (`user_id`, `friend_id`) VALUES
@@ -211,7 +222,9 @@ INSERT INTO `user_friends` (`user_id`, `friend_id`) VALUES
 	(8, 9),
 	(9, 8),
 	(7, 1),
-	(1, 7);
+	(1, 7),
+	(8, 2),
+	(2, 8);
 /*!40000 ALTER TABLE `user_friends` ENABLE KEYS */;
 
 
@@ -246,7 +259,7 @@ CREATE TABLE IF NOT EXISTS `user_games_relation` (
   CONSTRAINT `FK_USERS_DATA` FOREIGN KEY (`user_id`) REFERENCES `user_data` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Stores all the games that the different users have.';
 
--- Dumping data for table users.user_games_relation: ~15 rows (approximately)
+-- Dumping data for table users.user_games_relation: ~17 rows (approximately)
 DELETE FROM `user_games_relation`;
 /*!40000 ALTER TABLE `user_games_relation` DISABLE KEYS */;
 INSERT INTO `user_games_relation` (`user_id`, `game_id`) VALUES
@@ -255,7 +268,6 @@ INSERT INTO `user_games_relation` (`user_id`, `game_id`) VALUES
 	(1, 4),
 	(1, 5),
 	(1, 6),
-	(1, 7),
 	(2, 3),
 	(2, 4),
 	(2, 1),
@@ -264,8 +276,28 @@ INSERT INTO `user_games_relation` (`user_id`, `game_id`) VALUES
 	(7, 7),
 	(7, 4),
 	(9, 3),
-	(9, 1);
+	(9, 1),
+	(2, 2),
+	(2, 7),
+	(2, 5);
 /*!40000 ALTER TABLE `user_games_relation` ENABLE KEYS */;
+
+
+-- Dumping structure for table users.user_latest_news
+DROP TABLE IF EXISTS `user_latest_news`;
+CREATE TABLE IF NOT EXISTS `user_latest_news` (
+  `user_id` bigint(20) unsigned NOT NULL COMMENT 'The user''s unique ID.',
+  `latest_news_json` varchar(1024) COLLATE utf8_unicode_ci NOT NULL COMMENT 'The latest news encoded in a JSON string. First param is the ID of the user that "sends" the new, second param is the new type, and the third and optional param is some extra info used in the new like a game title or a second friend name.',
+  PRIMARY KEY (`user_id`),
+  CONSTRAINT `FK_user_data_latest_news` FOREIGN KEY (`user_id`) REFERENCES `user_data` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Stores the latest news for all users as a string encoded in JSON.';
+
+-- Dumping data for table users.user_latest_news: ~1 rows (approximately)
+DELETE FROM `user_latest_news`;
+/*!40000 ALTER TABLE `user_latest_news` DISABLE KEYS */;
+INSERT INTO `user_latest_news` (`user_id`, `latest_news_json`) VALUES
+	(1, '{"friendId":2,"newType":1,"extraInfo":{"friendName":"Seldon","timestamp":1350389377}};#;');
+/*!40000 ALTER TABLE `user_latest_news` ENABLE KEYS */;
 
 
 -- Dumping structure for table users.user_privacy
@@ -294,6 +326,29 @@ INSERT INTO `user_privacy` (`user_id`, `view_email`, `view_profile`, `view_lives
 	(10, 1, 1, 1),
 	(11, 1, 1, 3);
 /*!40000 ALTER TABLE `user_privacy` ENABLE KEYS */;
+
+
+-- Dumping structure for table users.user_private_keys
+DROP TABLE IF EXISTS `user_private_keys`;
+CREATE TABLE IF NOT EXISTS `user_private_keys` (
+  `user_private_key` varchar(50) COLLATE utf8_unicode_ci NOT NULL COMMENT 'The private key (is a MD5 key)'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Stores the authorized private keys to be able to register a new account in the website.';
+
+-- Dumping data for table users.user_private_keys: ~10 rows (approximately)
+DELETE FROM `user_private_keys`;
+/*!40000 ALTER TABLE `user_private_keys` DISABLE KEYS */;
+INSERT INTO `user_private_keys` (`user_private_key`) VALUES
+	('81febc381d06e467bb3e5229d4171bdd'),
+	('07c887bff8df122163fafc4a066bdfbe'),
+	('f82f40f44af719cfbd0fe2b89696eeae'),
+	('f6007d4f35f15367628934edcee74727'),
+	('8d509c28896865f8640f328f30f15721'),
+	('5182218de2efbaa87fb4de3558b1a01a'),
+	('964b438afe50ce795917eeb74e07cf0b'),
+	('b0d71a6d5282da3f82708c2f3bae7715'),
+	('957baedf225eb53d22f9a1808a89621f'),
+	('ea0bfea3dc19e431f2396200564ac225');
+/*!40000 ALTER TABLE `user_private_keys` ENABLE KEYS */;
 
 
 -- Dumping structure for table users.user_private_messages

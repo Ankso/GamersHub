@@ -7,9 +7,9 @@
 class Statements
 {
     // Basic load/save user data queries
-    const SELECT_USER_DATA_BY_ID              = "SELECT id, username, password_sha1, random_session_id, email, ip_v4, ip_v6, is_online, last_login FROM user_data WHERE id = ?";
-    const SELECT_USER_DATA_BY_USERNAME        = "SELECT id, username, password_sha1, random_session_id, email, ip_v4, ip_v6, is_online, last_login FROM user_data WHERE username = ?";
-    const REPLACE_USER_DATA                   = "REPLACE INTO user_data VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    const SELECT_USER_DATA_BY_ID              = "SELECT id, username, password_sha1, random_session_id, live_stream_id, email, ip_v4, ip_v6, is_online, last_login FROM user_data WHERE id = ?";
+    const SELECT_USER_DATA_BY_USERNAME        = "SELECT id, username, password_sha1, random_session_id, live_stream_id, email, ip_v4, ip_v6, is_online, last_login FROM user_data WHERE username = ?";
+    const REPLACE_USER_DATA                   = "REPLACE INTO user_data VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     const SELECT_USER_DATA_ID                 = "SELECT id FROM user_data WHERE username = ?";
     const SELECT_USER_DATA_USERNAME           = "SELECT username FROM user_data WHERE id = ?";
     // For user's data updates and profile changers functions
@@ -25,6 +25,7 @@ class Statements
     const SELECT_USER_DETAILED_DATA_AVATAR    = "SELECT avatar_path FROM user_detailed_data WHERE user_id = ?";
     const REPLACE_USER_DETAILED_DATA          = "REPLACE INTO user_detailed_data VALUES (?, ?, ?, ?, ?, ?)";
     const SELECT_USER_DETAILED_DATA           = "SELECT bio, birthday, country, city, avatar_path FROM user_detailed_data WHERE user_id = ?";
+    const SELECT_USER_LATEST_NEWS             = "SELECT latest_news_json FROM user_latest_news WHERE user_id = ?";
     // Privacy System
     const SELECT_USER_PRIVACY                 = "SELECT view_email, view_profile, view_livestream FROM user_privacy WHERE user_id = ?";
     const UPDATE_USER_PRIVACY                 = "UPDATE user_privacy SET view_email = ?, view_profile = ?, view_livestream = ? WHERE user_id = ?";
@@ -53,7 +54,7 @@ class Statements
     const SELECT_USER_FRIEND_REQUEST_ID       = "SELECT user_id FROM user_friend_requests WHERE user_id = ? AND requester_id = ?";
     const SELECT_USER_FRIEND_REQUESTS_COUNT   = "SELECT count(*) AS total FROM user_friend_requests WHERE user_id = ?";
     const INSERT_USER_FRIEND_REQUEST          = "INSERT INTO user_friend_requests (user_id, requester_id, message) VALUES (?, ?, ?)";
-    const SELECT_USER_FRIEND_REQUEST          = "SELECT b.requester_id, a.username, b.message, c.avatar_path FROM user_data AS a, user_friend_requests AS b, user_detailed_data AS c WHERE b.user_id = ? AND a.id = b.requester_id AND c.user_id = b.requester_id";
+    const SELECT_USER_FRIEND_REQUEST          = "SELECT b.requester_id, a.username, a.is_online, b.message, c.avatar_path FROM user_data AS a, user_friend_requests AS b, user_detailed_data AS c WHERE b.user_id = ? AND a.id = b.requester_id AND c.user_id = b.requester_id";
     const SELECT_USER_DATA_SEARCH             = "SELECT username FROM user_data WHERE username LIKE ? ORDER BY username LIMIT 10";
     const INSERT_USER_PRIVATE_MESSAGE         = "INSERT INTO user_private_messages (sender_id, receiver_id, message, date, readed) VALUES (?, ?, ?, ?, ?)";
     const SELECT_USER_PRIVATE_MESSAGE         = "SELECT message, date, readed FROM user_private_messages WHERE sender_id = ? AND receiver_id = ? ORDER BY date DESC";
@@ -66,9 +67,11 @@ class Statements
     const UPDATE_USER_DATA_RND_IDENTIFIER     = "UPDATE user_data SET random_session_id = ? WHERE id = ?";
     // Registration management
     const SELECT_USER_DATA_REGISTER           = "SELECT username, email FROM user_data WHERE username = ? OR email = ?";
-    const INSERT_USER_DATA                    = "INSERT INTO user_data (username, password_sha1, random_session_id, email, ip_v4, ip_v6, is_online, last_login) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    const INSERT_USER_DATA                    = "INSERT INTO user_data (username, password_sha1, random_session_id, live_stream_id, email, ip_v4, ip_v6, is_online, last_login) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     const DELETE_USER_DATA                    = "DELETE FROM user_data WHERE user_id = ?";
     const INSERT_USER_DETAILED_DATA           = "INSERT INTO user_detailed_data (user_id, bio, birthday, country, city) VALUES (?, ?, ?, ?, ?)";
+    const SELECT_USER_DATA_PRIVATE_KEY        = "SELECT * FROM user_private_keys WHERE user_private_key = ?";
+    const DELETE_USER_DATA_PRIVATE_KEY        = "DELETE FROM user_private_keys WHERE user_private_key = ?";
     //const DELETE_USER_DETAILED_DATA           = "DELETE FROM user_detailed_data WHERE user_id = ?";
     const INSERT_USER_PRIVACY                 = "INSERT INTO user_privacy (user_id, view_email, view_profile, view_livestream) VALUES (?, ?, ?, ?)";
     //const DELETE_USER_PRIVACY                 = "DELETE FROM user_privacy WHERE user_id = ?";
@@ -89,5 +92,10 @@ class Statements
     const SELECT_USER_GAMES_BASIC_DATA        = "SELECT a.id, a.title, a.webpage, a.description, a.image_path, a.exe_name FROM games.game_data AS a, users.user_games_relation AS b WHERE a.id = b.game_id AND b.user_id = ? ORDER BY a.title";
     const INSERT_USER_GAMES                   = "INSERT INTO user_games_relation VALUES (?, ?)";
     const DELETE_USER_GAMES                   = "DELETE FROM user_games_relation WHERE user_id = ? AND game_id = ?";
+    const SELECT_USER_GAME_GENRES             = "SELECT c.id, c.name FROM users.user_games_relation AS a, games.game_genres_relation AS b, games.game_genres AS c WHERE a.user_id = ? AND a.game_id = b.game_id AND b.genre_id = c.id";
+    const SELECT_GAME_ID_BY_2_GENRES          = "SELECT a.id FROM games.game_data AS a, games.game_genres_relation AS b WHERE b.genre_id = ? AND b.genre_id = ? AND a.id NOT IN (SELECT game_id FROM users.user_games_relation WHERE user_id = ?) LIMIT 100";
+    const SELECT_GAME_ID_BY_1_GENRE           = "SELECT a.id FROM games.game_data AS a, games.game_genres_relation AS b WHERE b.genre_id = ? AND a.id NOT IN (SELECT game_id FROM users.user_games_relation WHERE user_id = ?) LIMIT 100";
+    // Live stream utils
+    const UPDATE_USER_DATA_LIVE_STREAM_ID     = "UPDATE user_data SET live_stream_id = ? WHERE id = ?";
 }
 ?>

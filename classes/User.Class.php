@@ -53,6 +53,7 @@ Class User
             $this->_username = $userData['username'];
             $this->_passwordSha1 = $userData['password_sha1'];
             $this->_randomSessionId = $userData['random_session_id'];
+            $this->_liveStreamId = $userData['live_stream_id'];
             $this->_email = $userData['email'];
             if (is_null($userData['ip_v6']))
                 $this->_ip = $userData['ip_v4'];
@@ -84,6 +85,10 @@ Class User
         }
         return false;
     }
+    
+    /***********************************************************\
+    *  	                      RTS UTILS                         *
+    \***********************************************************/
     
     /**
      * Obtains the user's unique random session identifier for this login.
@@ -119,6 +124,49 @@ Class User
         if ($this->_db->ExecuteStmt(Statements::UPDATE_USER_DATA_RND_IDENTIFIER, $this->_db->BuildStmtArray("si", NULL, $this->GetId())))
         {
             $this->_randomSessionId = NULL;
+            return true;
+        }
+        return false;
+    }
+    
+    /***********************************************************\
+    *                      LIVE STREAM UTILS                    *
+    \***********************************************************/
+    
+    /**
+     * Obtains the live stream identifier of this user.
+     * @return string The live stream identifier token, with the pattern live_stream_[SHA256KEY]
+     */
+    public function GetLiveStreamId()
+    {
+        return $this->_liveStreamId;
+    }
+    
+    /**
+     * Generates a new live stream identifier for this user.
+     * @return boolean Returns true on success, else false.
+     */
+    public function GenerateLiveStreamId()
+    {
+        $unbreakable = $this->GetUsername() . "-:-" . MAGIC_STRING . "-" . microtime(true);
+        $unbreakable = "live_stream_" . hash("sha256", $unbreakable);
+        if ($this->_db->ExecuteStmt(Statements::UPDATE_USER_DATA_LIVE_STREAM_ID, $this->_db->BuildStmtArray("si", $unbreakable, $this->GetId())))
+        {
+            $this->_liveStreamId = $unbreakable;
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Destroys (deletes from database) the user's live stream identifier.
+     * @return boolean Returns true on success, else false.
+     */
+    public function DestroyLiveStreamId()
+    {
+        if ($this->_db->ExecuteStmt(Statements::UPDATE_USER_DATA_LIVE_STREAM_ID, $this->_db->BuildStmtArray("si", NULL, $this->GetId())))
+        {
+            $this->_liveStreamId = NULL;
             return true;
         }
         return false;
@@ -376,6 +424,28 @@ Class User
         return false;
     }
     
+    /**
+     * Returns a bidimensional array with all the latest news for this user (up to 10, that's the max number of stored latest news).
+     * @return mixed Returns USER_HAS_NO_LATEST_NEWS, the bidimensional array with the data or false if something goes wrong.
+     */
+    public function GetLatestNews()
+    {
+        if ($result = $this->_db->ExecuteStmt(Statements::SELECT_USER_LATEST_NEWS, $this->_db->BuildStmtArray("i", $this->GetId())))
+        {
+            if ($result->num_rows == 0)
+                return USER_HAS_NO_LATEST_NEWS;
+            
+            if ($row = $result->fetch_assoc())
+            {
+                $latestNews = explode(";#;", $row['latest_news_json']);
+                foreach ($latestNews as $i => $value)
+                    $latestNews[$i] = json_decode($latestNews[$i], true);
+                return $latestNews;
+            }
+        }
+        return false;
+    }
+    
     /***********************************************************\
     *  	                    PRIVACY SYSTEM                      *
     \***********************************************************/
@@ -575,6 +645,7 @@ Class User
             $friendRequests[] = array(
                 "id"         => $row['requester_id'],
                 "username"   => $row['username'],
+                "isOnline"   => $row['is_online'],
                 "message"    => $row['message'],
                 "avatarPath" => $row['avatar_path'],
             );
@@ -836,6 +907,12 @@ Class User
         return false;
     }
     
+    /**
+     * Inserts a board message reply in the database.
+     * @param long $messageId The ID ofthe message that's replied.
+     * @param string $content The content of the reply.
+     * @return boolean Returns true on success, else false.
+     */
     public function SendBoardMessageReply($messageId, $content)
     {
         if ($this->_db->ExecuteStmt(Statements::INSERT_USER_BOARD_REPLY, $this->_db->BuildStmtArray("iiss", $this->GetId(), $messageId, $content, date("Y-m-d H:i:s", time()))))
@@ -932,6 +1009,11 @@ Class User
         return false;
     }
     
+    /**
+     * Deletes a board message reply.
+     * @param long $replyId The identifier of the reply.
+     * @return boolean Returns true on success, else false.
+     */
     public function DeleteBoardMessageReply($replyId)
     {
         // TODO: Checks checks checks!
@@ -984,6 +1066,10 @@ Class User
     *  	                     GAMES SYSTEM                       *
     \***********************************************************/
     
+    /**
+     * Obtains basic data of all the user's games.
+     * @return mixed Returns a bidimensional array with the data.
+     */
     public function GetAllGames()
     {
         global $DATABASES;
@@ -1011,6 +1097,11 @@ Class User
         return false;
     }
     
+    /**
+     * Adds a game to this user in the DB.
+     * @param long $gameId The ID of the game to add.
+     * @return boolean Returns true on success, else false.
+     */
     public function AddGame($gameId)
     {
         if ($this->_db->ExecuteStmt(Statements::INSERT_USER_GAMES, $this->_db->BuildStmtArray("ii", $this->GetId(), $gameId)))
@@ -1018,6 +1109,11 @@ Class User
         return false;
     }
     
+    /**
+     * Removes a game of this user from the DB.
+     * @param long $gameId The ID of the game to be removed.
+     * @return boolean Returns true on success, else false.
+     */
     public function RemoveGame($gameId)
     {
         if ($this->_db->ExecuteStmt(Statements::DELETE_USER_GAMES, $this->_db->BuildStmtArray("ii", $this->GetId(), $gameId)))
@@ -1025,10 +1121,71 @@ Class User
         return false;
     }
     
+    /**
+     * Obtains one recommended game for this user, based on the genres the user plays most, the games that the user already has, etc.<br/>
+     * NOTE: This is a DB intensive function, it need several statistics and executes a lot of queries. Use with caution.<br/>
+     * NOTE2: This function is incomplete. The statisctics are by far less complex than the original idea, due to the fact that the recommendations system and the clans system is not yet implemented.
+     * @return mixed Returns a Game class with the recommended game, USER_HAS_NO_RECOMMENDED_GAMES if the algorithm can't select a proper game, or false if something goes horribly wrong.
+     */
+    public function GetRecommendedGame()
+    {
+        // First we look up for the favorite user genres
+        if ($result = $this->_db->ExecuteStmt(Statements::SELECT_USER_GAME_GENRES, $this->_db->BuildStmtArray("i", $this->GetId())))
+        {
+            if ($result->num_rows == 0)
+                return USER_HAS_NO_GAMES;
+            
+            // Now we should extract the favorite user genres and choose one genre to query the DB, based on the user most played ones.
+            $userGenres = array();
+            $count = 0;
+            while ($row = $result->fetch_assoc())
+            {
+                $userGenres[] = array(
+                    'id'         => $row['id'],
+                    'name'       => $row['name'],
+                );
+                ++$count;
+            }
+            // We can try to select a game with 2 different genres, to be more accurate
+            $genre = $userGenres[rand(0, $count - 1)];
+            $genre2 = $userGenres[rand(0, $count - 1)];
+            if ($result = $this->_db->ExecuteStmt(Statements::SELECT_GAME_ID_BY_2_GENRES, $this->_db->BuildStmtArray("iii", $genre, $genre2, $this->GetId())))
+            {
+                if ($result->num_rows == 0)
+                {
+                    $result = $this->_db->ExecuteStmt(Statements::SELECT_GAME_ID_BY_1_GENRE, $this->_db->BuildStmtArray("ii", $genre, $this->GetId()));
+                    if ($result->num_rows == 0)
+                        return USER_HAS_NO_RECOMMENDED_GAMES;
+                }
+                $rnd = rand(0, $result->num_rows);
+                $iter = 0;
+                $game = null;
+                while ($row = $result->fetch_assoc())
+                {
+                    if ($iter == $rnd)
+                    {
+                        $game = new Game($row['id']);
+                        break;
+                    }
+                    else
+                        ++$iter;
+                }
+                // Finally we have our choosen game
+                if ($game)
+                    return $game;
+                else
+                    // This should never happen anyway.
+                    return USER_HAS_NO_RECOMMENDED_GAMES;
+            }
+        }
+        return false;
+    }
+    
     private $_id;                // The user's unique ID
     private $_username;          // The user's username (nickname)
     private $_passwordSha1;      // The encripted user's password
     private $_randomSessionId;   // The user's unique session identifier. It changes on every new login.
+    private $_liveStreamId;      // The user's unique live stream ID, used by the Red5 server to identify this user's live stream.
     private $_email;             // The user's e-mail
     private $_ip;                // The user's last used IP address
     private $_isOnline;          // True if the user is online, else false

@@ -39,7 +39,14 @@ define("USER_DETAILS_BIO", 0);
 define("USER_DETAILS_BIRTHDAY", 1);
 define("USER_DETAILS_COUNTRY", 2);
 define("USER_DETAILS_CITY", 3);
-
+/**
+ * Latest news system
+ */
+define("USER_HAS_NO_LATEST_NEWS", -1);
+// News types
+define("NEW_TYPE_NEW_MESSAGE", 1);
+define("NEW_TYPE_NEW_FRIEND", 2);
+define("NEW_TYPE_NEW_GAME", 3);
 /**
  * Privacy system
  */
@@ -75,6 +82,7 @@ define("GAME_PUBLISHER_ID", 0);
 define("GAME_PUBLISHER_NAME", 1);
 define("GAME_PUBLISHER_DESCRIPTION", 2);
 define("USER_HAS_NO_GAMES", -1);
+define("USER_HAS_NO_RECOMMENDED_GAMES", -2);
 /**
  * String used to encrypt the unique user's random session identifier.
  * TODO: It must be put in a external-well-protected file when this becomes live.

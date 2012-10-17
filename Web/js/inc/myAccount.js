@@ -18,9 +18,6 @@ function MyAccountMenuOptionClick(event)
             $("#myAccountBasic").show();
             break;
         case "myAccountOptionPrivacy":
-            $("#radioEmail").buttonset();
-            $("#radioProfile").buttonset();
-            $("#radioLiveStream").buttonset();
             $("#myAccountPrivacy").show();
             break;
         case "myAccountOptionCustomization":

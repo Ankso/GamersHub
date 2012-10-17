@@ -58,24 +58,44 @@ function RemoveFriend(friendId)
     });
 }
 
-function HandleFriendRequest(requesterId, action)
+function HandleFriendRequest(requesterId, action, requesterUsername, requesterIsOnline)
 {
     if (!requesterId || !action)
         return;
+    
+    if (!requesterUsername)
+        requesterUsername = null;
     
     $.post("core/friends/addfriend.php", { requesterId: requesterId, action: action }, function(data) {
         if (data == "SUCCESS")
         {
             $("div#socialFriendRequestsError").text("");
             if (action == "ACCEPT")
+            {
                 $("div#socialManageRequest" + requesterId).html('<span class="socialAcceptFriendRequest">Request accepted!</span>');
+                // We should send the new to the RTS, if the socket object exitst (ergo we are in an user's space)
+                if (socket && user && friendsManager)
+                {
+                    socket.Emit(ClientOpcodes.OPCODE_REAL_TIME_NEW, {
+                        userId: user.id,
+                        newType: RealTimeNewTypes.NEW_TYPE_NEW_FRIEND,
+                        extraInfo: {
+                            newFriendName: requesterUsername,
+                            friendName: user.username,
+                            timestamp: Math.round((new Date().getTime() / 1000)),
+                        },
+                    });
+                    // And add the friend to the friends panel, if he is online.
+                    // Note that requesterIsOnline is a string, not a boolean value.
+                    if (requesterIsOnline == "1")
+                        friendsManager.AddToList(requesterId, requesterUsername, $("div#socialFriendRequest" + requesterId).children().attr("src"), false, null, false)
+                }
+            }
             else
                 $("div#socialManageRequest" + requesterId).html('<span class="socialDeclineFriendRequest">Request declined :(</span>');
             setTimeout(function() {
                 $("div#socialFriendRequest" + requesterId).parent().parent().fadeOut(1500);
             }, 5000);
-            // TODO: Here we must send a packet to the RTS with the new friend, for latest news section, etc,
-            // and add the new friend to the friends panel in the user main window. By the way, the page must be reloaded.
         }
         else
             $("div#socialFriendRequestsError").text("An error has occurred, please try again in a few seconds.")
