@@ -506,7 +506,7 @@ $(document).ready(function() {
     <div id="pluginStatus" style="position:fixed; bottom:0; left:0; font:12px Calibri; margin-bottom:60px;">Plugin status: Unknown</div>
     <div id="nodeServerStatus" style="position:fixed; bottom:0; left:0; font:12px Calibri; margin-bottom:40px;">RTS connection status: Unknown</div>
     <div id="pageGenerationTime" style="position:fixed; text-align:center; bottom:0; left:0; margin-bottom:20px; font:12px Calibri;">Page generated in <?php echo microtime(true) - $loadTime; ?> seconds.</div>
-    <div id="listStatus" style="position:fixed; bottom:0; left:0; font:12px Calibri;"><a href="todolist.html" style="color:#FFFFFF;">The list.</a></div>
+    <div style="position:fixed; bottom:0; left:0; font:12px Calibri;"><a id="listStatus" href="todolist.html" style="color:#FFFFFF; cursor:pointer;">The list.</a></div>
 </div>
 </body>
 </html>
