@@ -1,7 +1,4 @@
 <?php
-require_once($_SERVER['DOCUMENT_ROOT'] . "/../classes/Database.Class.php");
-require_once($_SERVER['DOCUMENT_ROOT'] . "/../common/SharedDefines.php");
-
 /**
  * Implementation of a custom sessions handler over the PHP's default, using a MySQL database to store sessions
  * @author Ankso

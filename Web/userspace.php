@@ -3,11 +3,15 @@
  * TODO: Redo "Add a friend" and "Remove friend" Structure.
  */
 $loadTime = microtime(true);
-require_once($_SERVER['DOCUMENT_ROOT'] . "/../common/SharedDefines.php");
-require_once($_SERVER['DOCUMENT_ROOT'] . "/../common/Common.php");
-require_once($_SERVER['DOCUMENT_ROOT'] . "/../classes/Database.Class.php");
-require_once($_SERVER['DOCUMENT_ROOT'] . "/../classes/User.Class.php");
-require_once($_SERVER['DOCUMENT_ROOT'] . "/../classes/SessionHandler.Class.php");
+require($_SERVER['DOCUMENT_ROOT'] . "/../common/SharedDefines.php");
+require($_SERVER['DOCUMENT_ROOT'] . "/../common/PreparedStatements.php");
+require($_SERVER['DOCUMENT_ROOT'] . "/../common/Common.php");
+require($_SERVER['DOCUMENT_ROOT'] . "/../classes/SessionHandler.Class.php");
+require($_SERVER['DOCUMENT_ROOT'] . "/../classes/Database.Class.php");
+require($_SERVER['DOCUMENT_ROOT'] . "/../classes/Developer.Class.php");
+require($_SERVER['DOCUMENT_ROOT'] . "/../classes/Publisher.Class.php");
+require($_SERVER['DOCUMENT_ROOT'] . "/../classes/Game.Class.php");
+require($_SERVER['DOCUMENT_ROOT'] . "/../classes/User.Class.php");
 
 $sessionsHandler = new CustomSessionsHandler();
 session_set_save_handler(

@@ -1,7 +1,4 @@
 <?php
-require_once($_SERVER['DOCUMENT_ROOT'] . "/../common/SharedDefines.php");
-require_once($_SERVER['DOCUMENT_ROOT'] . "/../classes/Database.Class.php");
-
 /**
  * Encripts the password using the username as modifier.
  * @param string $username The user's username

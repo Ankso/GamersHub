@@ -1,6 +1,10 @@
 <?php
-require_once($_SERVER['DOCUMENT_ROOT'] . "/../classes/User.Class.php");
-require_once($_SERVER['DOCUMENT_ROOT'] . "/../classes/SessionHandler.Class.php");
+require($_SERVER['DOCUMENT_ROOT'] . "/../common/PreparedStatements.php");
+require($_SERVER['DOCUMENT_ROOT'] . "/../common/SharedDefines.php");
+require($_SERVER['DOCUMENT_ROOT'] . "/../common/Common.php");
+require($_SERVER['DOCUMENT_ROOT'] . "/../classes/Database.Class.php");
+require($_SERVER['DOCUMENT_ROOT'] . "/../classes/User.Class.php");
+require($_SERVER['DOCUMENT_ROOT'] . "/../classes/SessionHandler.Class.php");
 
 $sessionsHandler = new CustomSessionsHandler();
 session_set_save_handler(

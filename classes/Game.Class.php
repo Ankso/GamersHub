@@ -1,10 +1,4 @@
 <?php
-require_once ($_SERVER['DOCUMENT_ROOT'] . "/../common/SharedDefines.php");
-require_once ($_SERVER['DOCUMENT_ROOT'] . "/../classes/Database.Class.php");
-require_once ($_SERVER['DOCUMENT_ROOT'] . "/../common/PreparedStatements.php");
-require_once ($_SERVER['DOCUMENT_ROOT'] . "/../classes/Developer.Class.php");
-require_once ($_SERVER['DOCUMENT_ROOT'] . "/../classes/Publisher.Class.php");
-
 /**
  * Main Game class. Stores all the info about a game, and all operations that a game must be able to do.
  * @author Ankso

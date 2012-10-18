@@ -75,7 +75,7 @@ function ConnectToRealTimeServer(data, userName)
     $.ajax({
         dataType: "jsonp",
         data: "",
-        url: "http://gamershub.no-ip.org:5124/login?userId=" + data.userId + "&sessionId=" + data.sessionId + "&callback=?",
+        url: "http://gamersnet.no-ip.org:5124/login?userId=" + data.userId + "&sessionId=" + data.sessionId + "&callback=?",
         success: function(response) {
             switch (response.status)
             {

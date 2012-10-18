@@ -1,9 +1,4 @@
 <?php
-require_once ($_SERVER['DOCUMENT_ROOT'] . "/../common/SharedDefines.php");
-require_once ($_SERVER['DOCUMENT_ROOT'] . "/../classes/Database.Class.php");
-require_once ($_SERVER['DOCUMENT_ROOT'] . "/../common/PreparedStatements.php");
-require_once ($_SERVER['DOCUMENT_ROOT'] . "/../classes/Game.Class.php");
-
 /**
  * Main User class. Can be initilized with a valid username or a valid user ID.<br />It stores data about an user, and has all the methods to access that data.<br />It also has methods representing user actions, like sending a private message to another user.<br />
  * TODO: Create classes for some objects like Board messages, Board message replies, Private messages, Custom options, Privacy options, etc, instead of returning bi-dimensional arrays or even tri-dimensional arrays with the values.
