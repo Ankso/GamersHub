@@ -1,11 +1,4 @@
-#GamersNet (The Project) README:
-
-```php
-/*
-First: Note that "GamersNet" is not (and probably it won't be) the final project name!
-So, is better call it just "The Project"
-*/
-```
+#GamersHub README:
 
 ##Documentation:
 - Git:
