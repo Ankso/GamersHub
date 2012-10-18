@@ -68,7 +68,7 @@ class Statements
     // Registration management
     const SELECT_USER_DATA_REGISTER           = "SELECT username, email FROM user_data WHERE username = ? OR email = ?";
     const INSERT_USER_DATA                    = "INSERT INTO user_data (username, password_sha1, random_session_id, live_stream_id, email, ip_v4, ip_v6, is_online, last_login) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    const DELETE_USER_DATA                    = "DELETE FROM user_data WHERE user_id = ?";
+    const DELETE_USER_DATA                    = "DELETE FROM user_data WHERE id = ?";
     const INSERT_USER_DETAILED_DATA           = "INSERT INTO user_detailed_data (user_id, bio, birthday, country, city) VALUES (?, ?, ?, ?, ?)";
     const SELECT_USER_DATA_PRIVATE_KEY        = "SELECT * FROM user_private_keys WHERE user_private_key = ?";
     const DELETE_USER_DATA_PRIVATE_KEY        = "DELETE FROM user_private_keys WHERE user_private_key = ?";
