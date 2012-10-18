@@ -1,7 +1,6 @@
 <?php
 require($_SERVER['DOCUMENT_ROOT'] . "/../common/PreparedStatements.php");
 require($_SERVER['DOCUMENT_ROOT'] . "/../common/SharedDefines.php");
-require($_SERVER['DOCUMENT_ROOT'] . "/../common/PreparedStatements.php");
 require($_SERVER['DOCUMENT_ROOT'] . "/../classes/SessionHandler.Class.php");
 require($_SERVER['DOCUMENT_ROOT'] . "/../classes/Database.Class.php");
 require($_SERVER['DOCUMENT_ROOT'] . "/../classes/User.Class.php");
