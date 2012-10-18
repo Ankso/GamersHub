@@ -633,7 +633,7 @@ Socket.prototype.ConnectToRealTimeServer = function() {
         return;
     
     // Open new socket with the real time events server
-    self.socket = io.connect("http://127.0.0.1:5124");
+    self.socket = io.connect("http://gamershub.no-ip.org:5124");
     // Called when the user tries to log in the Real Time Server and wants to open a socket.
     self.socket.on("requestCredentials", function(data) {
         // This is a special exception, the is no opcode here because this is part of the client-server handshaking process.
