@@ -69,7 +69,7 @@ else
 </head>
 <body>
 <div style="height:200px; width:450px; color:#FFFFFF; background-color:#000000; border:2px solid #FFFFFF; border-radius:0.7em;text-align:center;">
-<form action="ajax/changeavatar.php" method="post" enctype="multipart/form-data" style="margin-top:30px; border:1px #FFFFFF solid; border-radius:0.7em; margin-right:15px; margin-left:15px;padding:10px 10px 10px 10px;">
+<form action="core/ajax/changeavatar.php" method="post" enctype="multipart/form-data" style="margin-top:30px; border:1px #FFFFFF solid; border-radius:0.7em; margin-right:15px; margin-left:15px;padding:10px 10px 10px 10px;">
 	<input type="checkbox" name="gravatar" value="gravatar" <?php if ($user->IsUsingGravatar()) echo 'checked="checked"'; ?> />Use my <a href="http://gravatar.com" target="_blank" style="color:orange;">Gravatar</a> associated with this email
 	<br />or...<br />
 	<label for="file">Upload an image:</label><input type="file" name="avatar" id="avatar" style="background-color:#999999;border:1px #FFFFFF solid;border-radius:0.5em;" /><br /><br />
