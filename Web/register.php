@@ -119,7 +119,7 @@ if (isset($_POST['username']) && isset($_POST['email']) && isset($_POST['passwor
                 $user = new User($username);
                 // Begin the transaction and insert the data. This is to create all the rows in the related tables of the users Database.
                 $DB->BeginTransaction();
-                if ($DB->ExecuteStmt(Statements::INSERT_USER_DETAILED_DATA, $DB->BuildStmtArray("issssss", $user->GetId(), NULL, NULL, NULL, NULL, "/images/default_avatar.png")))
+                if ($DB->ExecuteStmt(Statements::INSERT_USER_DETAILED_DATA, $DB->BuildStmtArray("isssss", $user->GetId(), NULL, NULL, NULL, NULL, "/images/default_avatar.png")))
                 {
                     if ($DB->ExecuteStmt(Statements::INSERT_USER_PRIVACY, $DB->BuildStmtArray("iiii", $user->GetId(), 1, 1, 1)))
                     {
