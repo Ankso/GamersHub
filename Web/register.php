@@ -96,7 +96,6 @@ if (isset($_POST['username']) && isset($_POST['email']) && isset($_POST['passwor
     {
         if ($row = $result->fetch_assoc())      // If a coincidence was found in the DB, print the errors
         {
-            PrintForm();
             if ($row["username"] == $username)
                 echo "That username is already in use. <a href=\"/register.php\">Try again</a>.";
             else
@@ -109,9 +108,9 @@ if (isset($_POST['username']) && isset($_POST['email']) && isset($_POST['passwor
             $allOk = true;
             $data = NULL;
             if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6))
-                $data = $DB->BuildStmtArray("ssssssis", $username, CreateSha1Pass($username, $password), NULL, NULL, $email, NULL, $ip, 0, "1000-01-01 00:00:00");
+                $data = $DB->BuildStmtArray("sssssssis", $username, CreateSha1Pass($username, $password), NULL, NULL, $email, NULL, $ip, 0, "1000-01-01 00:00:00");
             else
-                $data = $DB->BuildStmtArray("ssssssis", $username, CreateSha1Pass($username, $password), NULL, NULL, $email, $ip, NULL, 0, "1000-01-01 00:00:00");
+                $data = $DB->BuildStmtArray("sssssssis", $username, CreateSha1Pass($username, $password), NULL, NULL, $email, $ip, NULL, 0, "1000-01-01 00:00:00");
             
             // Here we start the DB operations
             if ($DB->ExecuteStmt(Statements::INSERT_USER_DATA, $data))
@@ -144,7 +143,8 @@ if (isset($_POST['username']) && isset($_POST['email']) && isset($_POST['passwor
             if (!$allOk)
             {
                 $DB->RollbackTransaction();
-                $DB->ExecuteStmt(Statements::DELETE_USER_DATA, $DB->BuildStmtArray("i", $user->GetId()));
+                if (isset($user))
+                    $DB->ExecuteStmt(Statements::DELETE_USER_DATA, $DB->BuildStmtArray("i", $user->GetId()));
                 echo "An error occurred. Please, try again in a few moments. <a href=\"/register.php\">Try again</a>.";
             }
         }

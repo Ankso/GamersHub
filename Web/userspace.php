@@ -117,9 +117,8 @@ $(document).ready(function() {
         FadeOut(event, "logout.php");
     });
     // FancyBox(es)
-    $("a#friendRequests").fancybox();
     // Temp link to a list with the TODO:
-    $("a#listStatus").fancybox();
+    $("a.listStatus").fancybox();
     <?php
     if ($isOwner)
     {
@@ -506,7 +505,7 @@ $(document).ready(function() {
     <div id="pluginStatus" style="position:fixed; bottom:0; left:0; font:12px Calibri; margin-bottom:60px;">Plugin status: Unknown</div>
     <div id="nodeServerStatus" style="position:fixed; bottom:0; left:0; font:12px Calibri; margin-bottom:40px;">RTS connection status: Unknown</div>
     <div id="pageGenerationTime" style="position:fixed; text-align:center; bottom:0; left:0; margin-bottom:20px; font:12px Calibri;">Page generated in <?php echo microtime(true) - $loadTime; ?> seconds.</div>
-    <div style="position:fixed; bottom:0; left:0; font:12px Calibri;"><a id="listStatus" href="todolist.html" style="color:#FFFFFF; cursor:pointer;">The list.</a></div>
+    <div style="position:fixed; bottom:0; left:0; font:12px Calibri; cursor:pointer;"><a class="listStatus" href="todolist.html" style="color:#FFFFFF;">The list.</a></div>
 </div>
 </body>
 </html>
