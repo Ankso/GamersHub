@@ -15,7 +15,7 @@ register_shutdown_function("session_write_close");
 session_start();
 if (!isset($_SESSION['userId']))
 {
-    header("http://localhost/login.php");
+    header("http://gamershub.no-ip.org/login.php");
     die();
 }
 // Create the user object
@@ -26,7 +26,7 @@ if (isset($_POST['gravatar']))
     if ($_POST['gravatar'] === "gravatar")
     {
         if ($user->SetAvatarHost("http://www.gravatar.com/avatar/" . md5(strtolower(trim($user->GetEmail()))) . "?d=http://gamersnet.no-ip.org/images/default_avatar.png&s=200&r=pg"))
-            header("location:../" . $user->GetUsername());
+            header("location:../../" . $user->GetUsername());
         else
             die("A fatal error occurred while changing your settings. Please try again in a few moments.");
     }
@@ -50,7 +50,7 @@ elseif (isset($_FILES['avatar']))
                 if (!$user->SetAvatarHost("http://gamersnet.no-ip.org" . $relativeHost))
                     die("A fatal error occurred while connecting to the database server. Please try again soon.");
                 else
-                    header("location:../". $user->GetUsername());
+                    header("location:../../". $user->GetUsername());
             }
             else
                 die("An error occurred while uploading your avatar. Please try again.");
