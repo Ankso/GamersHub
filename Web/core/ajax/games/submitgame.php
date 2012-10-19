@@ -17,7 +17,6 @@ session_set_save_handler(
     );
 register_shutdown_function("session_write_close");
 session_start();
-/*
 if (!isset($_SESSION['userId']))
 {
     header("http://gamershub.no-ip.org/login.php");
@@ -25,7 +24,7 @@ if (!isset($_SESSION['userId']))
 }
 // Create the user object
 $user = new User($_SESSION['userId']);
-*/
+
 global $DATABASES;
 $gamesDb = new Database($DATABASES['GAMES']);
 $developers = array();
@@ -111,7 +110,7 @@ if (isset($_POST['title']) && isset($_POST['webpage']) && isset($_POST['descript
                     if (!$gamesDb->ExecuteStmt(Statements::INSERT_GAME_DATA_GENRE, $gamesDb->BuildStmtArray("ii", $gameId, $_POST['genres'][$i])))
                         die("An error occurred while uploading the game data. Please try again.");
                 }
-                //header("location:../../". $user->GetUsername());
+                header("location:../../". $user->GetUsername());
             }
             else
                 die("An error occurred while uploading the game data. Please try again.");
