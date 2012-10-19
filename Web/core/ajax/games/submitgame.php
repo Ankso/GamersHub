@@ -125,7 +125,7 @@ if (isset($_POST['title']) && isset($_POST['webpage']) && isset($_POST['descript
 <title>Submit new game</title>
 </head>
 <body>
-<div style="height:590px; width:650px; overflow:auto; color:#FFFFFF; background-color:#000000; border-radius:0.7em; text-align:center; padding:20px;">
+<div style="height:600px; width:650px; overflow:auto; color:#FFFFFF; background-color:#000000; border-radius:0.7em; text-align:center; padding:20px;">
 <form action="/core/ajax/games/submitgame.php" method="post" enctype="multipart/form-data" style="border-radius:0.7em; padding:25px; text-align:left; margin-left:100px;">
 	Game title: <input type="text" name="title" style="margin-left:85px;"/><br/><br/>
 	Game official webpage: <input type="text" name="webpage" style="margin-left:8px;"/><br/><br/>
