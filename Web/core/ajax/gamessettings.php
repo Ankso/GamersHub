@@ -73,8 +73,14 @@ $(document).ready(function() {
     });
     $("div#myGamesListedGameAddNew").unbind("click");
     $("div#myGamesListedGameAddNew").click(function() {
+		myGames.backToGamesList = false;
+		if (!$("div#myGamesGameView").is(":hidden"))
+			$("div#myGamesGameView").hide();
+		$("div#myGamesSearchInputContainer").show();
+		$("input#myGamesSearchInput").val("Search in the database...");
 		$("div#myGamesOptionDatabase").trigger("click");
     });
+    $("a#myGamesSubmitNewGame").fancybox();
     // This will do any pre-programmed action, for example, you can have a link to a game in the main user space,
     // with this, that link can open the My Games control panel and load automatically the game data.
     if (space.onControlPanelOpenAction)
@@ -91,7 +97,6 @@ $(document).ready(function() {
             }
         }
     }
-    $("a#myGamesSubmitNewGame").fancybox();
 });
 </script>
 <div class="myGamesMenu">
