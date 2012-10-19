@@ -19,7 +19,7 @@ register_shutdown_function("session_write_close");
 session_start();
 
 if (!isset($_POST['requesterId']) || !isset($_POST['action']) || !isset($_SESSION['userId']))
-    die(json_encode("status" => "FAILED"));
+    die(json_encode(array("status" => "FAILED")));
     
 // Create the user object
 // TODO: Aditional checks are required.
