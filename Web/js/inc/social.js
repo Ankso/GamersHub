@@ -52,6 +52,9 @@ function RemoveFriend(friendId)
         {
             $("div#socialFriendsError").text("");
             $("div#socialFriend" + friendId).parent().fadeOut(500);
+            // Remove the friend from the friends panel
+            if (friendsManager)
+                friendsManager.RemoveFromList(friendId);
         }
         else
             $("div#socialFriendsError").text("An error has occurred, please try again in a few seconds.");

@@ -1080,7 +1080,7 @@ Class User
      */
     public function HasGame($gameId)
     {
-        if ($result = $this->_db->ExecuteStmt(Statements::SELEC_USER_HAS_GAME, $this->_db->BuildStmtArray("ii", $this->GetId(), $gameId)))
+        if ($result = $this->_db->ExecuteStmt(Statements::SELECT_USER_HAS_GAME, $this->_db->BuildStmtArray("ii", $this->GetId(), $gameId)))
         {
             if ($result->num_rows == 0)
                 return false;
