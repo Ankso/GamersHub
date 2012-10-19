@@ -91,6 +91,7 @@ $(document).ready(function() {
             }
         }
     }
+    $("a#myGamesSubmitNewGame").fancybox();
 });
 </script>
 <div class="myGamesMenu">
@@ -102,7 +103,7 @@ $(document).ready(function() {
 <div id="myGamesDatabase" class="myGamesTab">
 	<div id="myGamesSearchInputContainer" class="myGamesSearchInputContainer">
     	<input id="myGamesSearchInput" class="myGamesSearchInput" type="text" value="Search in the database..."></input>
-    	<span style="margin-left:15px;"><i>Your game is not here? <a id="myGamesSubmitNewGame" href="#">Submit it!</a></i></span>
+    	<span style="margin-left:15px;"><i>Your game is not here? <a id="myGamesSubmitNewGame" href="core/ajax/games/submitgame.php">Submit it!</a></i></span>
     	<div id="myGamesListContainer">
     	</div>
     </div>

@@ -82,7 +82,7 @@ class Statements
     const SELECT_USER_CUSTOM_OPTIONS          = "SELECT option_livestream, option_livestream_livecomments, option_latest_news FROM user_custom_options WHERE user_id = ?";
     // Games system
     const SELECT_GAME_DATA                    = "SELECT a.title, a.webpage, a.description, a.image_path, b.id AS developer_id, b.name AS developer_name, b.webpage AS developer_webpage, b.description AS developer_description, c.id AS publisher_id, c.name AS publisher_name, c.webpage AS publisher_webpage, c.description AS publisher_description FROM game_data AS a, game_developers AS b, game_publishers AS c WHERE a.id = ? AND a.developer_id = b.id AND a.publisher_id = c.id";
-    const INSERT_GAME_DATA                    = "INSERT INTO game_data (id, title, webpage, description, developer_id, publisher_id, image_path) VALUES (?, ?, ?, ?, ?, ?)";
+    const INSERT_GAME_DATA                    = "INSERT INTO game_data (title, webpage, description, developer_id, publisher_id, image_path, exe_name) VALUES (?, ?, ?, ?, ?, ?, ?)";
     const DELETE_GAME_DATA                    = "DELETE FROM game_data WHERE id = ?";
     const SELECT_GAME_GENRES                  = "SELECT a.name FROM game_genres AS a, game_genres_relation AS b WHERE b.game_id = ? AND b.genre_id = a.id";
     const SELECT_GAME_DEVELOPER_DATA          = "SELECT name, webpage, description FROM game_developers WHERE id = ?";
