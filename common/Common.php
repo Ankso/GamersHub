@@ -116,4 +116,23 @@ function GetOnlineUsersCount()
     }
     return false;
 }
+
+/**
+ * Determines if an user is connected to the website right now.
+ * @param long $userId The unique user identifier.
+ * @return boolean Returns true if the user is online, else false. Note that the function also returns false if the ID is invalid or other problems.
+ */
+function IsUserOnline($userId)
+{
+    global $DATABASES;
+    
+    $usersDb = New Database($DATABASES['USERS']);
+    if ($result = $usersDb->ExecuteStmt(Statements::SELECT_USER_IS_ONLINE, $usersDb->BuildStmtArray("i", $userId)))
+    {
+        if ($row = $result->fetch_assoc())
+            if ($row['is_online'])
+                return true;
+    }
+    return false;
+}
 ?>

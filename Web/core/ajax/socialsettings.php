@@ -47,6 +47,14 @@ $(document).ready(function() {
         		},
         		"Cancel": function() {
         			dialogObject.dialogItem.dialog("close");
+        			$("div#socialRemoveFriend").unbind("click");
+        			$("div#socialRemoveFriend").click(function(event) {
+        		        dialogObject.friendId = $(event.target).attr("data-id");
+        		        dialogObject.dialogItem.dialog("open");
+        		        $(event.target).unbind("click");
+        		        $(event.target).text("Removing...");
+        		    });
+        			$("div#socialRemoveFriend").text("Remove");
         		},
         	},
         }),
@@ -55,12 +63,20 @@ $(document).ready(function() {
     $("div#socialRemoveFriend").click(function(event) {
         dialogObject.friendId = $(event.target).attr("data-id");
         dialogObject.dialogItem.dialog("open");
+        $(event.target).unbind("click");
+        $(event.target).text("Removing...");
     });
     $("span.socialAcceptFriendRequest").click(function(event) {
-		HandleFriendRequest($(event.target).parent().attr("data-id"), "ACCEPT", $(event.target).parent().attr("data-username"), $(event.target).parent().attr("data-isOnline"));
+		HandleFriendRequest($(event.target).parent().attr("data-id"), "ACCEPT", $(event.target).parent().attr("data-username"));
+		// This will disable multiple requests
+		$(event.target).unbind("click");
+		$(event.target).parent().html('<span class="socialAcceptFriendRequest">Accepting...</span>');
     });
     $("span.socialDeclineFriendRequest").click(function(event) {
-        HandleFriendRequest($(event.target).parent().attr("data-id"), "DECLINE" /* No more params are needed. */);
+        HandleFriendRequest($(event.target).parent().attr("data-id"), "DECLINE" /* No more params are needed here. */);
+        // The same as above
+        $(event.target).unbind("click");
+        $(event.target).parent().html('<span class="socialDeclineFriendRequest">Rejecting...</span>');
     });
     $("a.socialPrivateMessageUnreaded").click(function(event) {
 		SocialMarkMessageAsReaded(event);
@@ -120,7 +136,7 @@ if ($friendRequests !== USER_HAS_NO_FRIEND_REQUESTS)
     		</div>
     		<div class="socialFriendItemName">
     			<a class="socialPlainLink" href="<?php echo "/", $friendRequests[$i]['username']; ?>"><?php echo $friendRequests[$i]['username']; ?></a>
-    			<div class="socialManageFriendRequest" data-id="<?php echo $friendRequests[$i]['id']; ?>" data-username="<?php echo $friendRequests[$i]['username']; ?>" data-isOnline="<?php echo $friendRequests[$i]['isOnline']; ?>">
+    			<div class="socialManageFriendRequest" data-id="<?php echo $friendRequests[$i]['id']; ?>" data-username="<?php echo $friendRequests[$i]['username']; ?>">
     				<span class="socialAcceptFriendRequest">Accept</span> - <span class="socialDeclineFriendRequest">Decline</span>
     			</div>
     		</div>

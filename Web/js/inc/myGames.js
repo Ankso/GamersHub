@@ -7,6 +7,7 @@ function MyGames()
     this.backToGamesList = false;
     this.totalAddedGames = 0;
     this.addedGames = new Array();
+    this.isGameLoading = false;
 }
 
 MyGames.prototype.MenuOptionClick = function (event)
@@ -66,7 +67,13 @@ MyGames.prototype.LoadGame = function (gameId)
     
     if (!gameId)
         return false;
-
+    
+    // Don't start loading a new game until the last petition ends.
+    if (self.isGameLoading)
+        return;
+    
+    self.isGameLoading = true;
+    
     var htmlCode;
     $.post("core/ajax/games/gameinfo.php", { id: gameId }, function(data) {
         if (data)
@@ -110,11 +117,13 @@ MyGames.prototype.LoadGame = function (gameId)
                 htmlCode = htmlCode + '    </div>\n'
                     + '</div>\n';
                 $("#myGamesGameViewInfoContainer").html(htmlCode);
-                $("label.myGamesRemoveGameButton").click(function() {
+                $("label.myGamesRemoveGameButton").click(function(event) {
                     myGames.RemoveGame(gameId);
+                    $(event.target).unbind("click");
                 });
-                $("label.myGamesAddGameButton").click(function() {
+                $("label.myGamesAddGameButton").click(function(event) {
                     myGames.AddGame(gameId, data.title);
+                    $(event.target).unbind("click");
                 });
                 if (!self.backToGamesList)
                 {
@@ -127,6 +136,7 @@ MyGames.prototype.LoadGame = function (gameId)
                 $("#myGamesListContainer").html("");
             }
         }
+        self.isGameLoading = false;
     }, "json");
     return true;
 }
@@ -139,6 +149,10 @@ MyGames.prototype.AddGame = function(gameId, gameTitle)
         if (data && data == "SUCCESS")
         {
             $("label.myGamesAddGameButton").parent().html('<label class="myGamesRemoveGameButton">Remove game</label>\n');
+            $("label.myGamesRemoveGameButton").click(function(event) {
+                myGames.RemoveGame(gameId);
+                $(event.target).unbind("click");
+            });
             $("div#myGamesMyGames").append('<div class="myGamesListedGame" data-id="' + gameId + '">\n'
                     + '    <div><img src="' + $("img.myGamesGameViewCoverImg").attr("src") + '" style="width:170px; height:250px; border-radius:0.5em;"/></div>\n'
                     + '    <div class="myGamesGameName">' + $("label#title").text() + '</div>\n'
@@ -181,6 +195,10 @@ MyGames.prototype.RemoveGame = function(gameId)
         if (data && data == "SUCCESS")
         {
             $("label.myGamesRemoveGameButton").parent().html('<label class="myGamesAddGameButton">Add game</label>\n');
+            $("label.myGamesAddGameButton").click(function(event) {
+                myGames.AddGame(gameId, data.title);
+                $(event.target).unbind("click");
+            });
             $("div.myGamesListedGame").each(function(index) {
                 if ($(this).attr("data-id") == gameId)
                     $(this).remove();

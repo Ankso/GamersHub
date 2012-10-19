@@ -502,6 +502,10 @@ Class User
      */
     public function AcceptFriend($friendId)
     {
+        // Check if users aren't already friends
+        if ($this->IsFriendOf($friendId))
+            return false;
+        
         // Insert the new friends in the DB (both are friends now, we must insert 2 records, at least for now)
         if ($this->_db->ExecuteStmt(Statements::INSERT_USER_FRIEND, $this->_db->BuildStmtPackage(2, "ii", $this->GetId(), $friendId, $friendId, $this->GetId())))
             // Remove the friend request
@@ -530,6 +534,9 @@ Class User
      */
     public function RemoveFriend($friendId)
     {
+        if (!$this->IsFriendOf($friendId))
+            return false;
+        
         // We must "set as removed" - beacuse we aren't going to remove anything at all - all the private messages and other kind of archives that the users may have
         if ($this->_db->ExecuteStmt(Statements::DELETE_USER_FRIEND, $this->_db->BuildStmtPackage(2, "ii", $this->GetId(), $friendId, $friendId, $this->GetId())))
             return true;
@@ -616,6 +623,11 @@ Class User
             return false;
         if ($result->num_rows > 0)
             return FRIEND_REQUEST_ALREADY_SENT;
+        $result = $this->_db->ExecuteStmt(Statements::SELECT_USER_FRIEND_REQUEST_ID, $this->_db->BuildStmtArray("ii", $this->GetId(), $friendId));
+        if ($result === false)
+            return false;
+        if ($result->num_rows > 0)
+            return YOU_ALREADY_HAVE_FRIEND_REQUEST;
         $result = $this->_db->ExecuteStmt(Statements::INSERT_USER_FRIEND_REQUEST,
             $this->_db->BuildStmtArray("iis", $friendId, $this->Getid(), (is_null($message) ? ($this->Getusername() . " wants to be your friend!") : $message)));
         if ($result)
@@ -1062,6 +1074,22 @@ Class User
     \***********************************************************/
     
     /**
+     * Determines if the user has a specific game added to his or her games list.
+     * @param long gameId The unique identifier of the game.
+     * @return boolean Returns true if the user has the game, else false, and also returns false if something goes wrong.
+     */
+    public function HasGame(gameId)
+    {
+        if ($result = $this->_db->ExecuteStmt(Statements::SELEC_USER_HAS_GAME, $this->_db->BuildStmtArray("i", $this->GetId())))
+        {
+            if ($result->num_rows == 0)
+                return false;
+            return true;
+        }
+        return false;
+    }
+    
+    /**
      * Obtains basic data of all the user's games.
      * @return mixed Returns a bidimensional array with the data.
      */
@@ -1099,6 +1127,9 @@ Class User
      */
     public function AddGame($gameId)
     {
+        if ($this->HasGame($gameId))
+            return false;
+        
         if ($this->_db->ExecuteStmt(Statements::INSERT_USER_GAMES, $this->_db->BuildStmtArray("ii", $this->GetId(), $gameId)))
             return true;
         return false;

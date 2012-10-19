@@ -27,12 +27,27 @@ $customOptions = $user->GetCustomOptions();
 <script type="text/javascript">
 $(document).ready(function () {
     $("div.myAccountMenuOption").click(function(event) {
-    	MyAccountMenuOptionClick(event);
+    	myAccount.MenuOptionClick(event);
     });
 	$("div#myAccountOptionBasic").trigger("click");
 	$("#radioEmail").buttonset();
     $("#radioProfile").buttonset();
     $("#radioLiveStream").buttonset();
+    $("div.myAccountSubmit").click(function(event) {
+		switch ($(event.target).attr("data-config"))
+		{
+		    case "basic":
+		        myAccount.SubmitBasicChanges();
+			    break;
+		    case "privacy":
+		        myAccount.SubmitPrivacyChanges();
+			    break;
+		    case "customization":
+		        myAccount.SubmitCustomizationChanges();
+			    break;
+		}
+		$(event.target).unbind("click");
+    });
 });
 </script>
 <div class="myAccountMenu">
@@ -47,7 +62,7 @@ $(document).ready(function () {
 	<div class="myAccountTabItem">E-mail: <input id="email" type="text" value="<?php echo $user->GetEmail(); ?>" /></div>
 	<div class="myAccountTabItem">New password: <input id="password" type="password" /></div>
 	<div class="myAccountTabItem">Retype new password: <input id="passwordCheck" type="password" /></div>
-	<div class="myAccountSubmit" onclick="SubmitBasicChanges();">Save</div><span id="myAccountSubmitResult" class="myAccountSubmitResult"></span>
+	<div class="myAccountSubmit" data-config="basic">Save</div><span id="myAccountSubmitResult" class="myAccountSubmitResult"></span>
 	<div style="margin-top:55px; font:15px Calibri;"><i>*Note: This field can't be modified without the Staff's authorization.</i></div>
 </div>
 <div id="myAccountPrivacy" class="myAccountTab">
@@ -82,7 +97,7 @@ $(document).ready(function () {
 			</div>
 		</div>
 	</div>
-	<div class="myAccountSubmit" onclick="SubmitPrivacyChanges();">Save</div><span id="myAccountSubmitResult" class="myAccountSubmitResult"></span>
+	<div class="myAccountSubmit" data-config="privacy">Save</div><span id="myAccountSubmitResult" class="myAccountSubmitResult"></span>
 </div>
 <div id="myAccountCustomization" class="myAccountTab">
 	<div class="myAccountTabItem">
@@ -99,7 +114,7 @@ $(document).ready(function () {
 			<input type="checkbox" name="latestNews" <?php if ($customOptions[CUSTOM_OPTION_LATEST_NEWS]) echo 'checked="checked"'; ?> />Enable Latest News section.
 		</div>
 	</div>
-	<div class="myAccountSubmit" onclick="SubmitCustomizationChanges();">Save</div><span id="myAccountSubmitResult" class="myAccountSubmitResult"></span>
+	<div class="myAccountSubmit"  data-config="customization">Save</div><span id="myAccountSubmitResult" class="myAccountSubmitResult"></span>
 </div>
 <div id="myAccountSecurity" class="myAccountTab">
 	<div class="myAccountTabItem">Your last login: <?php echo ($user->GetLastLogin() != "1000-01-01 00:00:00") ? $user->GetLastLogin() : "This is your first login"; ?></div>

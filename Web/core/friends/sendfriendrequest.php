@@ -36,6 +36,8 @@ if(isset($_POST['username']))
             echo 'USER_IS_ALREADY_FRIEND';
         elseif ($res === FRIEND_REQUEST_ALREADY_SENT)
             echo 'REQUEST_ALREADY_SENT';
+        elseif ($res === YOU_ALREADY_HAVE_FRIEND_REQUEST)
+            echo 'YOU_ALREADY_HAVE_FRIEND_REQUEST';
         elseif ($res === false)
             echo 'FAILED';
         elseif ($res === true)

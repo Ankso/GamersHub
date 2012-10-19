@@ -58,7 +58,7 @@ function RemoveFriend(friendId)
     });
 }
 
-function HandleFriendRequest(requesterId, action, requesterUsername, requesterIsOnline)
+function HandleFriendRequest(requesterId, action, requesterUsername)
 {
     if (!requesterId || !action)
         return;
@@ -67,7 +67,7 @@ function HandleFriendRequest(requesterId, action, requesterUsername, requesterIs
         requesterUsername = null;
     
     $.post("core/friends/addfriend.php", { requesterId: requesterId, action: action }, function(data) {
-        if (data == "SUCCESS")
+        if (data.status == "SUCCESS")
         {
             $("div#socialFriendRequestsError").text("");
             if (action == "ACCEPT")
@@ -86,8 +86,8 @@ function HandleFriendRequest(requesterId, action, requesterUsername, requesterIs
                         },
                     });
                     // And add the friend to the friends panel, if he is online.
-                    // Note that requesterIsOnline is a string, not a boolean value.
-                    if (requesterIsOnline == "1")
+                    // Note that data.isOnline is a string, not a boolean value.
+                    if (data.isOnline == "1")
                         friendsManager.AddToList(requesterId, requesterUsername, $("div#socialFriendRequest" + requesterId).children().attr("src"), false, null, false)
                 }
             }
@@ -100,7 +100,7 @@ function HandleFriendRequest(requesterId, action, requesterUsername, requesterIs
         else
             $("div#socialFriendRequestsError").text("An error has occurred, please try again in a few seconds.")
             
-    });
+    }, "json");
 }
 
 function SocialLookup(friendname)

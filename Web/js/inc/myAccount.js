@@ -2,8 +2,11 @@
  * Functions for the account configuration menu.
  */
 
-function MyAccountMenuOptionClick(event)
+function MyAccount()
 {
+}
+
+MyAccount.prototype.MenuOptionClick = function(event) {
     $("div.myAccountTab").hide();
     $("div.myAccountMenuOption").attr("style", "");
     $("span.myAccountSubmitResult").text("");
@@ -31,8 +34,7 @@ function MyAccountMenuOptionClick(event)
     }
 }
 
-function SubmitBasicChanges()
-{
+MyAccount.prototype.SubmitBasicChanges = function() {
     var email = $("#email").val();
     var password = $("#password").val();
     var passwordCheck = $("#passwordCheck").val();
@@ -63,11 +65,26 @@ function SubmitBasicChanges()
             $("#myAccountSubmitResult").css("color", "#FF0000");
             $("#myAccountSubmitResult").text("An error occurred. Please make sure that you are connected to the internet.");
         }
+        $("div.myAccountSubmit").unbind("click");
+        $("div.myAccountSubmit").click(function(event) {
+            switch ($(event.target).attr("data-config"))
+            {
+                case "basic":
+                    myAccount.SubmitBasicChanges();
+                    break;
+                case "privacy":
+                    myAccount.SubmitPrivacyChanges();
+                    break;
+                case "customization":
+                    myAccount.SubmitCustomizationChanges();
+                    break;
+            }
+            $(event.target).unbind("click");
+        });
     });
 }
 
-function SubmitPrivacyChanges()
-{
+MyAccount.prototype.SubmitPrivacyChanges = function() {
     var email = $("input:radio[name=email]:checked").val();
     var profileDetails = $("input:radio[name=profileDetails]:checked").val();
     var liveStream = $("input:radio[name=liveStream]:checked").val();
@@ -92,11 +109,26 @@ function SubmitPrivacyChanges()
             $("span.myAccountSubmitResult").css("color", "#FF0000");
             $("span.myAccountSubmitResult").text("An error occurred. Please make sure that you are connected to the internet.");
         }
+        $("div.myAccountSubmit").unbind("click");
+        $("div.myAccountSubmit").click(function(event) {
+            switch ($(event.target).attr("data-config"))
+            {
+                case "basic":
+                    myAccount.SubmitBasicChanges();
+                    break;
+                case "privacy":
+                    myAccount.SubmitPrivacyChanges();
+                    break;
+                case "customization":
+                    myAccount.SubmitCustomizationChanges();
+                    break;
+            }
+            $(event.target).unbind("click");
+        });
     });
 }
 
-function SubmitCustomizationChanges()
-{
+MyAccount.prototype.SubmitCustomizationChanges = function() {
     var liveStream = ($("input:checkbox[name=liveStream]").is(":checked") ? 1 : 0);
     var liveStreamComments = ($("input:checkbox[name=liveStreamComments]").is(":checked") ? 1 : 0);
     var latestNews = ($("input:checkbox[name=latestNews]").is(":checked") ? 1 : 0);
@@ -121,5 +153,23 @@ function SubmitCustomizationChanges()
             $("span.myAccountSubmitResult").css("color", "#FF0000");
             $("span.myAccountSubmitResult").text("An error occurred. Please make sure that you are connected to the internet.");
         }
+        $("div.myAccountSubmit").unbind("click");
+        $("div.myAccountSubmit").click(function(event) {
+            switch ($(event.target).attr("data-config"))
+            {
+                case "basic":
+                    myAccount.SubmitBasicChanges();
+                    break;
+                case "privacy":
+                    myAccount.SubmitPrivacyChanges();
+                    break;
+                case "customization":
+                    myAccount.SubmitCustomizationChanges();
+                    break;
+            }
+            $(event.target).unbind("click");
+        });
     });
 }
+
+var myAccount = new MyAccount();

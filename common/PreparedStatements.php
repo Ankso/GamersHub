@@ -62,6 +62,7 @@ class Statements
     const SELECT_USER_PRIVATE_MESSAGES_COUNT  = "SELECT count(*) FROM user_private_messages WHERE receiver_id = ? AND readed = 0";
     const SELECT_USER_PRIVATE_CONVERSATION    = "SELECT sender_id, message, date, readed FROM user_private_messages WHERE sender_id IN (?, ?) AND receiver_id IN (?, ?) ORDER BY date DESC";
     const UPDATE_USER_PRIVATE_MESSAGES_READED = "UPDATE user_private_messages SET readed = ? WHERE receiver_id = ? AND sender_id = ?";
+    const SELECT_USER_IS_ONLINE               = "SELECT is_online FROM user_data WHERE id = ?";
     // Login system
     const SELECT_USER_DATA_LOGIN              = "SELECT username, password_sha1 FROM user_data WHERE username = ?";
     const UPDATE_USER_DATA_RND_IDENTIFIER     = "UPDATE user_data SET random_session_id = ? WHERE id = ?";
@@ -95,6 +96,7 @@ class Statements
     const SELECT_USER_GAME_GENRES             = "SELECT c.id, c.name FROM users.user_games_relation AS a, games.game_genres_relation AS b, games.game_genres AS c WHERE a.user_id = ? AND a.game_id = b.game_id AND b.genre_id = c.id";
     const SELECT_GAME_ID_BY_2_GENRES          = "SELECT a.id FROM games.game_data AS a, games.game_genres_relation AS b WHERE b.genre_id = ? AND b.genre_id = ? AND a.id NOT IN (SELECT game_id FROM users.user_games_relation WHERE user_id = ?) LIMIT 100";
     const SELECT_GAME_ID_BY_1_GENRE           = "SELECT a.id FROM games.game_data AS a, games.game_genres_relation AS b WHERE b.genre_id = ? AND a.id NOT IN (SELECT game_id FROM users.user_games_relation WHERE user_id = ?) LIMIT 100";
+    const SELECT_USER_HAS_GAME                = "SELECT game_id FROM user_games_relation WHERE user_id = ?";
     // Live stream utils
     const UPDATE_USER_DATA_LIVE_STREAM_ID     = "UPDATE user_data SET live_stream_id = ? WHERE id = ?";
 }

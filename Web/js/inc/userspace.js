@@ -540,9 +540,6 @@ Space.prototype.LoadPlugin = function() {
         // This timeouts are only for visual purposes.
         setTimeout(function() {
             $("div#advertMessagePopUp").slideDown(500);
-            setTimeout(function() {
-                $("div.mainContent").css("margin-top", "100px");
-            }, 200);
         }, 3000);
         $("a#pluginDownloadLink").click(function() {
             // Create temp link to spawn fancybox:

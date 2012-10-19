@@ -65,8 +65,13 @@ function SendFriendRequest()
 			}
 			else if (data === 'REQUEST_ALREADY_SENT')
 			{
-				message = "You have already sent a friend request to that person"
+				message = "You have already sent a friend request to that person.";
 				bgColor = '#FF0000';
+			}
+			else if (data === 'YOU_ALREADY_HAVE_FRIEND_REQUEST')
+			{
+			    message = "You have already a friend request from this person. Accept or decline it!";
+			    bgColor = '#FF0000';
 			}
 		}
 		else
