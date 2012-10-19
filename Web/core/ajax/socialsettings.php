@@ -105,7 +105,7 @@ if ($friends != USER_HAS_NO_FRIENDS)
 			<img src="<?php echo $friends[$i]['avatarPath']; ?>" style="width:50px; height:50px; border-radius:0.5em;" />
 		</div>
 		<div class="socialFriendItemName">
-			<a class="socialPlainLink" href="<?php echo "/", $friends[$i]['username']; ?>"><?php echo $friends[$i]['username']; ?></a>
+			<div><a class="socialPlainLink" href="<?php echo "/", $friends[$i]['username']; ?>"><?php echo $friends[$i]['username']; ?></a></div>
 			<div id="socialRemoveFriend" class="socialRemoveFriend" data-id="<?php echo $friends[$i]['id']; ?>" data-username="<?php echo $friends[$i]['username']; ?>">Remove</div>
 		</div>
 	</div>
