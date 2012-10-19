@@ -135,4 +135,23 @@ function IsUserOnline($userId)
     }
     return false;
 }
+
+/**
+ * Determines if a given game title is already in the database.
+ * @param string $gameTitle The title of the game to check.
+ * @return mixed Returns the game ID if the game exists, else false. Also it returns false if something goes wrong.
+ */
+function GameExists($gameTitle)
+{
+    global $DATABASES;
+    
+    $gamesDb = New Database($DATABASES['GAMES']);
+    if ($result = $gamesDb->ExecuteStmt(Statements::SELECT_GAME_EXISTS, $gamesDb->BuildStmtArray("s", $gameTitle)))
+    {
+        if ($result->num_rows > 0)
+            if ($row = $result->fetch_assoc())
+                return $row['id'];
+    }
+    return false;
+}
 ?>

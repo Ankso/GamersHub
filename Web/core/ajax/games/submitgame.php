@@ -1,6 +1,7 @@
 <?php
 require($_SERVER['DOCUMENT_ROOT'] . "/../common/PreparedStatements.php");
 require($_SERVER['DOCUMENT_ROOT'] . "/../common/SharedDefines.php");
+require($_SERVER['DOCUMENT_ROOT'] . "/../common/Common.php");
 require($_SERVER['DOCUMENT_ROOT'] . "/../classes/SessionHandler.Class.php");
 require($_SERVER['DOCUMENT_ROOT'] . "/../classes/Database.Class.php");
 require($_SERVER['DOCUMENT_ROOT'] . "/../classes/User.Class.php");
@@ -63,8 +64,29 @@ else
         "name" => "Error",
     );
 }
-if (isset($_POST['title']) && isset($_POST['webpage']) && isset($_POST['description']) && isset($_POST['developer']) && isset($_POST['publisher']) && isset($_POST['exename']) && isset($_FILES['cover']))
+$genres = array();
+if ($result = $gamesDb->Execute("SELECT id, name FROM game_genres"))
 {
+    while ($row = $result->fetch_assoc())
+    {
+        $genres[] = array(
+            "id"   => $row['id'],
+            "name" => $row['name'],
+        );
+    }
+}
+else
+{
+    $genres[0] = array(
+        "id"   => "0",
+        "name" => "Error",
+    );
+}
+if (isset($_POST['title']) && isset($_POST['webpage']) && isset($_POST['description']) && isset($_POST['developer']) && isset($_POST['publisher']) && isset($_POST['exename']) && isset($_FILES['cover']) && isset($_POST['genres']))
+{
+    if (GameExists($_POST['title']))
+        die("That game is already in the database!");
+    
     if (($_FILES['cover']['type'] == "image/gif" || $_FILES['cover']['type'] == "image/jpeg" || $_FILES['cover']['type'] == "image/pjpeg" || $_FILES['cover']['type'] == "image/png") && $_FILES['cover']['size'] <= 2024000)
     {
         if ($_FILES['cover']['error'] > 0)
@@ -74,13 +96,22 @@ if (isset($_POST['title']) && isset($_POST['webpage']) && isset($_POST['descript
             $relativeHost = "/images/games/". str_replace(" ", "_", $_POST['title']) ."/". str_replace(" ", "_", $_POST['title']) ."_cover.". substr($_FILES['cover']['name'], strrpos($_FILES['cover']['name'], ".") + 1);
             if (!is_dir($_SERVER['DOCUMENT_ROOT'] . "/images/games/". str_replace(" ", "_", $_POST['title'])))
                 if (!mkdir($_SERVER['DOCUMENT_ROOT'] . "/images/games/". str_replace(" ", "_", $_POST['title']), 0777, true))
-                    die("A fatal error occurred while uploading the avatar. Please try again soon.");
+                    die("A fatal error occurred while uploading the game data. Please try again soon.");
 
             if (move_uploaded_file($_FILES['cover']['tmp_name'], $_SERVER['DOCUMENT_ROOT'] . $relativeHost))
             {
                 if (!$gamesDb->ExecuteStmt(Statements::INSERT_GAME_DATA, $gamesDb->BuildStmtArray("sssiiss", $_POST['title'], $_POST['webpage'], $_POST['description'], $_POST['developer'], $_POST['publisher'], $relativeHost, $_POST['exename'])))
                     die("An error occurred while uploading the game data. Please try again.");
-                header("location:../../". $user->GetUsername());
+                $gameId = GameExists($_POST['title']);
+                if (!$gameId)
+                    die("This shit is broken man." . var_dump($gameId));
+                // A loop with querys? that's not good but anyway this is only a temporal solution...
+                foreach ($_POST['genres'] as $i => $value)
+                {
+                    if (!$gamesDb->ExecuteStmt(Statements::INSERT_GAME_DATA_GENRE, $gamesDb->BuildStmtArray("ii", $gameId, $_POST['genres'][$i])))
+                        die("An error occurred while uploading the game data. Please try again.");
+                }
+                //header("location:../../". $user->GetUsername());
             }
             else
                 die("An error occurred while uploading the game data. Please try again.");
@@ -94,12 +125,21 @@ if (isset($_POST['title']) && isset($_POST['webpage']) && isset($_POST['descript
 <title>Submit new game</title>
 </head>
 <body>
-<div style="height:400px; width:650px; color:#FFFFFF; background-color:#000000; border-radius:0.7em; text-align:center; padding:20px;">
+<div style="height:590px; width:650px; overflow:auto; color:#FFFFFF; background-color:#000000; border-radius:0.7em; text-align:center; padding:20px;">
 <form action="/core/ajax/games/submitgame.php" method="post" enctype="multipart/form-data" style="border-radius:0.7em; padding:25px; text-align:left; margin-left:100px;">
 	Game title: <input type="text" name="title" style="margin-left:85px;"/><br/><br/>
 	Game official webpage: <input type="text" name="webpage" style="margin-left:8px;"/><br/><br/>
 	Game description: <input type="textarea" name="description" style="margin-left:40px;"/><br/><br/>
-	Game developer: 
+	Game genres: 
+	<?php 
+	foreach ($genres as $i => $value)
+	{
+	?>
+		<br/><input type="checkbox" name="genres[]" value="<?php echo $genres[$i]['id']; ?>" style="margin-left:153px;"><?php echo $genres[$i]['name']; ?>
+	<?php
+	}
+	?>
+	<br/><br/>Game developer: 
 	<select name="developer" style="margin-left:46px;">
 	<?php
 	foreach ($developers as $i => $value)
