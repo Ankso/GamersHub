@@ -1078,9 +1078,9 @@ Class User
      * @param long gameId The unique identifier of the game.
      * @return boolean Returns true if the user has the game, else false, and also returns false if something goes wrong.
      */
-    public function HasGame(gameId)
+    public function HasGame($gameId)
     {
-        if ($result = $this->_db->ExecuteStmt(Statements::SELEC_USER_HAS_GAME, $this->_db->BuildStmtArray("i", $this->GetId())))
+        if ($result = $this->_db->ExecuteStmt(Statements::SELEC_USER_HAS_GAME, $this->_db->BuildStmtArray("ii", $this->GetId(), $gameId)))
         {
             if ($result->num_rows == 0)
                 return false;
