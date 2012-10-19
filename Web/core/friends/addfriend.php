@@ -37,5 +37,5 @@ elseif ($_POST['action'] === 'DECLINE')
     if ($user->DeclineFriendRequest((int)$_POST['requesterId']))
         exit(json_encode(array("status" => "SUCCESS")));
 }
-die(json_encode("status" => "FAILED"));
+die(json_encode(array("status" => "FAILED")));
 ?>
