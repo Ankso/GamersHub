@@ -17,7 +17,7 @@ class Developer
     {
         global $DATABASES;
         
-        if (!$id && id != 0)
+        if (!$id && $id != 0)
             die("Error initializing Developer class: No ID provided.");
         
         $this->_id = $id;
