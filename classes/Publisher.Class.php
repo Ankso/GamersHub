@@ -17,7 +17,7 @@ class Publisher
     {
         global $DATABASES;
         
-        if (!$id)
+        if (!$id && $id != 0)
             die("Error initializing Publisher class: No ID provided.");
         
         $this->_id = $id;
