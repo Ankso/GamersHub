@@ -100,7 +100,6 @@ $recommendedGame = $user->GetRecommendedGame();
 <script type="text/javascript" src="js/inc/privateMessages.js"></script>
 <script type="text/javascript" src="js/inc/userspace.js"></script>
 <script type="text/javascript">
-// TODO: Move all the inline function calls from the HTML to here
 $(document).ready(function() {
     space.totalMessages = <?php echo $spaceOwner->GetBoardMessagesCount(); ?>;
     user.id = <?php echo $user->GetId(); ?>;

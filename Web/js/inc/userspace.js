@@ -1283,21 +1283,25 @@ GamesManager.prototype.CheckClientProcessList = function() {
         gamesManager.CheckClientProcessList();
     }, TIME_BETWEEN_PROCESSES_CHECKS);
     
+    // If the plugin is not loaded, we can cancel the next function call, because, at least,
+    // the page should be reloaded after the plugin installation.
     if (!space.plugin.valid)
     {
-        // If the plugin is not loaded, we can cancel the next function call, because, at least,
-        // the page should be reloaded after the plugin installation.
         clearTimeout(this.checkProcessTimeout);
         return;
     }
     
+    // If the games list is not initialized for whatever the reason is, we can try to get the list again.
     if (!this.gamesList)
     {
-        // If the games list is not initialized for whatever the reason is, we can try to get the list again.
         this.GetGamesList();
         return;
     }
-
+    
+    // If the connection to the real time server isn't a success, or the server hasn't responded yet, we must wait until the next tick.
+    if (socket.status != STATUS.CONNECTED)
+        return;
+    
     var processesList = space.plugin.GetProcessList();
     var processes = processesList.split(";");
     processes.pop();
