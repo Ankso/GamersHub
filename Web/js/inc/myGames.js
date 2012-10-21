@@ -23,13 +23,22 @@ MyGames.prototype.MenuOptionClick = function (event)
     {
         case "myGamesOptionDatabase":
             $("#myGamesDatabase").show();
+            $("div#myGamesDatabase").jScrollPane({
+                showArrows: true,
+            });
             break;
         case "myGamesOptionMyGames":
             $("#myGamesMyGames").show();
             this.backToGamesList = false;
+            $("div#myGamesMyGames").jScrollPane({
+                showArrows: true,
+            });
             break;
         case "myGamesOptionRecommendations":
             $("#myGamesRecommendations").show();
+            $("div#myGamesRecommendations").jScrollPane({
+                showArrows: true,
+            });
             break;
         default:
             break;

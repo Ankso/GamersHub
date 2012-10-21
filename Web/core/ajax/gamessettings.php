@@ -83,9 +83,6 @@ $(document).ready(function() {
     $("a#myGamesSubmitNewGame").fancybox();
     // Calculate the height of the div, to allow the overflow property to work properly.
     $("div.myGamesTab").height($(window).height() - 51);
-    $("div.myGamesTab").jScrollPane({
-		showArrows: true,
-    });
     // This will do any pre-programmed action, for example, you can have a link to a game in the main user space,
     // with this, that link can open the My Games control panel and load automatically the game data.
     if (space.onControlPanelOpenAction)
