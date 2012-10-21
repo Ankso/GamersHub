@@ -282,7 +282,7 @@ Class User
      */
     public function SetLastIp($newIp)
     {
-        if ($this->_db->ExecuteStmt((filter_var($newIp, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) ? Statements::UPDATE_USER_DATA_IPV4 : Statements::UPDATE_USER_DATA_IP_V6),
+        if ($this->_db->ExecuteStmt((filter_var($newIp, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) ? Statements::UPDATE_USER_DATA_IPV4 : Statements::UPDATE_USER_DATA_IPV6),
         	$this->_db->BuildStmtArray("si", $newIp, $this->GetId())))
         {
             $this->_ip = $newIp;

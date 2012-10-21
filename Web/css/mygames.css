@@ -25,10 +25,10 @@
     font:22px Calibri;
     margin-left:15%;
     text-align:left;
-    width:70%;
     height:100%;
     padding:50px 50px 50px 75px;
     border-left:10px rgba(255, 51, 30, 1) solid;
+    overflow-y:auto;
 }
 
 .myGamesListedGame {

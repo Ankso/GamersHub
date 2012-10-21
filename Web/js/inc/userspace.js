@@ -773,6 +773,9 @@ Socket.prototype.ConnectToRealTimeServer = function() {
         }
         // This will affect only the new, hidden new.
         $("div.latestNew").fadeIn(500);
+        $("div#latestNews").jScrollPane({
+            showArrows: true,
+        });
         space.UpdateTimestamps();
     });
     // Called when the online friends list is received from the RTS.
