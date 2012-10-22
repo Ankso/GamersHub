@@ -82,6 +82,8 @@ $(document).ready(function() {
 		SocialMarkMessageAsReaded(event);
     });
     $("a#sendPrivateMessage").fancybox();
+ 	// Calculate the height of the div, to allow the overflow property to work properly.
+    $("div.socialTab").height($(window).height() - 51);
 });
 </script>
 <div class="socialMenu">

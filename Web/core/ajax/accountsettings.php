@@ -48,6 +48,8 @@ $(document).ready(function () {
 		}
 		$(event.target).unbind("click");
     });
+ 	// Calculate the height of the div, to allow the overflow property to work properly.
+    $("div.myAccountTab").height($(window).height() - 51);
 });
 </script>
 <div class="myAccountMenu">

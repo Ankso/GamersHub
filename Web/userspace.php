@@ -253,7 +253,7 @@ $(document).ready(function() {
     {
         jwplayer("videoContainer").setup({
             flashplayer: "/flash/player.swf",
-            streamer: "rtmp://127.0.0.1/oflaDemo",
+            streamer: "rtmp://gamershub.no-ip.org/oflaDemo",
             // This ID should be hashed to avoid stream steal...
             file: "<?php echo /*hash("SHA256", */$spaceOwner->GetLiveStreamId()/*)*/; ?>",
     		width: ($("div#videoWindow").width() >= 720) ? 720 : 640,
