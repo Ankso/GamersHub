@@ -95,8 +95,8 @@ class Statements
     const INSERT_USER_GAMES                   = "INSERT INTO user_games_relation VALUES (?, ?)";
     const DELETE_USER_GAMES                   = "DELETE FROM user_games_relation WHERE user_id = ? AND game_id = ?";
     const SELECT_USER_GAME_GENRES             = "SELECT c.id, c.name FROM users.user_games_relation AS a, games.game_genres_relation AS b, games.game_genres AS c WHERE a.user_id = ? AND a.game_id = b.game_id AND b.genre_id = c.id";
-    const SELECT_GAME_ID_BY_2_GENRES          = "SELECT a.id FROM games.game_data AS a, games.game_genres_relation AS b WHERE b.genre_id = ? AND b.genre_id = ? AND a.id NOT IN (SELECT game_id FROM users.user_games_relation WHERE user_id = ?) LIMIT 100";
-    const SELECT_GAME_ID_BY_1_GENRE           = "SELECT a.id FROM games.game_data AS a, games.game_genres_relation AS b WHERE b.genre_id = ? AND a.id NOT IN (SELECT game_id FROM users.user_games_relation WHERE user_id = ?) LIMIT 100";
+    const SELECT_GAME_ID_BY_2_GENRES          = "SELECT a.id FROM games.game_data AS a, games.game_genres_relation AS b WHERE b.genre_id = ? AND b.genre_id = ? AND b.game_id = a.id AND a.id NOT IN (SELECT game_id FROM users.user_games_relation WHERE user_id = ?) LIMIT 100";
+    const SELECT_GAME_ID_BY_1_GENRE           = "SELECT a.id FROM games.game_data AS a, games.game_genres_relation AS b WHERE b.genre_id = ? AND b.game_id = a.id AND a.id NOT IN (SELECT game_id FROM users.user_games_relation WHERE user_id = ?) LIMIT 100";
     const SELECT_USER_HAS_GAME                = "SELECT game_id FROM user_games_relation WHERE user_id = ? AND game_id = ?";
     const SELECT_GAME_EXISTS                  = "SELECT id FROM game_data WHERE title = ?";
     // Live stream utils
