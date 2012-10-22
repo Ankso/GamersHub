@@ -1174,7 +1174,7 @@ Class User
             }
             // We can try to select a game with 2 different genres, to be more accurate
             $genre = $userGenres[rand(0, $count - 1)];
-            if ($result = $this->_db->ExecuteStmt(Statements::SELECT_GAME_ID_BY_GENRE, $this->_db->BuildStmtArray("ii", $genre, $this->GetId())))
+            if ($result = $this->_db->ExecuteStmt(Statements::SELECT_GAME_ID_BY_GENRE, $this->_db->BuildStmtArray("ii", $genre['id'], $this->GetId())))
             {
                 if ($result->num_rows == 0)
                         return USER_HAS_NO_RECOMMENDED_GAMES;
@@ -1192,12 +1192,8 @@ Class User
                     else
                         ++$iter;
                 }
-                // Finally we have our choosen game
-                if ($game)
-                    return $game;
-                else
-                    // This should never happen anyway.
-                    return USER_HAS_NO_RECOMMENDED_GAMES;
+                // Finally we have our chosen game
+                return $game;
             }
         }
         return false;
