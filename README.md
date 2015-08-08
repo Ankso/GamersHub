@@ -9,10 +9,6 @@
 - Manual and tutorials (english & spanish): http://www.php.net/manual/es/
 - Performance tips and more (may be a little bit old, but worth reading it): http://phplens.com/lens/php-book/optimizing-debugging-php.php
 
-- HTML: http://www.w3schools.com/html/default.asp
-
-- CSS: http://www.w3schools.com/css/default.asp
-
 - Ajax:
     - Definition: http://es.wikipedia.org/wiki/AJAX
     - AJAX Tutorial (with Javascript): http://www.librosweb.es/ajax/capitulo1.html
@@ -20,7 +16,6 @@
 - MySQL: http://dev.mysql.com/doc/refman/5.0/es/index.html
 
 - Javascript and NodeJS:
-    - Javascript intro: http://www.w3schools.com/js/
     - Javascript tutorial (with AJAX): http://www.librosweb.es/ajax/capitulo1.html
     - Object orientation and inheritance in Javascript (worth reading it a lot): http://manuel.kiessling.net/2012/03/23/object-orientation-and-inheritance-in-javascript-a-comprehensive-explanation/
     - NodeJS official webpage: http://nodejs.org/
